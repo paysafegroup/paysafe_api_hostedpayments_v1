@@ -1,0 +1,3247 @@
+FORMAT: 1A
+HOST: https://test.api.netbanx.com/hosted/v1/
+
+# NETBANX Hosted Payments API
+
+# Release Notes
+
+| Version | Date | Details |
+|---      |---  |---      |
+| 1.3.4 | January 2015 | <ul><li>Added functionality for Pingit</li></ul>|
+| 1.3.3 | October 2014 | <ul><li>Added *accordD* functionality for select merchants</li><li>Added *oct* as an *authType* for Original Credit requests</li></ul>|
+| 1.3.2 | May 2014 | <ul><li>Added authCode parameter to order status response table and to Return Keys appendix</li><li>Updated HTML example in ThreatMetrix appendix</li><li>Added functionality for Giropay, NETELLER, PayPal, Sofort Banking and Ukash</li><li>Updated extended options key/value pairs table</li><li>Updated values for transaction.status parameter</li></ul>|
+| 1.3.1 | February 2014 | <ul><li>Added MasterPass functionality</li><li>Updated extended options key/value pairs table</li></ul>|
+| 1.3 | October 2013 | <ul><li>Updated extended options key/value pairs table</li><li>Added section for rebilling with a profile</li><li>Added silent post for prepaid cards</li><li>Added ThreatMetrix appendix</li><li>Add optional delimiter for redirects and callbacks</li><li>Corrected rebill examples to include currencyCode</li><li>Added error message for updating a transaction</li><li>Added orderTimeout extended option and error message</li></ul>|
+| 1.2 | May 2013 | <ul><li>Updated Return Keys appendix</li><li>Added Test and Production URLs section</li><li>Added section for updating an order</li><li>Removed Order/Response Examples appendix</li><li>Added section for rebilling</li><li>Added parameters to shipping details table</li><li>Added parameters to order status response table</li><li>Updated error response table</li><li>Added four appendices</li><li>Updated extended options key/value pairs table</li></ul>|
+| 1.1 | March 2013 | <ul><li>Added customer profiles</li><li>Added mobile functionality</li><li>Added return keys table</li><li>Added key/value pairs</li></ul>|
+| 1.0 | January 2013 | <ul><li>Document release</li></ul>|
+
+# Overview
+
+The API is a RESTful interface for making secure payments by way of your e-commerce site. The REST API works with JSON messages and responses.
+* With the API, your customer can pay securely using a PCI-compliant hosted payment page.
+* By using a payment page hosted by NETBANX, sensitive payment information such as credit card numbers is handled by NETBANX.
+* The NETBANX payment page helps reduce the overhead of PCI audit requirements and its associated costs.
+
+The API does not allow merchants to pass card data. If you wish your e-commerce site to collect and pass card data, then you need to use the NETBANX Card Payments API
+and comply with PCI guidelines regarding the handling of card data.
+
+**NOTE** NETBANX may add additional elements in future releases of this API, so ensure that your integration is flexible enough to ignore any unrecognized response fields.
+
+![Hosted Checkout Flow](https://developer.optimalpayments.com/confluence/NBXHPAPI/attachments/5088271/6291544.gif)
+
+# Authentication
+
+In order for you to use the NETBANX REST API, NETBANX must first set you up on their system and provide you with an API key. Your API key looks something like this:
+
+  * Key ID – MerchantXYZ
+  * Key Password – B-tst1-0-51ed39e4-312d02345d3f123120881dff9bb4020a89e8ac44cdfdcecd702151182fdc952272661d290ab2e5849e31bb03deede7e
+  
+The case-sensitive API key is sent using HTTP Basic Authentication. To use HTTP Basic Authentication, you must send the API key credentials using the Authorization header with every request. The Authorization header is constructed as follows:
+
+1. The Key ID and Key Password are combined into a string separated by a colon, e.g.,“Key ID:Key Password”.
+
+2. The resulting string literal is then encoded using Base64.
+
+3. The authorization method and a space (i.e., “Basic”) are then put before the encoded string.
+
+For example, using the Key ID and Password examples above, the header is formed as follows:
+
+``Authorization: Basic
+TWVyY2hhbnRYWVo6Qi10c3QxLTAtNTFlZDM5ZTQtMzEyZDAyMzQ1ZDNmMTIzMTIwODgxZGZmOWJiNDAyMGE4OWU4YWM0NGNkZmRjZWNkNzAyMTUxMTgyZmRjOTU yMjcyNjYxZDI5MGFiMmU1ODQ5ZTMxYmIwM2RlZWRlN2U=``
+
+For additional details, please refer to [http://en.wikipedia.org/wiki/Basic_access_authentication](http://en.wikipedia.org/wiki/Basic_access_authentication).
+
+**NOTE** Your Production API key will be different from your Test API key. Contact your account manager for details. You must keep your API keys safe and ensure that it is used appropriately for your needs.
+
+<a name="getting-started"></a>
+# Getting Started
+
+<a name="verify-that-the-service-is-accessible"></a>
+## Verify That the Service Is Accessible
+
+The following request verifies that the service is up and accessible from your network.
+
+`curl -X GET https://api.test.netbanx.com/hosted/monitor`
+
+**Example Response**
+
+```apib
+{
+  "status" : "READY"
+}
+```
+
+<a name="process-an-order-using-a-hosted-page"></a>
+## Process an Order Using a Hosted Page
+
+To process an order using a payment page that is hosted by NETBANX, you first need to create (or register) an order in the system. The request may be performed when the total amount, currency and merchant reference have been determined. This is an example of a simple order:
+
+**Example Request**
+
+```apib
+$ curl -X POST -H "Content-Type: application/json" \
+  -u jTxL2wsNysJ8Jzmpdwim:NAA043a7c53c66ac3826c5e \
+     https://api.test.netbanx.com/hosted/v1/orders \
+  -d '{
+          "merchantRefNum" : "ABCDE12345",
+          "currencyCode"   : "GBP",
+          "totalAmount"    : 1000
+      }'
+```
+
+**NOTE** By default, the order request is a purchase, in which the amount is both authorized and settled in the same request.
+
+A successful order request will result in a response with the following structure:
+
+**Example Response**
+
+```apib
+{
+   "currencyCode" : "GBP",
+   "id" : "25TWPTLHRR81AIG1LF",
+   "link" : [
+      {
+         "rel" : "hosted_payment",
+         "uri" : "https://api.test.netbanx.com/hosted/v1/payment/53616c7465645f5fc96311a769ed171ce70fac1483fa7f6d9ecfb6d427c1e12c6fc573a35f13e0ea"
+      },
+      {
+         "rel" : "self",
+         "uri" : "https://jTxL2wsNysJ8Jzmpdwim:NAA043a7c53c66ac3826c5e@api.test.netbanx.com/hosted/v1/orders/25TWPTLHRR81AIG1LF"
+      }
+   ],
+   "merchantRefNum" : "ABCDE12345",
+   "mode" : "live",
+   "totalAmount" : 1000,
+   "type" : "order"
+}
+```
+
+This response confirms that the NETBANX system has accepted your order and is prepared to process the payment.
+It will contain basic information about the order received, including the *currencyCode*, *merchantRefNum*, *totalAmount* and the order *id* which is the unique reference that the NETBANX system has assigned to your order request.
+You can use this id to find out information about your order at any time. 
+The order response also provides you with a link section. The first link refers to the hosted_payment URL – this is the URL of the payment page. Your system should take this URL from the order and use it to redirect your customer to the hosted payment page, where they can enter payment details.
+A second link, self is the URL to call to find out the status of the transaction.
+
+![](https://developer.optimalpayments.com/confluence/NBXHPAPI/attachments/5084360/6291512.png)
+
+<a name="process-an-order-using-a-silent-post"></a>
+## Process an Order Using a Silent Post
+
+When you use a payment page hosted by NETBANX, you can customize it to a great extent. However, you may want to have full control over the customer experience, which means not redirecting them to a hosted page. To achieve this, you can implement a Silent Post (also known as Direct Post) order, which allows your customer to make a payment on your own, branded payment page, while at the same time allowing NETBANX to handle all the sensitive card information. This helps you to avoid full PCI compliance overhead, since you don't touch card data.
+
+**NOTE**  PCI DSS v3.0 introduces a new self-assessment requirement, A-EP, for merchants processing card transactions using the Silent Post (or Direct Post) model. Please refer to [PCI DSS guidelines](https://www.pcisecuritystandards.org/documents/PCI_DSS_v3.pdf) for more details. 
+
+To begin, you would submit the same type of order request as for a hosted payment, except that you must include the *extendedOptions* parameter, with *silentPost* set to true. 
+
+As with a regular payment, NETBANX provides you with a *hosted_payment* URL in the response to a successful call to the API – this is the URL of the payment page. 
+
+Create a post to the *hosted_payment* URL you have just received, and include the following additional credit card parameters ([alternative payment types](#silent-post-considerations) may require different parameters to be sent), which you will have collected from your e-commerce site:
+
+*   cardNum
+*   cardExpiryMonth
+*   cardExpiryYear
+*   cvdNumber
+
+The SUBMIT action of your payment form should be to the *hosted_payment* URL. Here is a simple example of a payment page using Silent Post:
+
+**Example Payment Form**
+
+```apib
+form action="https://pay.test.netbanx.com/hosted/v1/payment/53616c7465645f5fc96311a769ed171ce70fac1483fa7f6d9ecfb6d427c1e12c6fc573a35f13e0ea"
+method="POST" >
+ 
+<h3>Please enter your credit card details below</h3>
+ 
+<table>
+  <tr>
+    <td>Card Num:</td>
+    <td><input type="text" name="cardNum" /></td>
+  </tr>
+  <tr>
+    <td>Card Exp Month:</td>
+    <td><input type="text" name="cardExpiryMonth" /></td>
+  </tr>
+  <tr>
+    <td>Card EXP YEAR:</td>
+    <td><input type="text" name="cardExpiryYear" /></td>
+  </tr>
+  <tr>
+    <td>CVD:</td>
+    <td><input type="text" name="cvdNumber" /></td>
+  </tr>
+  <tr>
+    <td>Store Card?</td>
+    <td>
+      <select name="storeCardIndicator">
+        <option value="true">Yes</option>
+        <option value="false">No</option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2">
+      <input type="submit" name="Submit" value="Pay Now" />
+    </td
+```
+
+![](https://developer.optimalpayments.com/confluence/NBXHPAPI/attachments/5084364/6291545.gif)
+
+<a name="process-an-order-with-settlement"></a>
+## Process an Order with Settlement
+
+By default, an order made through the Hosted Payments API is a purchase, in which the authorization and settlement are performed through the same transaction. 
+However, your business model might require you to first authorize a transaction and then to settle it at a later date, e.g., once you have shipped goods. In this case, the API allows you to perform these requests separately.
+
+### Process an Authorize-only Order
+
+To process an authorize-only order using a payment page that is hosted by NETBANX, the regular order request structure is retained, but with the addition of an extendedOptions array to specify that the request is authorization-only.
+
+A successful request will result in the following response structure:
+
+**Example Request**
+
+```apib
+$ curl -X POST -H "Content-Type: application/json" \
+  -u jTxL2wsNysJ8Jzmpdwim:NAA043a7c53c66ac3826c5e \
+     https://api.test.netbanx.com/hosted/v1/orders \
+  -d '{
+          "merchantRefNum" : "ABCDE12345",
+          "currencyCode"   : "GBP",
+          "totalAmount"    : 1000,
+          "extendedOptions" : [
+      { 
+            "key" : " authType", 
+            "value" : "auth" 
+      }
+    }'
+```
+
+A successful request will result in the following response structure:
+
+**Example Response**
+
+```apib
+{
+   "currencyCode" : "GBP",
+   "id" : "25TWPTLHRR81AIG1LF",
+   "link" : [
+      {
+         "rel" : "hosted_payment",
+         "uri" : "https://api.test.netbanx.com/hosted/v1/payment/53616c7465645f5fc96311a769ed171ce70fac1483fa7f6d9ecfb6d427c1e12c6fc573a35f13e0ea"
+      },
+      {
+         "rel" : "self",
+         "uri" : "https://jTxL2wsNysJ8Jzmpdwim:NAA043a7c53c66ac3826c5e@api.test.netbanx.com/hosted/v1/orders/25TWPTLHRR81AIG1LF"
+      }
+   ],
+   "merchantRefNum" : "ABCDE12345",
+   "mode" : "live",
+   "totalAmount" : 1000,
+   "type" : "order"
+}
+```
+
+If you looked up the order, you will get a response with the following structure, which indicates that it is an authorization-only transaction, as indicated by the transaction authType being auth:
+
+**Example Response**
+
+```apib
+{
+    "link" : [
+        {
+            "rel" : "hosted_payment",
+            "uri" : "https://api.netbanx.com/hosted/v1/payment/53616c7465645f5ffeb47c2287dbf903bbb4627b16929a27b8d09b37db190a0f6ce44f8ea1461be2"
+        },
+        {
+            "rel" : "self",
+            "uri" : "https://jTxL2wsNysJ8Jzmpdwim:NAA043a7c53c66ac3826c5e@api.netbanx.com/hosted/v1/orders/25TWPTLHRR81AIG1LF"
+        }
+    ],
+    "currencyCode" : "GBP",
+    "transaction" : {
+        "status" : "pending",
+        "lastUpdate" : "2012-05-14T15:12:18",
+        "authType" : "auth",
+        "merchantRefNum" : "ABCDE12345",
+        "associatedTransactions" : [],
+        "currencyCode" : "GBP",
+        "refunded" : false,
+        "amount" : 1000,
+        "paymentType" : "card",
+        "settled" : false
+    },
+    "totalAmount" : 1000,
+    "id" : "25TWPTLHRR81AIG1LF",
+    "merchantRefNum" : "ABCDE12345"
+}
+```
+
+Once you ship the goods, you can settle the order as shown in the next section.
+
+
+### Settle an Authorization
+
+To settle an authorization, use the order ID received in the order response and POST a settlement request to the endpoint described below.
+
+* If you omit the *amount* parameter, the full amount of the authorization will be settled.
+* If you include the *amount* parameter, you can specify how much of the authorization to settle.
+
+curl -X POST \
+       -H "Content-Type: application/json" \
+       -u jTxL2wsNysJ8Jzmpdwim:NAA043a7c53c66ac3826c5e \
+       -d '{ "amount": 500, "merchantRefNum": "ABCDE12345" }' \
+       https://api.netbanx.com/hosted/v1/orders/25TWPTLHRR81AIG1LF/settlement
+
+Assuming your settlement request is valid, you will get a response with the following structure, indicating that the settlement request has been successfully processed: 
+
+{
+   "currencyCode" : "GBP",
+   "id" : "25TWPTLHRR81AIG1LF",
+   "merchantRefNum" : "ABCDE12345",
+   "mode" : "live",
+   "totalAmount" : 500,
+   "authType" : "settlement"
+}
+
+<a name="cancel-a-pending-order"></a>
+## Cancel a Pending Order
+
+To cancel a pending order through the Hosted Payments API, submit a DELETE request as follows:
+
+```apib
+curl -X DELETE -u jTxL2wsNysJ8Jzmpdwim:NAA043a7c53c66ac3826c5e https://api.netbanx.com/hosted/v1/orders/25TWPTLHRR81AIG1LF
+```
+
+It is important to note that it is only possible to cancel an order prior to it being processed. If an order has been processed or is "in flight", the cancel request will fail.
+Assuming the cancellation request has been successfully processed, the following structure will be returned:
+
+**Example Response**
+
+```apib
+{
+    "currencyCode" : "GBP",
+    "extendedOptions" : [],
+    "link" : [
+        {
+            "rel" : "self",
+            "uri" : "https://jTxL2wsNysJ8Jzmpdwim:NAA043a7c53c66ac3826c5e@api.netbanx.com/hosted/v1/orders/25TWPTLHRR81AIG1LF"
+        } 
+    ],
+    "merchantRefNum" : "ABCDE12345",
+    "id" : "25TWPTLHRR81AIG1LF",
+    "totalAmount" : 1000,
+    "transaction" : {
+        "amount" : 1000,
+        "associatedTransactions" : [],
+        "authType" : "purchase",
+    "settled" : false,
+        "currencyCode" : "GBP",
+        "lastUpdate" : "2012-06-01T17:12:14",
+        "merchantRefNum" : "ABCDE12345",
+    "paymentType" : "card",
+        "refunded" : false,
+        "status" : "cancelled"
+   }
+}
+```
+
+The *status* parameter in the response contains the confirmation that the request has been cancelled.
+
+**NOTE** If you attempt to cancel an order that has already been processed, the cancellation request will fail and you will need to submit a refund request.
+
+<a name="look-up-an-order"></a>
+## Look Up an Order
+
+The Hosted Payments API can be used to request the status or view the details of an order at any time. A *self* link is included in the order link section, which can be used to look up the status of the order. Alternatively, the order endpoint can be called directly as a GET request on the order *id*:
+
+```apib
+curl -u jTxL2wsNysJ8Jzmpdwim:NAA043a7c53c66ac3826c5e https://api.netbanx.com/hosted/v1/orders/25TWPTLHRR81AIG1LF
+```
+
+In this example, *25TWPTLHRR81AIG1LF* represents the ID returned in the response to the order request. 
+A successful response to the order lookup will have the following structure:
+
+**Example Response**
+
+```apib
+
+
+{
+    "link" : [
+        {
+            "rel" : "hosted_payment",
+            "uri" : "https://api.netbanx.com/hosted/v1/payment/53616c7465645f5ffeb47c2287dbf903bbb4627b16929a27b8d09b37db190a0f6ce44f8ea1461be2"
+        },
+        {
+            "rel" : "self",
+            "uri" : "https://[api_key]api.netbanx.com/hosted/v1/orders/25TWPTLHRR81AIG1LF"
+        }
+    ],
+    "currencyCode" : "GBP",
+    "transaction" : {
+        "status" : "pending",
+        "lastUpdate" : "2012-05-14T15:12:18",
+        "authType" : "purchase",
+        "merchantRefNum" : "MERCHANT_REF_123",
+        "associatedTransactions" : [],
+        "currencyCode" : "GBP",
+        "refunded" : false,
+        "amount" : 1000,
+        "paymentType" : "card",
+        "settled" : false
+    },
+    "totalAmount" : 1000,
+    "id" : "25TWPTLHRR81AIG1LF",
+    "merchantRefNum" : "MERCHANT_REF_123"
+}
+```
+
+This response contains all of the information contained in the order, with the addition of the *transaction* and *link* elements. 
+
+
+## Optional Order Features
+
+### Send Customer Email Notifications
+
+In order to send a notification email to the customer, pass a *customerNotificationEmail* parameter during the order creation step as follows:  
+
+```apib
+{
+  "customerNotificationEmail" : "jane.smythe@emailhost.com"
+}
+```
+
+Customer email notifications offer full localization and customization. Please contact Merchant Services for more details.
+In order to avoid sending a customer notification email, send the *extendedOption* field *suppressCustomerEmail* with the value true.
+See [Order Object](#order-object) for details on using the *customerNotificationEmail* parameter.
+
+### Localization
+The Hosted Payments API supports localization of display pages and/or emails that contain payment and receipt information. The system will attempt a best-match to the localization information passed in the locale parameter.
+
+**NOTE** If the *locale* parameter is not passed or an unsupported ISO 639-1 code is sent to the API then the default value provided in the merchant’s integration configuration will be used.
+
+To add localization information to the order, pass the locale parameter as follows:
+
+```apib
+{
+  "locale" : "en_GB"
+}
+```
+
+Currently supported locale parameters are:
+
+* en_US
+* en_GB
+* fr_FR
+* fr_CA
+
+See [Order Object](#order-object) for details on using the *locale* parameter.
+
+
+### Send Customer Email Notifications
+
+In order to send a notification email to the customer, pass a *customerNotificationEmail* parameter during the order creation step as follows:  
+
+```apib
+{
+  "customerNotificationEmail" : "jane.smythe@emailhost.com"
+}
+```
+
+Customer email notifications offer full localization and customization. Please contact Merchant Services for more details.
+In order to avoid sending a customer notification email, send the *extendedOption* field *suppressCustomerEmail* with the value *true*.
+
+See [Order Object](#order-object) for details on using *customerNotificationEmail* parameter.
+
+
+### Send Merchant Email Notifications
+
+In order to send a notification email to the merchant, pass a *merchantNotificationEmail* parameter during the order creation step as follows:
+
+```apib
+{
+  "merchantNotificationEmail" : "merchant@emailhost.com"
+}
+```
+
+See [Order Object](#order-object) for details on using *merchantNotificationEmail* parameter.
+
+
+## Order Response
+
+If everything in your order is set up correctly, the server will return an order response. 
+
+|Element                 |Type                      |Description|
+|---                     |---                       |---|
+|totalAmount             |integer                   |This is the amount of the order that was processed. It is the sum of all *shoppingCart* items + *ancillarFees* (if provided).|
+|currencyCode            |enumeration               |This is the currency in which to process the transaction. See [Currency Codes](#currency-codes)|
+|link.rel                |enumeration               |This is the link type, allowing different results to be displayed, depending on the end state of the transaction. Possible values are: <ul><li>hosted-payment - URI for the payment page. Customers should be redirected to this URI to see their invoice and complete payment; or this should be used as the form action on the merchant payment page if using a Silent Post (Direct Post).</li><li>self - This URI can be called to return a JSON object about the current status of the order, e.g., to see if the payment has been settled.</li><li>resend_callback – if a callback URI is specified in the initial request, calling this URI will re-queue the callback and resend it (which is useful if your callback retries have run out).</li></ul>||
+|link.uri                |string</br>`length<=1024` |This is the URL to which the link was sent.|
+|merchantRefNum          |string</br>`length<=40`   |This is the merchant's transaction ID, included in the initial order request.|
+|mode                    |enumeration               |This parameter is for internal use only.|
+|id                      |string</br>`length<=128`  |This ID represents the original transaction request. This ID will be used for subsequent transactions associated with the original request, such as making a payment or requesting an order status.|
+|profile.id              |string</br>`length<=80`   |This is the customer ID of the profile created during the order request. It can be used for subsequent order requests (see [Process an order with a Payment token](#process-an-order-with-a-payment-token))|
+|profile.paymentToken    |string</br>`length<=80`   |This is the payment token used, or created, to process the transaction.|
+
+```apib
+{
+    "link" : [
+        {
+            "rel" : "hosted_payment",
+            "uri" : "https://api.netbanx.com/hosted/v1/payment/53616c7465645f5ffeb47c2287dbf903bbb4627b16929a27b8d09b37db190a0f6ce44f8ea1461be2"
+        },
+        {
+            "rel" : "self",
+            "uri" : "https://dlTXGAJJWsEdFdJn2SBP:NAA6942c974f7de6e5cd690@api.netbanx.com/hosted/v1/order/25TWPTLHRR81AIG1LF"
+        }
+    ],
+    "currencyCode" : "GBP",
+    "totalAmount" : 1125,
+    "mode" : "live",
+    "type" : "order",
+    "id" : "25TWPTLHRR81AIG1LF",
+    "merchantRefNum" : "MERCHANT_REF_123",
+    "profile" : {
+         "id" : "0275e76c-2141-11e4-8ac3-74cde64e5c68"
+    }
+}
+```
+
+<a name="silent-post-considerations"></a>
+## Silent Post Considerations
+
+Depending on the *paymentMethod* that is specified in the order (see [Order Object](#order-object)), different parameters may be required to send to NETBANX when a [Silent Post order](#process-an-order-with-a-silent-post) (also known as Direct Post) is processed. This means that capturing the necessary payment details from the customer is required on the merchant payment page depending on the chosen payment type.  
+
+Consult the appropriate payment method, as required.
+
+*   [Silent Post for Customer Profile](#silent-post-for-customer-profile)
+*   [Silent Post for Giropay](#silent-post-for-giropay)
+*   [Silent Post for iDEAL](#silent-post-for-ideal)
+*   [Silent Post for NETELLER](#silent-post-for-neteller)
+*   [Silent Post for Prepaid Cards](#silent-post-for-prepaid-cards)
+*   [Silent Post for Sofort Banking](#silent-post-for-sofort-banking)
+*   [Silent Post for Ukash](#silent-post-for-ukash)
+
+For the following payment methods, no additional parameters need to be passed with the Silent Post order, as the redirect occurs immediately and no intermediary page is displayed:
+
+*   interac
+*   masterpass
+*   paynearme
+*   paypal
+*   pingit
+*   poli
+
+<a name="silent-post-for-customer-profile"></a>
+###Silent Post for Customer Profile
+
+If a customer profile has been created, you may be able to submit fewer parameters with a [Silent Post order](#process-an-order-with-a-silent-post) (also known as Direct Post). 
+
+*   If a valid *profile.id* and *profile.paymentToken* have been captured from the order request, then only a value for *cvdNumber* in the Silent Post is required. 
+*   If a valid *profile.id* (but no *profile.paymentToken*) has been captured from the order request, then all values for a standard credit card Silent Post (see [Process an Order with a Silent Post](#process-an-order-with-a-silent-post)) must be included. In this case, an additional *profile.paymentToken* will be assigned to the *profile.id* and returned in the order response (see [Order Status Response Parameters](#order-status-response-parameters)). This new token can then be used in future requests (i.e., a single *profile.id* can have multiple *profile.paymentToken* instances assigned to it).
+
+<a name="silent-post-for-giropay"></a>
+###Silent Post for Giropay
+
+To process a [Silent Post order](../process-an-order-with-a-silent-post) using *giropay* as the *paymentMethod*, the fields in the following table must be provided in the POST to the *hosted\_payment* URL that was received in the order response. 
+
+| Field | Type | Required | Description |
+|---    |---   |--- |--- |
+| nbx_customerBIC  |string |Yes| This is the customer’s Bank Identifier Code (BIC).|
+| nbx_customerIBAN | string|Yes|This is the customer’s International Bank Account Number (IBAN).|
+
+**Note** Please consult Giropay documentation for field length constraints
+
+<a name="silent-post-for-ideal"></a>
+###Silent Post for Ideal
+To process a [Silent Post order](../process-an-order-with-a-silent-post) using *ideal* as the *paymentMethod*, the fields in the following table must be provided in the POST to the *hosted\_payment* URL that was received in the order response. 
+
+| Field | Type | Required | Description |
+|--- |--- |--- | --- |
+| senderHolder | string</br>`length<=27` | Yes | This is the owner of the sending account.|
+| senderIBAN | string</br>`length<=34` | Yes | This is the IBAN of the sending account.|
+
+<a name="silent-post-for-neteller"></a>
+###Silent Post for Neteller
+To process a [Silent Post order](../process-an-order-with-a-silent-post) using *neteller* as the *paymentMethod*, the fields in the following table must be provided in the POST to the *hosted\_payment* URL that was received in the order response. 
+
+| Field | Type | Required | Description |
+|---    |---   |--- |--- |
+|netAccount |integer|Yes|This is the NETELLER account ID.|
+|secureId |integer|Yes|This is the password for the NETELLER account.|
+
+**Note** Please consult Neteller documentation for field length constraints
+
+<a name="silent-post-for-prepaid-cards"></a>
+###Silent Post for Prepaid Cards
+
+To process a [Silent Post order](../process-an-order-with-a-silent-post) using *prepaidcard* as the *paymentMethod*, the fields in the following table must be provided in the POST to the *hosted\_payment* URL that was received in the order response. 
+
+| Field | Type | Required | Description |
+|---    |---   |--- |--- |
+| cardNum | string</br>`length=8-20` | Conditional | This is the full prepaid card number. <br></br><br></br>**Note**  Use <u>either</u> *cardNum* <u>or</u> *referenceId*, but not both. |
+| referenceId | string</br>`length<=36` | Conditional | This is the reference ID for the prepaid card, returned in the response to the enrollments request that created the card. <br></br><br></br>**Note** Use <u>either</u> *cardNum* <u>or</u> *referenceId*, but not both. |
+| lastFourSsn | string</br>`length=4` | Yes | This is the last four digits of the customer’s Social Security Number. |
+| storeCardIndicator | boolean || This indicates whether the customer has granted permission to store card details for future use within their associated profile (if applicable). |
+
+
+<a name="silent-post-for-sofort-banking"></a>
+###Silent Post for Sofort Banking
+To process a [Silent Post order](../process-an-order-with-a-silent-post) using *sofort* as the *paymentMethod*, the fields in the following table must be provided in the POST to the *hosted\_payment* URL that was received in the order response. 
+
+| Field | Type | Required | Description |
+|---    |---   |--- |--- |
+| senderHolder | string | Yes | This is the name of the account owner.  |
+| senderBankBIC | string | Yes | This is the Bank Identifier Code of the account. |
+| senderIBAN | string | Yes | This is the International Bank Account Number for the account.  |
+| senderCountryID | string | Yes | The is the account owner’s country. See [Country Codes](#country-codes). |
+
+**Note** Please consult Sofort Banking documentation for field length constraints
+
+<a name="silent-post-for-ukash"></a>
+###Silent Post for Sofort ukash
+To process a [Silent Post order](../process-an-order-with-a-silent-post) using *ukash* as the *paymentMethod*, the fields in the following table must be provided in the POST to the *hosted_payment* URL that was received in the order response. 
+
+| Field | Type | Required | Description |
+|---    |---   |--- |--- |
+| voucherNumber | integer | Yes | This is the Ukash voucher number.  |
+| voucherValue | integer | Yes | This is the value of the Ukash voucher. |
+
+**Note** Please consult the Ukash documentation for field length constraints
+
+<a name="payment-method-notes"></a>
+## Payment Method Notes
+This table provides the following additional information on each payment method:
+
+*   Whether the merchant account needs to be configured by NETBANX in order to accept the payment type
+*   Whether the Hosted Payments API can be used to issue refunds via the payment method
+*   Additional notes, where applicable
+
+| Payment Method | Configure Merchant Account | Process Refunds | Notes |
+|--- |--- |--- |--- |
+| card | No | Yes |
+| giropay | Yes | No  |
+| ideal | Yes | No |
+| interac | Yes | Yes |
+| masterpass | No | Yes |
+| neteller | Yes | Yes |
+| paynearme | Yes | No | The expiry date for a PayNearMe voucher can be controlled by adding the *orderTimeout* variable as an [extended option](#extendedoptions-object) of the order. For example, setting the value to 172800 (seconds) would extend the expiry date by 48 hours. |
+| paypal | Yes | Yes |
+| pingit | Yes | No | Pingit should be implemented as a Silent Post (or Direct Post) when possible to avoid an extra click. The Pingit application will open directly on the mobile device. |
+| poli | Yes | No |
+| prepaidcard | No | Yes |
+| sofortbanking | Yes | No |
+| ukash | Yes | No | The Ukash change voucher (and expiry date) should be returned to the voucher holder at the end of the transaction process in the event that the amount paid is less than the voucher value. |
+
+
+<a name="implementing=-threatmetrix-for-a-silent-post-order"></a>
+## Implementing ThreatMetrix for a Silent Post Order
+
+ThreatMetrix is a service that anonymously profiles your website visitor’s computer in real time to determine its unique fingerprint – derived from over 150 attributes obtained from such data as TCP/IP packets, operating system, fonts, language, time zone, operating system, browser, and more, matching it against a global collection of data from previously profiled computers and their transactions. Implementing the ThreatMetrix service provides merchants with an additional layer of protection that reduces lost sales from false negatives, reduces fraud chargebacks and associated fees, and minimizes fraud management expense by reducing the number of transactions sent for manual review.
+
+**To implement ThreatMetrix for a Silent Post (also known as Direct Post) order: **
+
+1. Set up an order and retrieve the id from the order response from NETBANX (see [Order Response](#order-response) to see the id). 
+
+1. Insert that id along with the org_id – which NETBANX will provide you – in the profiling HTML (see [HTML](#html)).
+
+1. Insert this profiling HTML on one or more pages of your e-commerce site. **Note** In order for this profiling HTML to be effective, you must place it on a page on which your customer will stay for at least 3–5 seconds.
+
+1. Configure a Web server URL redirect so that the objects in the profiling code that reside on h.online-metrix.net can be referenced on your local domain. This will enable maximum attribute collection (some browsers will attempt to block third-party domains). See [Redirecting the profile server URL](#redirecting-the-profile-server-url) for details.
+
+1. When your customer visits the page containing the profiling HTML on your site to make a purchase, the ThreatMetrix process is launched and the resulting profile and score are integrated into the NETBANX risk assessment of that transaction. **Note** Should you wish to use your own value for the session_id then please see _threatMetrixSessionId_ in the table of _extendedOptions_ key/value pairs in the [extendedOptions Object](#extendedoptions-object). 
+
+<a name="html"></a>
+### Profiling HTML
+
+NETBANX provides the profiling HTML, below, to insert on your e-commerce site. The code should be placed inside the <body> section of your HTML pages.
+
+*   If placed at the beginning of the <body> section, the profiling can begin sooner, but may have a slight impact on your page render time. 
+*   If placed at the end of the <body> section, the profiling tags will not affect the render time of your page, but it may take slightly more time to complete the profiling.
+
+The profiling HTML contains two dynamic variables: org_id and session_id. The rest of the code is static.
+
+| Variable | Description |
+|--- |--- |
+| org_id | The *org_id* parameter uniquely identifies the NETBANX account with ThreatMetrix. NETBANX will provide you with the value for this parameter.  |
+| session_id | For the *session_id*, use the *id* you receive in the response to the initial order for which you want to implement ThreatMetrix profiling. See [Order Response](#order-response) for details. |
+
+
+**HTML**
+
+This is an example of the HTML you could insert in your e-commerce site, amended as required (e.g., inserting proper values for the *org_id* and *session_id* variables).
+
+```html
+<!-Begin ThreatMetrix profiling tags below -->
+
+<!- note: replace 'my_org_id' with your organization id note: replace my_session_id' with a uniquely generated handle -->
+<!- note: 'PAGEID' is only needed for TDCloud, replace 'PAGEID' with an unique ID for that page, if omitted, default is 1 -->
+<!- note: for production, replace 'h.online-metrix.net' with a local URL and configure your web server to redirect to 'h.online-metrix.net' -->
+
+<img src="https://h.online-metrix.net/fp/clear.png?org_id=my_org_id&amp;session_id=my_session_id&amp;m=2" />
+<script src="https://h.online-metrix.net/fp/check.js?org_id=my_org_id&amp;session_id=my_session_id&amp;pageid=##PAGEID##">
+</script>
+<object type="application/x-shockwave-flash" data="https://h.online-metrix.net/fp/fp.swf?org_id=my_org_id&amp;session_id=my_session_id" width="1" height="1">
+ <param name="movie" value="https://h.online-metrix.net/fp/fp.swf?org_id=my_org_id&amp;session_id=my_session_id" />
+ <param name="wmode" value="transparent" />
+<div></div>
+</object>
+<!- End profiling tags -->
+```
+
+<a name="redirecting-the-profile-server-url"></a>
+### Redirecting the profile server URL
+
+In the sample HTML above, all objects refer to the server h.online-metrix.net. This is the DNS name of the ThreatMeterix profiling server. In your Production environment you should use a local URL and configure your Web server to redirect to h.online-metrix.net. Otherwise, visitors can configure their Web browser to block the third-party h.online-metrix.net domain and disable profiling. In addition, many customers prefer that all objects in their Web pages refer only to their own domain.
+
+Configuring redirection is Web server–specific. Here are two ways to do that using Apache (tested with Apache 2.2). Both methods will cause the Apache Web server to send an HTTPS REDIRECT reply for any URL path beginning with /fp/ on the host name it is configured for. The calling page remains the same in the customer’s browser; only the URL appearing in the profiling HTML is changed. This reply tells the HTTP client to re-fetch the new URL instead of the one embedded in the HTML page. Users who view the source of the HTML page itself will not notice that the links are actually redirected to another server. However, tracing tools will still show that a call was being made to an external server.
+
+**RedirectMatch**
+
+Ensure that mod_alias is enabled in the Apache configuration. To do so, make sure the following line is included in the main Apache configuration file (/etc/httpd/conf/httpd.conf on RHEL5):
+
+```LoadModule alias_module modules/mod_alias.so```
+
+On most standard Apache configurations this is the default, in which case no action is required on your part. Add the following line to the relevant VirtualHost:
+
+```RedirectMatch ^/(fp/.*) https://h.online-metrix.net/$1```
+
+**Rewrite Module**
+
+Ensure that mod_rewrite is enabled in the Apache configuration. To do so, make sure the following line is included in the main Apache configuration file (/etc/httpd/conf/httpd.conf on RHEL5):
+
+``` LoadModule rewrite_module modules/mod_rewrite.so```
+
+On most standard Apache configurations this is the default, in which case no action is required on your part. Add the following to the relevant VirtualHost:
+
+```RewriteEngine On RewriteRule ^/(fp/.*) https://h.online-metrix.net/$1 [L,R]```
+
+<a name="order status response parameters"></a>
+## Order Status Response Parameters
+In addition to the parameters that were part of the original transaction request, the order status response may contain the following parameters.
+
+Generic order status response parameters:
+
+| Parameter | Type | Description |
+|--- |--- |--- |---
+| id | string<br>`length<=128` | This is the ID provided in the original order status transaction request. |
+| currencyCode | enumeration | This is the currency in which the transaction was processed. See [Currency Codes](#currency-codes). |
+| merchantRefNum | string<br>`length<=40` | This is the merchant's transaction ID, included in the initial order request. |
+| totalAmount | integer | This is the amount of the order that was processed. It is the sum of all _shoppingCart_ items + _ancillaryFees_ (if provided). E.g., 999 would be $9.99  |
+| transaction.amount | integer | This is the amount of the transaction that was processed. E.g., 999 would be $9.99 |
+| transaction.associatedTransactions | [associatedTransactions Object](#associatedtransactions-object) \[\] | This returns a JSON array of other transactions associated with the order, e.g., refunds and completions. Each member of the list refers to a specific operation that was executed against the order. For example, three refunds of $1.00 would show up as three individual _associatedTransactions_ refunds, not as one refund of $3.00. See [associatedTransactions Object](#associatedtransactions-object) for a description of associated parameters. |
+| transaction.authCode | string<br>`length=50` | This is the authorization code assigned by the issuing bank and returned by NETBANX for the transaction. |
+| transaction.authType | enumeration | This is the transaction type. Possible values are:<ul><li>auth – This is an authorization-only transaction.</li><li>purchase – This is a transaction with immediate billing.</li><li>settlement – This transaction is the settlement of a previous authorization-only transaction. </li><li>refund – This is a refund transaction. </li></ul>
+| transaction.availableToRefund | integer | E.g., 999 would be $9.99 | This is the amount available to refund on the initial order. |
+| transaction.card.brand | enumeration | This is the brand of the card used. Possible values are:<ul><li>amex (American Express)</li><li>cb (Carte Bleue)</li><li>discover</li><li>diners</li><li>international maestro </li><li>jcb</li><li>mastercard </li><li>mastercard debit </li><li>maestro </li><li>visa </li><li>visa debit</li><li>visa electron</li></ul>
+| transaction.card.country | string<br>`length=2` | This is the country of origin for the card used. See [Country Codes](#country-codes). |
+| transaction.card.expiry | string<br>`length=7`| This is the expiry date of the card used. Format = mm/yyyy |
+| transaction.card.lastDigits | string<br>`length=4` | This is the last four digits of the card used. |
+| transaction.card.threeDEnrolment | enumeration | This indicates the enrollment status of the card in the 3D Secure program. Possible values are:<ul><li>Y – Authentication available </li><li>N – Cardholder not enrolled</li><li>U – Authentication unavailable</li><li>E – Error </li></ul>
+| transaction.card.threeDResult | enumeration | This indicates the outcome of the authentication request. Possible values are:<ul><li>Y – Cardholder successfully authenticated with their Card Issuer.</li><li>A – Cardholder authentication was attempted.</li><li>N – Cardholder failed to successfully authenticate with their Card Issuer.</li><li>U – Authentication with the Card Issuer was unavailable.</li><li>E – Error </li></ul>
+| transaction.card.type | enumeration | This is the type of card used. Possible values are:<ul><li>debit</li><li>credit </li></ul>
+| transaction.prepaidcard.lastDigits | string<br>`length=4` | This is the last four digits of the prepaid card that was used for the transaction. |
+| transaction.cleared | boolean | The transaction has been sent to the bank for clearing. |
+| transaction.settled | boolean | The authorization-only transaction has been settled. |
+| transaction.confirmationNumber | string<br>`length=20` | This is the confirmation number returned by NETBANX in response to the transaction request. |
+| transaction.lastUpdate | dateTime UTC | This is the date and time of the last change made to the transaction, e.g., a refund. |
+| transaction.paymentType | string<br>`length<=20` | This is the type of payment used for the transaction. Value will be set to:<ul><li>card</li><li>giropay</li><li>ideal</li><li>interac</li><li>masterpass</li><li>neteller</li><li>paypal</li><li>pingit</li><li>poli</li><li>prepaidcard</li><li>sofortbanking</li><li>ukash</li></ul>
+| transaction.refunded | boolean | This indicates that the transaction has been either fully or partially refunded.<br></br><br></br>**Note** If this value is set to _true_, then check the value for _availableToRefund_ before attempting to issue a refund request. |
+| transaction.reversed | boolean | This indicates whether a reversal has been attempted (e.g. a successful transaction that fails an AVS check, or a successful authorization that has been subsequently cancelled).|
+| transaction.status | enumeration | This indicates the status of the transaction. Possible values are:<ul><li>success – Transaction has been authorized by bank/NETBANX.</li><li>cancelled – Transaction has been cancelled.</li><li>declined – Transaction has been declined by bank/NETBANX.</li><li>pending – Transaction has been created and is awaiting consumer interaction.</li><li>abandoned – Transaction was abandoned part way through by the consumer.</li><li>held – Transaction has been placed on hold due to risk rules results. See _transaction.riskReasonCode_ for the reason codes.</li><li>errored – An error occurred and the transaction could not be completed <br></br><br></br>**NOTE** The merchant's account must be configured by NETBANX to be able to place transactions on hold. </li></ul>
+| transaction.errorCode | integer | If an error occurs, this is the error number. |
+| transaction.errorMessage | string | If an error occurs, this is the error message. |
+| transaction.riskReasonCode | integer | If the transaction has a status of held, these are the reason codes. |
+| transaction.zipVerification | enumeration | This is the result of the AVS check received from the bank. Possible values are:<ul><li>Matched – The zip value provided matches the zip value associated with the card.</li><li>Not Matched – The zip value provided does not match the zip value associated with the card.</li><li>Not Checked – The zip value was not processed. </li></ul>
+| transaction.houseNumberVerification | enumeration | This is the result of the AVS check received from the bank. Possible values are:<ul><li>Matched – The house number value provided matches the house number value associated with the card.</li><li>Not Matched – The house number value provided does not match the house number value associated with the card.</li><li>Not Checked – The house number value was not processed. </li></ul>
+| transaction.cvdVerification | enumeration | This is the result of the CVD check received from the bank. Possible values are:<ul><li>Matched – The CVD value provided matches the CVD value associated with the card.</li><li>Not Matched – The CVD value provided does not match the CVD value associated with the card.</li><li>Not Checked – The CVD value was not processed. </li></ul>
+| profile.paymentToken | string<br>`length<=80` | This is the payment token returned by NETBANX in response to the transaction request. It can be used to process a repeat payment. |
+| profile.id  | string<br>`length<=80` | This is the customer ID of the profile created during the order request. |
+| dueDate | date</br>`YYYY-MM-DD (UTC)`| This is the date the order request will be processed. |
+
+Payment method–specific order status response parameters:
+
+| Parameter | Type | Description |
+|--- |---  |--- |
+| transaction.giropay.giropay.TxId | string | This is the giropay transaction ID. Please consult Giropay documentation for information about field lengths and constraints on field values. |
+| transaction.giropay.paymentPurposeLine_1 | string | This is a Giropay merchant reference. |
+| transaction.giropay.paymentPurposeLine_2 | string | This is a Giropay merchant reference. |
+| transaction.giropay.transactionId | integer | This is a Giropay transaction ID. |
+| transaction.giropay.fullBankResponse | string | This is the bank response code. |
+| transaction.giropay.authCode | string | This is a Giropay authorization code. |
+| transaction.giropay.operatorId | string | This is Giropay’s unique merchant identification. |
+| transaction.giropay.beneficiaryName_1 | string | This is the first part of the beneficiary’s name. |
+| transaction.giropay.beneficiaryName_2 | string | This is the second part of the beneficiary’s name. |
+| transaction.giropay.beneficiaryAcctNo | integer | This is the beneficiary’s bank account number. |
+| transaction.giropay.beneficiaryBankBlz | integer | This is the beneficiary’s bank ID. |
+| transaction.giropay.beneficiaryBic | string | This is the beneficiary’s international Bank Identifier Code. |
+| transaction.giropay.beneficiaryIban | string | This is the beneficiary’s International Bank Account Number. |
+| transaction.giropay.customerAcctNo | integer | This is the customer’s bank account number. |
+| transaction.giropay.customerBankBlz | integer | This is the customer’s bank ID. |
+| transaction.giropay.customerBic | string | This is the customer’s international Bank Identifier Code. |
+| transaction.giropay.customerIban | string | This is the customer’s International Bank Account Number. |
+| transaction.giropay.transType | integer | This is the transaction type ID. |
+| transaction.giropay.email | string | This is the customer’s email address. |
+| transaction.giropay.currency | string | This is the 3-character currency code. |
+| transaction.giropay.authResult | string | This is the result of the authorization. |
+| transaction.giropay.extensionSic | integer | This is the expanded status code. |
+| transaction.giropay.rc | integer | This is the return code. |
+| transaction.giropay.merchantId | string | This is the merchant ID. |
+| transaction.giropay.merchantReference | string | This is the merchant reference ID. |
+| transaction.giropay.amount | integer | This is the amount of the payment. |
+| transaction.giropay.merchantNumber | integer | This is the merchant number. |
+| transaction.ideal.IdealTxId  | string</br>`length<=27` | This is the iDEAL transaction ID. |
+| transaction.paypalToken | string | This is the PayPal token. Please consult PayPal documentation for information about field lengths and constraints on field values. |
+| transaction.paypalTransactionId | string | This is the PayPal transaction reference ID. |
+| transaction.neteller.net_account | string | This is the NETELLER account ID. Please consult NETELLER documentation for information about field lengths and constraints on field values. |
+| transaction.neteller.neteller_type | string | This is the type of NETELLER payment. |
+| transaction.neteller.fxrate | string | This is the foreign exchange rate applied (if applicable). |
+| transaction.neteller.da_amount | string | The amount of the transfer that is being withdrawn from the bank account registered with the member’s NETELLER account. The amount may have decimal places but no currency symbols. |
+| transaction.neteller.total_fee | string | This is the total fee charged for the transfer if it was a Direct Accept transaction (i.e., fee plus dafee). |
+| transaction.neteller.trans_id | string | This is the NETELLER transaction ID. |
+| transaction.neteller.dafee | string | The additional fee charged for the transfer if it was a Direct Accept transaction. |
+| transaction.neteller.client_amount | string | This is the amount taken from the client’s NETELLER account. |
+| transaction.neteller.client_currency | string | This is the client’s currency. |
+| transaction.neteller.merchant_amount | string | The amount moved to to the merchant’s account. |
+| transaction.neteller.merchant_currency | string | This is the merchant’s currency. |
+| transaction.poli.poliRef | string | This is the state of the transaction. |
+| transaction.poli.poliToken | string | This is an encrypted POLi ID. |
+| transaction.poli.state | string | This is the state of the transaction. |
+| transaction.sofortBanking.sofortBankingTxId | string | This is the Sofort Banking transaction ID. Please consult Sofort Banking documentation for information about field lengths and constraints on field values. |
+| transaction.sofortBanking.internationalTransaction | boolean | This is the flag for international transactions. |
+| transaction.ukash.voucherValue | string | This is the value of the voucher. Please consult Ukash documentation for information about field lengths and constraints on field values. |
+| transaction.ukash.settleAmount | string | This is the amount deducted from the voucher. |
+| transaction.ukash.changeVoucherCurrency | string | This is the currency of the change voucher the customer receives. |
+| transaction.ukash.changeIssueAmount | string | This is the amount of the change voucher the customer receives. |
+| transaction.ukash.amount | string | This is the amount processed for the transaction request. |
+| transaction.ukash.changeIssueExpDate | string | This is the expiry date of the change voucher. |
+| transaction.ukash.redemptionType | string | This is the Ukash redemption type. |
+| transaction.ukash.ukashTransactionId | string | This is the Ukash transaction ID. |
+| transaction.ukash.voucherNumber | string | This is the Ukash voucher number. |
+| transaction.masterpass.id  | string | This is the MasterPass transaction ID. |
+| transaction.masterpass.reward.id | string | This is the ID associated with the reward program. |
+| transaction.masterpass.reward.number | string | This is the consumer’s reward number associated with the reward program |
+| transaction.masterpass.reward.name | string | This is the name of the reward program. |
+| transaction.masterpass.reward.expiry.month | integer | This is the month the reward program expires. |
+| transaction.masterpass.reward.expiry.year | integer | This is the year the reward program expires. |
+
+<a name="testing-instructions"></a>
+# Testing Instructions
+
+The NETBANX Test environment can be used to test websites or applications without actually running transactions through the payment processing engine. It is important to make sure that your systems are working correctly before going into a live environment.
+
+**NOTE** Please note that card transactions processed in the Test environment are not sent to the banking network, but through a simulator. Depending on the information provided with the transaction request, the simulator returns either a successful (approved) or failed (declined) response.
+
+With the NETBANX Hosted Payments API you can test the following:
+
+*   Verify support for all the operation types that you require.
+*   Review all common errors as well as errors that may occur for each operation, and ensure your application can handle them.
+*   Verify the lengths and format for all attributes you send.
+*   Use the details in this section to simulate different responses.
+
+To use the Test environment, you must post your requests to the following endpoint: [https://api.test.netbanx.com/hosted/v1/orders](https://api.test.netbanx.com/hosted/v1/orders)
+
+<a name="testing-cards"></a>
+## Test Cards
+You can use the following test credit card numbers to test your integration.  
+
+| Card Type | Card Number | 3D Secure Enabled |
+|---        |---          |---                |---
+| Visa | 4530910000012345 | No 
+||4510150000000321 | No |
+||4107857757053670| Yes |
+| Visa Debit |4206720389883775| Yes |
+| Visa (Electron) | 4917480000000008 | No |
+||4917484589897107 | No |
+| MasterCard | 5191330000004415 | No |
+||5457490000008763 | No |
+||5186750368967720| Yes |
+| MasterCard Debit (Maestro) | 6759950000000162 | No |
+||5036150000001115 | No |
+||5573560100022200| Yes |
+| American Express | 370123456789017 | No 
+||375529360131002 | No |
+| Discover | 6011234567890123 | No |
+| JCB | 3569990000000009 | No |
+
+**NOTE** You can use any of the card numbers to test the Card Payments API or the Hosted Payments API. If you want to test the [3D Secure API](https://developer.optimalpayments.com/en/documentation/3d-secure-api/overview/) and then continue on with the resulting 3D Secure data to perform a test Purchase through the [Card Payments API](https://developer.optimalpayments.com/en/documentation/card-payments-api/overview/) or [Hosted Payments API](https://developer.optimalpayments.com/en/documentation/hosted-payment-api/overview/), make sure you use a card number that is 3D Secure Enabled.
+
+### Expiry Date
+
+When using the test card numbers, you can use any date in the future for the expiry date (e.g., 11/18).
+
+<a name="simulating-response-codes"></a>
+## Simulating Response Codes
+
+You can return specific response codes by specifying different amounts under $1.00 in the request.
+
+*WARNING* For regular testing, do not use amounts less than $1.00 (100 in minor units) as this will trigger different decline or delay cases.
+
+| Amount (Minor Units)  | HTTP Status Code | Error Code | Response |
+|---                    |---            |---        |--- |
+| 1     | 200 |         | Approved |
+| 4     | 402 | 3015    | The bank has requested that you process the transaction manually by calling the card holder's credit card company.|
+| 5     | 402 | 3009    | Your request has been declined by the issuing bank. |
+| 6     | 525 | 1000    | Clearing house timeout (although the simulator returns immediately; if delay is desired, see amount 96). The following text will be displayed: "An internal error occurred. Please retry the transaction."|
+| 12    | 402 | 3023    | Your request has been declined by the issuing bank due to its proprietary card activity regulations. |
+| 13    | 402 | 3009    | Your request has been declined by the issuing bank |
+| 20    | 500 | 1007    | An internal error occurred. Please retry the transaction |
+| 23    | 402 | 4002    | The transaction was declined by our Risk Management department. |
+| 24    | 402 | 3007    | Your request has failed the AVS check. Note that the amount has still been reserved on the customer's card and will be released in 3–5 business days. Please ensure the billing address is accurate before retrying the transaction. |
+| 25    | 402 | 4001    | The card number or email address associated with this transaction is in our negative database. |
+| 90    | 200 |         | Approved with 5-second delay |
+| 91    | 200 |         | Approved with 10-second delay |
+| 92    | 200 |         | Approved with 15-second delay |
+| 93    | 200 |         | Approved with 20-second delay |
+| 94    | 200 |         | Approved with 25-second delay |
+| 95    | 200 |         | Approved with 30-second delay |
+| 96    | 500 | 1007    | Declined with 35-second delay. Transaction timed out after 30 seconds. The following text will be displayed: "An internal error occurred. Please retry the transaction."|
+| 100   | 200 |         | Approved |
+
+**Example request**
+
+```apib
+$ curl -X POST -H "Content-Type: application/json" \
+  -u Qtz9UWrNEod1aKJuuDKQ:NAAd6bef4be7deaeea2aeb5 \
+     https://api.test.netbanx.com/hosted/v1/orders \
+  -d '{
+    "merchantRefNum" : "PXDKI7LZ0V6VAH4KP6",
+    "currencyCode" : "GBP",
+    "totalAmount" : "5"
+}' 
+```
+
+**Example response**
+
+```apib
+{
+   "profile" : {
+      "firstName" : "test",
+      "lastName" : null
+   },
+   "link" : [
+      {
+         "rel" : "hosted_payment",
+         "uri" : "https://pay.test.netbanx.com/hosted/v1/payment/53616c7465645f5f6001f944791dfdbec1fd5e167cdaaa6d92f314b9659c060c3d83bbfcefe17832"
+      },
+      {
+         "rel" : "self",
+         "uri" : "https://Qtz9UWrNEod1aKJuuDKQ:NAAd6bef4be7deaeea2aeb5@api.test.netbanx.com/hosted/v1/orders/25TWQSHIJY7B9UR1LS"
+      },
+      {
+         "rel" : "resend_callback",
+         "uri" : "https://Qtz9UWrNEod1aKJuuDKQ:NAAd6bef4be7deaeea2aeb5@api.test.netbanx.com/hosted/v1/orders/25TWQSHIJY7B9UR1LS/resend_callback"
+      }
+   ],
+   "totalAmount" : "5",
+   "currencyCode" : "GBP",
+   "billingDetails" : {
+      "zip" : "cb249ad",
+      "street" : "1"
+   },
+   "merchantRefNum" : "PXDKI7LZ0V6VAH4KP6",
+   "customerNotificationEmail" : "test@test.com",
+   "transaction" : {
+      "authCode" : null,
+      "confirmationNumber" : "270746010",
+      "status" : "declined",
+      "associatedTransactions" : [],
+      "authType" : "purchase",
+      "settled" : false,
+      "paymentType" : "card",
+      "refunded" : false,
+      "reversed" : false,
+      "errorCode" : 3009,
+      "cvdVerification" : "Matched",
+      "currencyCode" : "GBP",
+      "zipVerification" : "Matched",
+      "errorMessage" : "Your request has been declined by the issuing bank.",
+      "merchantRefNum" : "PXDKI7LZ0V6VAH4KP6",
+      "houseNumberVerification" : "Matched",
+      "riskReasonCode" : null,
+      "card" : {
+         "lastDigits" : "1230",
+         "country" : "pe",
+         "expiry" : "02/2016",
+         "threeDEnrolment" : "N",
+         "type" : "credit",
+         "brand" : "visa"
+      },
+      "amount" : "5",
+      "lastUpdate" : "2014-08-12T15:24:57"
+```  
+
+<a name="simulating-cvd-responses"></a>
+## Simulating CVD Responses
+
+In order to simulate a specific card security code response, provide a CVD value from the table below with your transaction.
+
+|CVV Value |CVV Response Code | Description |
+|---        |---              |---  |
+|111 |Matched | The CVD value provided matches the CVD value associated with the card.|
+|222 |Not Checked | The CVD value was not processed.|
+|666 |Not Matched | The CVD value provided does not match the CVD value associated with the card.|
+
+**Example Request**
+
+```apib
+ {
+    "merchantRefNum" : "483N1IT6EXPHM7JGKG",
+    "currencyCode" : "GBP",
+    "totalAmount" : "7815",
+    "billingDetails" : {
+       "country" : "GB",
+       "street2" : "etc",
+       "phone" : "1234578544",
+       "street" : "123 Somewhere Street",
+       "state" : "Cambridgeshire",
+       "city" : "Bigcity",
+       "zip" : "YJ23 28DO"
+   },
+ }
+```
+
+**Example Response**
+
+```apib
+ {
+   "profile" : {
+      "firstName" : "test",
+      "lastName" : null
+   },
+   "link" : [
+      {
+         "rel" : "hosted_payment",
+         "uri" : "https://pay.vm-dev-sc-02.cambridge.netbanx.com/hosted/v1/payment/53616c7465645f5fc85a0391c8ea5cce08560adda4974ffddca2bd8a07fbc245e2b416498edb7937"
+      },
+      {
+         "rel" : "self",
+         "uri" : "https://Qtz9UWrNEod1aKJuuDKQ:NAAd6bef4be7deaeea2aeb5@pay.vm-dev-sc-02.cambridge.netbanx.com/hosted/v1/orders/258WQSKLPXFE2MQSW9"
+      },
+      {
+         "rel" : "resend_callback",
+         "uri" : "https://Qtz9UWrNEod1aKJuuDKQ:NAAd6bef4be7deaeea2aeb5@pay.vm-dev-sc-02.cambridge.netbanx.com/hosted/v1/orders/258WQSKLPXFE2MQSW9/resend_callback"
+      }
+   ],
+   "totalAmount" : "2700",
+   "currencyCode" : "GBP",
+   "billingDetails" : {
+      "zip" : "CB3 0RN",
+      "street" : "123"
+   },
+   "merchantRefNum" : "483N1IT6EXPHM7JGKG",
+   "customerNotificationEmail" : "jane.smythe@emailserver.com",
+   "transaction" : {
+      "authCode" : "614370",
+      "confirmationNumber" : "1408001529971919",
+      "status" : "success",
+      "associatedTransactions" : [],
+      "authType" : "purchase",
+      "settled" : false,
+      "paymentType" : "card",
+      "refunded" : false,
+      "reversed" : false,
+      "cvdVerification" : "Not Matched",
+      "currencyCode" : "GBP",
+      "zipVerification" : "Matched",
+      "merchantRefNum" : "483N1IT6EXPHM7JGKG",
+      "houseNumberVerification" : "Matched",
+      "riskReasonCode" : null,
+      "card" : {
+         "lastDigits" : "1230",
+         "country" : "pe",
+         "expiry" : "02/2016",
+         "threeDEnrolment" : "N",
+         "type" : "credit",
+         "brand" : "visa"
+      },
+      "amount" : "2700",
+      "lastUpdate" : "2014-08-14T07:32:09"
+   },
+   "id" : "258WQSKLPXFE2MQSW9"
+}
+```
+<a name="error-summary"></a>
+# Error Summary
+
+This is a summary of all errors that could be returned when using the Hosted Payments API, including HTTP Status Codes.
+
+1xx: Informational – Communicates transfer protocol–level information.
+
+2xx: Success – Indicates that the client’s request was accepted.
+
+3xx: Redirection – Indicates that the client must take some additional action in order to complete the request.
+
+4xx: Client Error – Indicates that the client has made an error with the request.
+
+5xx: Server Error – Indicates that an error occurred on the server side.
+
+<a name="common-http-response-status-codes"></a>
+## Common HTTP Response Status Codes
+
+| Status Code               | Description |
+|---                        |---          |
+|200 OK                     | Everything worked as expected.|
+|201 CREATED                | The request was successful. NETBANX created a new resource and the response body contains the representation.|
+|202 ACCEPTED               | This indicates that the client’s request will be handled asynchronously. It tells the client that the request appears valid, but it still may have problems once it is processed.|
+|204 NO CONTENT             | This is usually returned in response to a PUT, POST, or DELETE request, when the REST API declines to send back any status message or representation in the body of the response message.|
+|304 NOT MODIFIED           | The client's cached version of the representation is still up to date.|
+|400 BAD REQUEST            | This often indicates that a required parameter is missing or that a parameter is invalid. This is a generic client-side error status, used when no other 4xx error code is appropriate.|
+|401 UNAUTHORIZED           | This indicates that the client tried to operate on a protected resource without providing the proper authorization. They may have provided the wrong credentials or none at all.|
+|402 PAYMENT REQUIRED       | The parameters were valid but the request failed.|
+|404 NOT FOUND              | The requested resource does not exist.|
+|405 METHOD NOT ALLOWED     | The client tried to POST or PUT to a resource that would not accept it.|
+|415 UNSUPPORTED MEDIA TYPE | The request is in a format not supported by the requested resource for the requested method.|
+|429 TOO MANY REQUESTS      | The application is sending too many simultaneous requests.|
+|500 INTERNAL SERVER ERROR  | An error occurred with an internal server.|
+|502 EXTERNAL SERVER ERROR  | We received an invalid response from the upstream gateway in attempting to fulfil the request.|
+
+<a name="hosted-payment-specific-errors"></a>
+## Hosted Payment Specific Errors
+
+| HTTP Status |Code                           |Description |
+|---          |---                            |---          |
+| 400         |"Cannot update transaction"    | You are attempting to update a transaction that cannot be updated. E.g., you are attempting to update a rebill for which the *dueDate* has passed. |
+| 400         |"Duplicate merchant reference"   | You are attempting a transaction using a *merchantRefNum* that has already been used.|
+| ---         |"Duplicate merchantCustomerId - Existing profile id XXXX" | You are attempting to create a profile using a *merchantCustomerId* that has already been used. |
+| ---         |"You submitted an expired credit card number with your request. Please verify this parameter and retry the request."|The *cardExpiryYear* and *cardExpiryMonth* parameters indicate that the card has expired.|
+| ---         |"Invalid Id"|You have provided an invalid ID with your request.|
+| ---         |"Invalid profileId"|A profile could not be loaded for the *profileId* provided.|
+| 401         |"Not authorized"|You have provided an invalid API key with your request.|
+| 400         |"Amount exceeds refundable amount"|You are attempting to refund an amount that is greater than the original transaction amount (minus the sum of any existing refunds against the transaction).|
+| 400         |"Request validation failed: currency_code invalid: ' ' is not a valid ISO 4217 currency code"|You have provided an invalid currencyCode parameter with your request.|
+| 400         |"Request validation failed: merchant\_ref_num invalid: required field"|You have provided an invalid *merchantRefNum* parameter with your request.|
+| 400         |"Request validation failed: total\_amount invalid: required field" or "Request validation failed: total\_amount invalid : '10.00' not an integer"|You have provided an invalid *totalAmount* parameter with your request.|
+| 400         |"Resend callback failed"|Your attempt to resend a callback failed.|
+| ---         |"Time for completing payment has expired"|You are attempting to complete a payment for which the *orderTimeout* period has expired|
+| 531         |"Transaction already processed"|You are attempting to make a second payment against a completed order.|
+| 400         |"Transaction not yet processed"|You are attempting to refund is a transaction that has not been processed.|
+
+# Complex JSON Objects
+
+<a name="accordd-object"></a>
+## accordD Object
+
+The accordD object allows the merchant to specify a financing plan along with the regular order. 
+
+**NOTE** Do not include this object unless you are instructed to do so by NETBANX.
+
+
+|Element                 |Type                   |Required       |Description|
+|---                     |---                    |---            |---|
+|financingType           |enumeration            |Yes            |This is the type of financing offered. Possible values are: <ul><li>DEFERRED_PAYMENT - Deferred payment financing</li><li>EQUAL_PAYMENT - Equal payment financing</li></ul>
+|plan                    |string<br/>`length<=3` |Yes            |This is the plan number for this financing transaction. |
+|gracePeriod             |integer<br/>`max=99`   |               |This is the grace period, in months, associated with deferred payment transactions.|
+|term                    |integer<br/>`max=99`   |               |This is the number of payments, in months, for equal payment transactions.
+
+**Example**
+
+```apib
+{
+ "accordD" : 
+ {
+ "financingType" : "DEFERRED_PAYMENT",
+ "plan" : "123",
+ "gracePeriod" : "12"
+  }
+}
+```
+
+<a name="addendumdata-object"></a>
+## addendumData Object
+
+* Addendum data allows the merchant to specify additional data (e.g., affiliate codes, session IDs, etc.) to be stored against the transaction and returned to in status calls, reports, etc. Addendum data parameters are sent back in callbacks and redirection URLs.
+* Up to 10 addendum data key/value pairs are enabled per order. They do not need to be defined in advance and can be different on each transaction.
+
+|Element                 |Type                      |Required       |Description|
+|---                     |---                       |---            |---|
+|key                     |string<br/>`length=50`                 |Yes            |This is a description of the data being added to the order.
+|value                   |string<br/>`length=50`                |Yes            |This is the value for the key/value pair.
+
+**Example**
+
+```apib
+{
+  "addendumData" : [
+  {
+    "key" : "affiliate_code",
+    "value" : "test12345"
+  },
+  {
+    "key" : "JSESSIONID",
+    "value" : "ABCDE12345"
+  }
+]
+}
+```
+
+### MasterPass addendumData Key/Value Pairs
+
+If MasterPass is being used as a payment method, extra values can be included in an *addendumData* array in order to override some default merchant account settings. 
+
+MasterPass addendumData Key/Value Pairs
+
+The MasterPass addendumData array would look like this: 
+
+|Key Name | Key Value | Description |
+|---      |---        |----         |
+|acceptRewardProgram | boolean |This allows the reception back of reward details if the shopper has an accepted loyalty/reward card in MasterPass that is also enabled on the merchant account with NETBANX. See [Get an Order Status](#get-an-order-status) for details  
+|suppressShippingAddress | boolean | This allows the prevention of MasterPass from asking for a delivery address, which is ideal, e.g., if digital download goods are being sold. |
+|shippingLocationProfile | string</br>`length<=8` | This allows the specification of the countries that can be delivered to, so that MasterPass does not return an address to which goods are not able to be shipped. MasterPass stores shipping address details for each card the customer has on file there.<br></br><br></br> **NOTE** If this location is set to a value that does not match the shipping address of the customer’s profile with MasterPass, the order will fail. 
+Please contact the Customer Service team for available values.|
+
+The MasterPass *addendumData* array would look like this: 
+
+**Example**
+
+```apib
+{
+"addendumData" : [
+    {
+        "key" : "acceptRewardProgram",
+        "value" : "false"
+    },
+    {
+        "key" : "suppressShippingAddress",
+        "value" : "false"
+    },
+    {
+        "key" : " shippingLocationProfile ",
+        "value" : "default"
+    }
+]
+}
+```
+
+<a name="ancillaryfees-object"></a>
+## ancillaryFees Object
+|Element                 |Type                      |Required       |Description|
+|---                     |---                       |---            |---|
+|amount                       |integer                 |Yes            |This is the amount of the fee in minor units. This value can be negative to indicate a discount. E.g. 999 would be $9.99
+|description                  |string<br/>`length=50`                |Yes            |This is the description of the fee. <br></br><br></br>**NOTE** The totalAmount provided in the initial order must include any ancillary fees (and shopping cart items) passed in the ancillaryFees section. 
+
+**Example**
+
+```apib
+{
+ "ancillaryFees" : [
+ {
+   "amount" : 300,
+   "description" : "Postage"
+ },
+ {
+   "amount" : 125,
+   "description" : "Tax"
+ }
+ ]
+}
+```
+
+<a name="billingdetails-object"></a>
+## billingDetails Object
+
+The merchant can return billing details in the order – these details will be used to pre-populate the payment form when the payment page is requested for payment. The street and zip parameters are used for address verification checks. No further validation on other address information is performed (other than data-type integrity checks).
+
+|Element                 |Type                      |Required       |Description|
+|---                     |---                       |---            |---|
+|city                    |string<br/>`length<=40`   |               |This is the city in the billing address.
+|country                 |string<br/>`length=2`     |Yes            |This is the country in the billing address. See [Country Codes](#country-codes)|
+|street                  |string<br/>`length<=50`   |               |This is the first line of the street address in the billing address.|
+|street2                 |string<br/>`length<=50`   |               |This is the second line of the street address in the billing address.|
+|zip                     |string<br/>`length<=10`   |Yes            |This is the postal/zip code in the billing address.|
+|state                   |string<br/>`length<=40`   |               |This is the state/province/region in the billing address. For Canada, see [Province Codes](#province-codes). For the US, see [State Codes](#state-codes). Other countries have no restrictions. |
+|phone                   |string<br/>`length<=40`   |               |This is the telephone number in the billing address.|
+|useAsShippingAddress    |boolean                   |               |This indicates whether this address should also be used as the shipping address.|
+
+**Example**
+
+```apib
+{
+  {
+  "billingDetails" : {
+    "city" : "London",
+    "country" : "EG",
+    "street" : "123 Grosvenor Street",
+    "street2" : "#25",
+    "zip" : "EG123",
+    "state" : "County",
+    "phone" : "1234578544",
+    "useAsShippingAddress" : true
+  }
+}
+```
+
+<a name="callback-object"></a>
+## callback Object
+Callbacks can be made back to a merchant system either in-line with a transaction authorization or asynchronously shortly after. 
+The callback system can detect problems with the merchant system and retry any failed attempts until a successful response is received.
+
+**NOTE** NETBANX recommends asynchronous callbacks as the customer experience is significantly better.
+
+|Element                 |Type                      |Required       |Description|
+|---                     |---                       |---            |---|
+|format                  |enumeration               |Yes            |This is the redirect type, allowing different endpoints to be targeted depending on the end state of the transaction. Possible values are: <ul><li>json</li><li>get</li><li>form-urlencoded</li><li>xml</li></ul>|
+|rel                     |enumeration               |Yes            |This is the callback type, allowing different endpoints to be targeted depending on the end state of the transaction. Possible values are: <ul><li>on_success</li><li>on_decline</li><li>on_hold</li></ul>Multiple callbacks of the same type are possible, and can be appended to the array|
+|retries                 |number<br/>`0-10`         |               |This specifies the number of callback attempts to make on the system (from 0 to 10) after receiving an error from the merchant endpoint.|
+|returnKeys              |array                     |               |This is an array of additional parameter names to be passed back to the URL in the format specified. All addendumData parameters are returned by default. See [callback return keys](#callback-return-keys)|
+|synchronous             |boolean                   |               |This parameter specifies that the callback should be made in-line with the authorization. The system will time out any synchronous callback that takes longer than 20 seconds to complete. <br></br><br></br>**NOTE** This value defaults to *false. NETBANX recommends that this flag is set to false. Callbacks will be made back to the merchant within 10 minutes of a transaction attempt. |
+|uri                     |string<br/>`length<=1024` |Yes            |This is the URL to which to send the callback. If this is an HTTPS address, please ensure that the certificate is valid – otherwise, the callback will fail.|
+|delimiter               |string<br/>`length<=10`   |               |This specifies the delimiter to use when parameters are sent to the callback URI (e.g, “;” “&” “$”). By default an ampersand (&) is used. <br></br><br></br>**NOTE** The delimiter parameter is supported only when the format parameter is set to get or form-urlencoded.|
+
+**NOTE** Callbacks are retried every 5 minutes if a non-200 response is returned by the merchant, up to the number of callback retries set by the merchant (default is 3)
+
+**Example**
+
+```apib
+{
+  "callback" : [
+    {
+        "format" : "json",
+        "rel" : "on_success",
+        "retries" : 3,
+        "returnKeys" : [
+            "id"
+        ],
+        "synchronous" : true,
+        "uri" : "https://success.example.com/transaction_success.php"
+    }
+    ]
+}
+```
+
+<a name="callback-return-keys"></a>
+The callback return keys may contain the following parameters.
+
+| Parameter | Description |
+|---        |---          |
+| id | This is the transaction ID returned in response to the initial order request. |
+| transaction.amount | This is the amount of the transaction that was processed. |
+| transaction.authCode | This is the authorization code assigned by the issuing bank and returned by NETBANX for the transaction. |
+| transaction.authType | This is the transaction type. |
+| transaction.card.bin | This is the BIN of the card used (the first 6 digits). |
+| transaction.card.brand | This is the brand of the card used. |
+| transaction.card.country | This is the country of origin for the card used. See [Country Codes](#country-codes). |
+| transaction.card.expiry | This is the expiry date of the card used. Format = mm/yyyy |
+| transaction.card.lastDigits | This is the last four digits of the card used. |
+| transaction.card.threeDEnrolment | This indicates the enrollment status of the card in the 3D Secure program. |
+| transaction.card.threeDResult | This indicates the outcome of the authentication request. |
+| transaction.card.type | This is the type of card used. |
+| transaction.prepaidcard.lastDigits | This is the last four digits of the prepaid card that was used for the transaction. |
+| transaction.confirmationNumber | This is the confirmation number returned by NETBANX in response to the transaction request. |
+| transaction.currencyCode | This is the currency in which the transaction was processed. See [Currency Codes](#currency-codes). |
+| transaction.merchantRefNum | This is the merchant's transaction ID, included in the initial transaction. |
+| transaction.paymentType | This is the type of payment used for the transaction. |
+| transaction.sofortBanking.sofortBankingTxId | This is the Sofort Banking transaction ID. Please consult Sofort Banking documentation for all Sofort Banking maximum/minimum field values. |
+| transaction.sofortBanking.internationalTransaction | This is the flag for international transactions. |
+| transaction.status | This indicates the status of the transaction. |
+| transaction.errorCode | If an error occurs, this is the error number. |
+| profile.paymentToken | This is the payment token returned by NETBANX in response to the transaction request. It can be used to process a repeat payment. |
+| profile.id  | This is the customer ID of the profile created during the order request. |
+| profile.firstName | This is the customer’s first name. |
+| profile.lastName | This is the customer’s last name. |
+| customerNotificationEmail | This is the consumer’s email address, to which notifications regarding the order request are sent. |
+
+<a name="payment-method-notes"></a>
+##Payment Method Notes
+
+This table provides the following additional information on each payment method:
+
+*   Whether the merchant account needs to be configured by NETBANX in order to accept the payment type
+*   Whether the Hosted Payments API can be used to issue refunds via the payment method
+*   Additional notes, where applicable
+
+| Payment Method | Configure Merchant Account | Process Refunds | Notes |
+|---            |---                        |---                |---    |---
+| card | No | Yes |
+| giropay | Yes | No  |
+| ideal | Yes | No |
+| interac | Yes | Yes |
+| masterpass | No | Yes |
+| neteller | Yes | Yes |
+| paynearme | Yes | No | The expiry date for a PayNearMe voucher can be controlled by adding the *orderTimeout* variable as an [extended option](#extendedoptions-object) of the order. For example, setting the value to 172800 (seconds) would extend the expiry date by 48 hours. |
+| paypal | Yes | Yes |
+| pingit | Yes | No | Pingit should be implemented as a Silent Post (or Direct Post) when possible to avoid an extra click. The Pingit application will open directly on the mobile device. |
+| poli | Yes | No |
+| prepaidcard | No | Yes |
+| sofortbanking | Yes | No |
+| ukash | Yes | No | The Ukash change voucher (and expiry date) should be returned to the voucher holder at the end of the transaction process in the event that the amount paid is less than the voucher value. |
+
+<a name="extendedoptions-object"></a>
+## extendedOptions Object
+The merchant can use extended options to activate/deactivate certain features in the payment system.
+For example, if billing information is being passed from the merchant's system, it can be rendered non-editable on the payment page by setting an extended option.
+
+|Element                 |Type                      |Required       |Description|
+|---                     |---                       |---            |---|
+|key                     |string<br/>`length<=40`   |               |This is a description of the option being added to the order.|
+|value                   |enumeration               |               |This is the value for the key/value pair. See [extendedOptions Key/Value Pairs](#extendedoptions-keyvalue-pairs) for more information.|
+
+**Example**
+
+```apib
+{
+  "extendedOptions" : [
+    { 
+        "key" : "callbackEmail", 
+        "value" : "john.smith@email.com" 
+    },
+    {
+        "key" : "emailNotEditable",
+        "value" : "1"
+    }
+    ]
+}
+```
+
+<a name="extendedoptions-keyvalue-pairs"></a>
+### extendedOptions Key/Value Pairs
+
+The *extendedOptions* array may contain the following key/value pairs. 
+
+| Key | Type | Description |
+|---  |---   |--- |
+| authType | string</br>`length<=20` | This allows merchants to specify that a transaction is Authorize Only, where the customer will not be billed until some time in the future. Possible values are: <ul><li>auth</li><li>purchase</li><li>oct</li></ul> |
+| callbackEmail | string</br>`length<=256` | This allows merchants to receive an email that contains the same data they would receive if they were to query the *self* URL returned from the API. |
+| disableAddingPaymentMethods | boolean | This prevents the customer from adding a new payment method on the hosted payment page.|
+| disableAllProfileActions | boolean | This removes all "edit" and "add new card" functions from the hosted payment page. |
+| disableDuplicateMerchantRefCheck | boolean | This allows merchants to submit an order using a duplicate *merchantRefNum* parameter. By default this is set to *false*.
+| disableDupCardCheckWithinProfile | boolean | This allows the same card to be added against a profile multiple times without inducing an error message. |
+| disablePaymentMethodStorage | boolean | If passed as *true* this removes the "Store my details for future use" check box from the hosted payment page and sets the flag value to ***false*** |
+| disableProfileEditing | boolean | This prevents the customer from editing profile details on the hosted payment page. |
+| disableRemovingPaymentMethods | boolean | This prevents the customer from removing a previously stored payment method from a profile on the hosted payment page. |
+|dupCheckCardMaxAllowed |string |This indicates the number of existing customer profiles that are allowed to contain the same card number. For example, if *dupCheckCardMaxAllowed* is assigned a value of 2, then the card can be added to two profiles.<ul><li>In order to enforce complete uniqueness, assign *dupCheckCardMaxAllowed* a value of 1.</li><li>If *dupCheckCardMaxAllowed* is not included, then the card can be added to an unlimited number of profiles.</li></ul>
+| emailNotEditable | boolean | This prevents the customer from changing their email address on the hosted payment page.|
+| forcePaymentMethodStorage | boolean | If passed as *true* this removes the "Store my details for future use" check box from the hosted payment page and sets the flag value to ***true*** |
+| houseNumberNotEditable | boolean | This prevents the customer from changing their address on the hosted payment page.|
+| merchantAccount | string</br>`length<=40` | This allows merchants to specify the merchant account ID for which to process the order. This feature should be used if a merchant has more than one merchant account they wish to use within the same integration. This feature must be configured by NETBANX before use. |
+| orderTimeout | integer<br>`300-2592000` | This indicates how many seconds an order remains valid (see [Process an Order with a Hosted Page](#process-an-order-with-a-hosted-page)). Current supported values are from 5 minutes to 30 days (300–2592000 seconds). If a timeout occurs and a customer is directed to the *hosted*payment* URI, or if Silent Post (or Direct Post) details are submitted, then an error will be raised. Merchants can also specify that customers are returned to the *on*timeout* URL (see the redirect parameters in [redirect Object](#redirect-object)).|
+| recurringIndicator | boolean | This allows merchants to specify that the transaction is recurring and does not require the *cvdNumber* element. See [Process a Rebill Using an Order ID](#process-a-rebill-using-an-order-id).|
+| silentPost | boolean | This allows merchants to submit a Silent Post (or Direct Post) order. See [Process an Order with a Silent Post](#process-an-order-with-a-silent-post).|
+| skip3D | boolean | This allows merchants to skip 3D Secure for an order. |
+| suppressCustomerEmail | boolean | This allows merchants to include the *customerNotificationEmail* parameter in an order but without having NETBANX send an email to the customer notifying them of the purchase. It gives merchants the ability to show/capture the customer’s email address on the payments page but not send an email.|
+| threatMetrixSessionId | string</br>`length<=128` | This allows Silent Post (or Direct Post) merchants to specify their own *session*id* for use with ThreatMetrix (see [Implementing ThreatMetrix for a Silent Post Order](#implementing-threatmetrix-for-a-silent-post-order)). The value should be unique per request. This must consist of the following characters only:<ul><li>Upper and lowercase English letters (a-z, A-Z)</li><li>Digits (0-9)</li><li>Underscore or hyphen ( *, -)</li> |
+| useProfileDefaults | boolean | When performing a transaction with *recurringIndicator* set to *true,* passing this key with a value of *true* will allow the previously stored billing details to be retrieved from the profile and passed with the new transaction. |
+
+
+<a name="link-object"></a>
+## link Object
+The merchant can send different links (e.g., to cancel a payment and return to the shopping basket).
+The link section works in the same way as redirects. All addendum data fields are available for the return keys, and a subset of callback parameters (see [callbacks](#callback-object) ).
+
+|Element                 |Type                       |Required       |Description|
+|---                     |---                        |---            |---|
+|rel                     |enumeration                |Yes            |This is the link type, allowing different endpoints to be targeted depending on the end state of the transaction. Possible values are:<ul><li>cancel_url</li><li>return_url</li></ul>|
+|returnKeys              |array                      |               |This is an array of parameter names to be passed back to the URL in the format specified, including those passed in [addendumData](#addendumdata-object)|
+|uri                     |string<br/>`length<=40`    |Yes            |This is the URL to which to send the link. If this is an HTTPS address, please ensure that the certificate is valid. Otherwise, the link will cause the browser to display a certificate warning. |
+
+**Example**
+
+```apib
+{
+  "link" : [
+    {
+        "rel" : "cancel_url",
+        "returnKeys" : [
+            "JSESSIONID"
+        ],
+        "uri" : "https://example.com/cancel.html"
+    }
+    ]
+}
+```
+
+<a name="profile-object"></a>
+## profile Object
+
+For more information on profiles, see [Create a Profile with an Order](#create-a-profile-with-an-order).
+
+|Element                 |Type                       |Required       |Description|
+|---                     |---                        |---            |---|
+|merchantCustomerId      |string<br/>`length<=100`   |Yes            |This is the customer ID that the merchant has assigned to the customer. When this parameter is included in the request, a customer profile will be created.<ul><li>Once a <italic>profile.id</italic> is created for the customer, the is created for the customer, the merchantCustomerId parameter no longer needs to be included in an order request.</li><li>If a profile is being created for a new customer, then the merchantCustomerId parameter should be included in the request.</li></ul>|
+| firstName              |string<br/>`length<=80` ||This is the customer’s first name.|
+| lastName |string<br/>`length<=80`||This is the customer’s last name.|
+| id|string<br/>`length<=80`|| This is the customer ID returned by NETBANX when the profile is created (see [Order Response](#order-response)). If the *id* is included in an order request, then the customer profile associated with that ID will be used for the transaction. See [Process an Order with a Profile ID](#process-an-order-with-a-profile-id) for more information.|
+| paymentToken |string<br/>`length<=80`|| This is the payment token returned by NETBANX when the profile is created (see [Order Status Response Parameters](#order-status-response-parameters)). If the *paymentToken* is included in an order request, then the card number associated with that token will be used for the transaction. See [Process an Order with a Payment Token](#process-an-order-with-a-payment-token) for more information.|
+
+**Example**
+
+```apib
+{
+    "customerIp" : "123.123.123.123",
+    "merchantRefNum" : "MERCHANT_REF_123",
+    "currencyCode" : "GBP",
+    "totalAmount" : 1125,
+    "profile" : {
+        "merchantCustomerId" : "jane.smythe@emailhost.com",
+        "firstName" : "Jane",
+        "lastName" : "Smythe"
+   },
+    "customerNotificationEmail" : "jane.smythe@emailhost.com"
+}
+```
+
+<a name="order-object"></a>
+## order Object
+
+|Element                 |Type                      |Required       |Description|
+|---                     |---                       |---            |---|
+|merchantRefNum|string<br/>`length=40`|?|This is your own transaction ID, for your reference purposes. This should be unique for each transaction.
+|currencyCode|enumeration |? |This is the currency in which to process the transaction. See [Currency Codes](#currency-codes)
+|totalAmount |integer||This is the total amount of the transaction (note that this value must be equal to the amounts passed in the ancillaryFees and shoppingCart parameters, discussed below).Merchants can provide zero (0) as an amount, if they need to process a verification with no value on the card. In this case, the authType must be set to auth, using the .E.g., 999 would authorize $9.99 |
+|customerIp |string<br/>`length<=15`||The value should be the incoming IP address of your customer, which will restrict the payment page to being viewable only from this IP address. <br></br><br></br>**NOTE** Though the customerIp parameter is not mandatory, NETBANX recommends including it for additional security.|
+|id|string<br/>`length<=128`||This ID represents the original order request. This ID will be used for subsequent transactions associated with the original request, such as making a payment or requesting an order status.|
+|customerNotificationEmail|string<br/>`length<=256`||This is the consumer’s email address, to which notifications regarding the purchase request are sent.|
+|merchantNotificationEmail|string<br/>`length<=256`||This is the merchant’s email address, to which notifications regarding the purchase request are sent.|
+|dueDate |date YYYY-MM-DD (UTC)||This is the date the order request will be processed. <br></br><br></br>**NOTE** Include this parameter only when processing a rebill (see [Process a Rebill using an Order ID](#process-a-rebill-using-an-order-id)|
+|[profile](#profile-object) |complex|| This allows you to create a customer profile with the order |
+|[shoppingCart](#shoppingCart-object) |complex|| This allows you to add shopping cart information to the order|
+|[ancillaryFees](#ancillaryFees-object) |complex|| This allows you to add ancillary fees to the order|
+|[billingDetails](#billingDetails-object) |complex|| This allows you to add billing details to the order |
+|[shippingDetails](#shippingDetails-object) |complex|| This allows you to add shipping details to the order |
+|[callback](#callback-Object) |complex|| This allows you to add callbacks to the order. <br></br><br></br>**NOTE** You can avoid callbacks if you poll the self endpoint for the Transaction ID. See the link.rel parameter in [Order Response](#order-response) |
+|[redirect](#redirect-Object) |complex|| This allows you to add redirects to the order. Redirects cause a connection back to the merchant system via the customer's browser. |]
+|[link](#link-Object) |complex|| This allows you to add links to the order. You can add different links – e.g., to cancel a payment and return to the shopping cart.|
+|paymentMethod | enumeration [] ||Array of payment methods. This allows you to add payment methods to the order. Possible values are: <ul><li>card</li><li>giropay</li><li>ideal</li>interact</li><li>masterpass</li><li>neteller</li></li>paynearme</li><li>paypal</li><li>pingit</li>poli</li><li>prepaidcard</li><li>sofortbanking</li><li>sofortbanking</li><li>ukash</li></ul> <br></br><br></br>**NOTE** This value defaults to card. See [Payment Method Notes](#payment-method-notes) for additional information on each payment method.|
+|addendumData |||This allows you to specify additional data (e.g., affiliate codes, session IDs, etc.) to be stored against the transaction and returned to you in status calls, reports, etc.|
+|locale|enumeration||This allows you to display your payment/receipt pages and emails using the locale requested. Possible values are: <ul><li>en_GB - UK English</li><li>en_US - American English</li><li>fr_CA - Canadian French</li><li>fr_FR - European French</li></ul><br></br><br></br>**NOTE** If the locale parameter is not passed or if an unsupported ISO 639-1 code is sent to the API then the default value provided in the merchant’s integration configuration will be used.|
+|[extendedOptions](#extendedOptions-object)|complex||This allows you to activate/deactivate certain features in the payment system.|
+|[associatedTransactions](#associatedTransactions-object)|complex||In a response, this is any transaction relating to the original request (e.g., the refund of a settlement).|
+|[accordD](#accordD-object)|complex||These are parameters for financing plans supported for certain merchant configurations. <br></br><br></br>**NOTE** Include this element only when instructed to do so by NETBANX.|
+|[visaAdditionalAuthData](#visaAdditionalAuthData)|complex||This allows additional data to be included with a request using Visa as a payment method.|
+
+
+<a name="redirect-object"></a>
+## redirect Object
+
+*   Redirects are similar to callbacks in that they cause a connection back to the merchant system, but in this case from the customer's browser.
+*   In the event of multiple redirects with the same name being sent, only the first will be used. No parameters will be passed back by default. You can encode simple parameters into the URL and do not need to use _returnKeys_, provided the redirection URL is kept under 100 characters.
+
+**NOTE** Never rely on a redirection to determine the end state of a transaction, as they can fail or be tampered with. Always use a callback or a “status” call to obtain transaction status.
+
+|Element                 |Type                      |Required       |Description|
+|---                     |---                       |---            |---|
+| rel |enumeration |Yes|This is the redirect type, allowing different endpoints to be targeted depending on the end state of the transaction. Possible values are: <ul><li>on_success</li><li>on_error</li><li>on_decline</li><li>on_timeout</li><li>on_hold</li></ul>|
+| returnKeys | enumeration [] ||This is an array of parameter names to be passed back to the URL in the format specified. All *addendumData* parameters are included by default. See [Redirect Return Keys](#redirect-return-keys).|
+| uri |string<br/>`length=1024`|Yes|This is the URL to which to send the redirect. If this is an HTTPS address, please ensure that the certificate is valid – otherwise, the redirect will cause the browser to display a certificate warning.|
+| delimiter |string<br/>`length=10`||This specifies the delimiter to use when parameters are sent to the redirect URI (e.g, “;” “&” “$”). By default an ampersand (&) is used. |
+
+**Example**
+
+```apib
+{
+  "redirect" : [
+    {
+        "rel" : "on_success",
+        "returnKeys" : [
+            "id"
+        ],
+        "uri" : "https://example.com/success.html"
+    }
+    ]
+}
+```
+<a name="redirect-return-keys"></a>
+### redirect return keys
+
+The redirect return keys may contain the following parameters.
+
+| Parameter | Description |
+|---        |--- | 
+| id | This is the transaction ID returned in response to the initial order request. |
+| profile.firstName | This is the customer’s first name. |
+| profile.lastName | This is the customer’s last name. |
+| customerNotificationEmail | This is the consumer’s email address, to which notifications regarding the order request are sent. |
+| transaction.confirmationNumber | This is the confirmation number returned by NETBANX in response to the transaction request. |
+| transaction.amount | This is the amount of the transaction that was processed. |
+| transaction.authCode | This is the authorization code assigned by the issuing bank and returned by NETBANX for the transaction. |
+| transaction.status | This indicates the status of the transaction. |
+| transaction.errorCode | If an error occurs, this is the error number. |
+| transaction.errorMessage | If an error occurs, this is the description of the error. |
+| transaction.riskReasonCode | If the transaction has a status of held, these are the reason codes.  |
+
+<a name="shippingdetails-object"></a>
+## shippingDetails Object
+**NOTE** The merchant should include shipping details for any purchase that requires delivery of physical goods.
+
+|Element                 |Type                      |Required       |Description|
+|---                     |---                       |---            |---|
+|city|string<br>`length<=40`| This is the city in the shipping address. |
+|country|string<br>`length<=3` |Yes|This is the country in the shipping address. See [Country Codes](#country-codes).|
+|recipientName|string</br>`length<=256` | This is the name of the recipient in the shipping address. |
+|street|string<br>`length<=50` |This is the first line of the street address in the shipping address. |
+|street2|string<br>`length<=50` |This is the second line of the street address in the shipping address. |
+|zip|string<br>`length=10` |Yes |This is the postal/zip code in the shipping address. |
+|state |string<br>`length<=40`||This is the state/province/region in the shipping address. For Canada, see [Province Codes](#province-codes). For the U.S., see [State Codes](#state-codes). Other countries have no restrictions.
+|phone|string<br>`length<=40`||This is the telephone number in the shipping address.|
+|carrier|enumeration||This is the shipment carrier. Possible values are: <ul><li>APC = APC Overnight</li><li>APS = AnPost</li><li>CAD = Canada Postal Service</li><li>DHL</li><li>FEX = Fedex</li><li>RML = Royal Mail</li><li>UPS = United Parcel Service</li><li>USPS = United States Postal Service</li><li>OTHER</li></ul>|
+|shipMethod|enumeration||This is the method of shipment. Possible values are:<ul><li>N = Next Day/Overnight&nbsp;</li><li>T = Two-Day Service&nbsp;</li><li>C = Lowest Cost</li><li>O = Other</li></ul>|
+
+**Example**
+
+```apib
+{
+  "shippingDetails" : {
+    "city" : "Cambridge",
+    "country" : "GB",
+    "recipientName" : "Jane Smith",
+    "street" : "321 Daffodil Lane",
+    "street2" : "#12",
+    "zip" : "EL321",
+    "phone" : "4412345785"
+  }
+}
+```
+
+<a name="shoppingcart-object"></a>
+## shoppingCart Object
+
+**NOTE** The *totalAmount* provided in the initial order must add up to the amounts (and [Ancillary Fees](ancillaryfees)) passed in the *shoppingCart* section.
+
+|Element                 |Type                      |Required       |Description|
+|---                     |---                       |---            |---|
+|amount |integer |Yes |  This is the total amount for the items in the shopping cart in minor units e.g. 999 would be $9.99 | 
+|description |string<br>`length<=50`|Yes|This is the merchant's description of the shopping cart item. It will appear on the payment page. <br></br><br></br>**NOTE** The *description* label on the payment page is not localized, regardless of the language specified in the locale settings (see [Localization](#localization)). So, for example, if the description included were "Hammer", and the localization settings were for French, "Hammer" would be displayed on the payment page, and not "Marteau".|
+|sku |string<br>`length<=60`||This is your ID for the shopping cart item (e.g., the merchant's internal SKU or ID). It is not displayed on the payment page, but is reflected back upon querying an order status.|
+|quantity|integer||This is the quantity of the shopping cart item. It will appear on the payment page.|
+
+**Example**
+
+```apib
+{
+"shoppingCart" : [
+    {
+        "amount" : 500,
+        "quantity" : 2,
+        "sku" : "id/sku-1",
+        "description" : "Wrench"
+    },
+    {
+        "amount" : 200,
+        "quantity" : 1,
+        "sku" : "id/sku-2",
+        "description" : "Hammer"
+    }
+    ]
+}
+```
+
+<a name="associatedtransactions-object"></a>
+## associatedTransactions Object
+
+|Element                 |Type                      |Required       |Description|
+|---                     |---                       |---            |---|
+|amount|integer|| This is the total amount of any transaction associated with the order (e.g. a refund) in minor units e.g. 999 would be $9.99 .|| authType | Enumeration | 
+|authType|enumeration||This is the transaction type. Possible values are: <ul><li>auth – This is an authorization-only transaction.</li><li>purchase – This is a transaction with immediate billing.</li><li>settlement – This transaction is the settlement of a previous authorization-only transaction.&nbsp;</li><li>refund – This is a refund transaction.</li></ul>|
+|dateTime|dateTime UTC||This is the date and time at which the associated transaction was processed.|
+|reference|string<br>`length<=20` ||This is the NETBANX reference for the associated transaction.|
+
+**Example**
+
+```apib
+{
+"associatedTransactions" : [
+    {
+        "amount" : 500,
+        "authType" : "settlement",
+        "dateTime" : "2014-01-26T10:32:28Z",
+        "reference" : "25TWPTLHRR81AIG1LF"
+    }
+    ]
+}
+```
+
+<a name="visaadditionalauthdata-object"></a>
+## visaAdditionalAuthData Object
+
+The recipient is deemed to be the person or party who has the contractual relationship with the merchant/financial institution. This may be different from the cardholder, e.g., in the case of a parent topping up a child's savings account. Therefore, the fields should not be collected on the same page as cardholder information, but instead be passed in the background from the merchant’s records.
+
+**NOTE** Include _recipientDateOfBirth_ elements if your Merchant Category Code is 6012 and your registered trading address is in the United Kingdom. If you have any questions, contact your account manager. All fields are optional, however scheme fines may apply if data is consistently not supplied and chargebacks persist.
+
+|Element                 |Type                      |Required       |Description|
+|---                     |---                       |---            |---|
+| recipientDateOfBirth.day|integer<br>`1-31`|| This is the recipient's day of birth. | 
+| recipientDateOfBirth.month |integer<br>`1-12` || This is the recipient's month of birth. |
+| recipientDateOfBirth.year | integer<br>`length=4` ||The is the recipient's year of birth. |
+| recipientZip |string<br>`length<=10`||This is the recipient‘s postcode.<br></br><br></br>**NOTE** The last 3 characters are not sent to the banking network. |
+| recipientLastName |string<br>`length<=40`||This is the recipient‘s last name or surname.<br></br><br></br>**NOTE** Only the first 6 characters are sent to the banking network. |
+| recipientAccountNumber |string<br>`length<=25`|| This is the recipient‘s account number, e.g., a loan agreement number or customer ID. In the case where the recipient account is a prepaid card, the card number may be sent in full. <br></br><br></br>**NOTE** Only the first 6 and last 4 characters are sent to the banking network and will be masked accordingly within the back office and any other reports, to comply with PCI regulations.|
+
+**Example**
+
+```apib
+ {
+    "visaAdditionalAuthData": {
+        "recipientDateOfBirth": {
+            "day": 29,
+            "month": 1,
+            "year": 2001
+        },
+        "recipientZip": "CB24 9AD",
+        "recipientLastName": "Smith",
+        "recipientAccountNumber": "ABC1234567890"
+    }
+}
+```
+
+# ISO Standards
+
+<a name="currency-codes"></a>
+## Currency Codes
+| **Currency** | **Code** |
+|---           |---       |---|
+| Argentine Peso | ARS |
+| Australian Dollar | AUD |
+| Baht | THB |
+| Brazilian Real | BRL |
+| Bulgarian Lev | BGN |
+| Canadian Dollar | CAD |
+| Czech Koruna | CZK |
+| Danish Krone | DKK |
+| Euro | EUR |
+| Forint | HUF |
+| Hong Kong Dollar | HKD |
+| Iceland Krona | ISK |
+| Japanese Yen | JPY |
+| Mexican Peso | MXN |
+| New Israeli Shekel | ILS |
+| New Leu | RON |
+| New Taiwan Dollar | TWD |
+| New Zealand Dollar | NZD |
+| Norwegian Krone | NOK |
+| Pound Sterling | GBP |
+| Rand | ZAR |
+| Singapore Dollar | SGD |
+| Swedish Krona | SEK |
+| Swiss Franc | CHF |
+| US Dollar | USD |
+| Zloty | PLN |
+
+<a name="province-codes"></a>
+## Province Codes
+| **Province** | **Code** |
+|---           |---       |---|
+| Alberta | AB |
+| British Columbia | BC |
+| Manitoba | MB |
+| New Brunswick | NB |
+| Newfoundland | NL |
+| Nova Scotia | NS |
+| Northwest Territories | NT |
+| Nunavut | NU |
+| Ontario | ON |
+| Prince Edward Island | PE |
+| Quebec  | QC |
+| Saskatchewan | SK |
+| Yukon | YT |
+
+<a name="stade-codes"></a>
+## State Codes
+| **State** | **Code** |
+|---        |---       |--- |
+| Alabama | AL |
+| Alaska | AK |
+| American Samoa | AS |
+| Arizona | AZ |
+| Arkansas | AR |
+| Armed Forces Americas | AA |
+| Armed Forces Europe | AE |
+| Armed Forces Pacific | AP |
+| California | CA |
+| Colorado | CO |
+| Connecticut | CT |
+| Delaware | DE |
+| District of Columbia | DC |
+| Florida | FL |
+| Georgia | GA |
+| Guam | GU |
+| Hawaii | HI |
+| Idaho | ID |
+| Illinois | IL |
+| Indiana | IN |
+| International | IT |
+| Iowa | IA |
+| Kansas | KS |
+| Kentucky | KY |
+| Louisiana | LA |
+| Maine | ME |
+| Maryland | MD |
+| Massachusetts | MA |
+| Michigan | MI |
+| Minnesota | MN |
+| Mississippi | MS |
+| Missouri | MO |
+| Montana | MT |
+| Nebraska | NE |
+| Nevada | NV |
+| New Hampshire | NH |
+| New Jersey | NJ |
+| New Mexico | NM |
+| New York | NY |
+| North Carolina | NC |
+| North Dakota | ND |
+| Northern Mariana Is. | MP |
+| Ohio | OH |
+| Oklahoma | OK |
+| Oregon | OR |
+| Palau | PW |
+| Pennsylvania | PA |
+| Puerto Rico | PR |
+| Rhode Island | RI |
+| South Carolina | SC |
+| South Dakota | SD |
+| Tennessee | TN |
+| Texas | TX |
+| U.S. Virgin Islands | VI |
+| United States Federal | US |
+| Utah | UT |
+| Vermont | VT |
+| Virginia | VA |
+| Washington  | WA |
+| West Virginia | WV |
+| Wisconsin | WI |
+| Wyoming | WY |
+
+<a name="country-codes"></a>
+## Country Codes
+| **Country** | **Code** |
+|---          |---       |--- |
+| Afghanistan | AF |
+| Åland Islands | AX |
+| Albania | AL |
+| Algeria | DZ |
+| American Samoa | AS |
+| Andorra | AD |
+| Angola | AO |
+| Anguilla | AI |
+| Antarctica | AQ |
+| Antigua and Barbuda | AG |
+| Argentina | AR |
+| Armenia | AM |
+| Aruba | AW |
+| Australia | AU |
+| Austria | AT |
+| Azerbaijan | AZ |
+| Bahamas | BS |
+| Bahrain | BH |
+| Bangladesh | BD |
+| Barbados | BB |
+| Belarus | BY |
+| Belgium | BE |
+| Belize | BZ |
+| Benin | BJ |
+| Bermuda | BM |
+| Bhutan | BT |
+| Bolivia | BO |
+| Bonaire, Sint Eustatius and Saba | BQ |
+| Bosnia and Herzegovina | BA |
+| Botswana | BW |
+| Bouvet Island | BV |
+| Brazil | BR |
+| British Indian Ocean Territory | IO |
+| Brunei Darussalam | BN |
+| Bulgaria | BG |
+| Burkina Faso | BF |
+| Burundi | BI |
+| Cambodia | KH |
+| Cameroon | CM |
+| Canada | CA |
+| Cape Verde | CV |
+| Cayman Islands | KY |
+| Central African Republic | CF |
+| Chad | TD |
+| Chile | CL |
+| China | CN |
+| Christmas Island | CX |
+| Cocos (Keeling) Islands  | CC |
+| Colombia | CO |
+| Comoros | KM |
+| Congo | CG |
+| Congo, Democratic Republic of | CD |
+| Cook Islands | CK |
+| Costa Rica | CR |
+| Côte D’Ivoire | CI |
+| Croatia  | HR |
+| Cuba | CU |
+| Curaçao | CW |
+| Cyprus | CY |
+| Czech Republic | CZ |
+| Denmark | DK |
+| Djibouti | DJ |
+| Dominica | DM |
+| Dominican Republic | DO |
+| Ecuador | EC |
+| Egypt | EG |
+| El Salvador | SV |
+| Equatorial Guinea | GQ |
+| Eritrea | ER |
+| Estonia | EE |
+| Ethiopia | ET |
+| Falkland Islands  | FK |
+| Faroe Islands | FO |
+| Fiji | FJ |
+| Finland | FI |
+| France | FR |
+| French Guiana | GF |
+| French Polynesia | PF |
+| French Southern Territories | TF |
+| Gabon | GA |
+| Gambia | GM |
+| Georgia | GE |
+| Germany | DE |
+| Ghana | GH |
+| Gibraltar | GI |
+| Greece | GR |
+| Greenland | GL |
+| Grenada | GD |
+| Guadeloupe | GP |
+| Guam | GU |
+| Guatemala | GT |
+| Guernsey | GG |
+| Guinea | GN |
+| Guinea-Bissau | GW |
+| Guyana | GY |
+| Haiti | HT |
+| Heard and McDonald Islands | HM |
+| Honduras | HN |
+| Hong Kong | HK |
+| Hungary | HU |
+| Iceland | IS |
+| India | IN |
+| Indonesia | ID |
+| Iran  (Islamic Republic of)  | IR |
+| Iraq | IQ |
+| Ireland | IE |
+| Isle of Man | IM |
+| Israel | IL |
+| Italy | IT |
+| Jamaica | JM |
+| Japan | JP |
+| Jersey | JE |
+| Jordan | JO |
+| Kazakhstan | KZ |
+| Kenya | KE |
+| Kiribati | KI |
+| Korea, Democratic People’s Republic | KP |
+| Korea, Republic of | KR |
+| Kuwait | KW |
+| Kyrgyzstan | KG |
+| Lao People’s Democratic Republic | LA |
+| Latvia | LV |
+| Lebanon | LB |
+| Lesotho | LS |
+| Liberia | LR |
+| Libyan Arab Jamahiriya | LY |
+| Liechtenstein | LI |
+| Lithuania | LT |
+| Luxembourg | LU |
+| Macau | MO |
+| Macedonia | MK |
+| Madagascar | MG |
+| Malawi | MW |
+| Malaysia | MY |
+| Maldives | MV |
+| Mali | ML |
+| Malta | MT |
+| Marshall Islands | MH |
+| Martinique | MQ |
+| Mauritania | MR |
+| Mauritius | MU |
+| Mayotte | YT |
+| Mexico | MX |
+| Micronesia, Federated States of | FM |
+| Moldova, Republic of | MD |
+| Monaco | MC |
+| Mongolia | MN |
+| Montenegro | ME |
+| Montserrat | MS |
+| Morocco | MA |
+| Mozambique | MZ |
+| Myanmar | MM |
+| Namibia | NA |
+| Nauru | NR |
+| Nepal | NP |
+| New Caledonia | NC |
+| New Zealand | NZ |
+| Nicaragua | NI |
+| Niger | NE |
+| Nigeria | NG |
+| Niue | NU |
+| Norfolk Island | NF |
+| Northern Mariana Islands | MP |
+| Norway | NO |
+| Oman | OM |
+| Pakistan | PK |
+| Palau | PW |
+| Palestinian Territory, Occupied | PS |
+| Panama | PA |
+| Papua New Guinea | PG |
+| Paraguay | PY |
+| Peru | PE |
+| Philippines | PH |
+| Pitcairn | PN |
+| Poland | PL |
+| Portugal | PT |
+| Puerto Rico | PR |
+| Qatar | QA |
+| Reunion | RE |
+| Romania | RO |
+| Russian Federation | RU |
+| Rwanda | RW |
+| Saint Barthélemy | BL |
+| Saint Helena | SH |
+| Saint Kitts and Nevis | KN |
+| Saint Lucia | LC |
+| Saint Martin | MF |
+| Saint Vincent and the Grenadines | VC |
+| Samoa | WS |
+| San Marino | SM |
+| Sao Tome and Principe | ST |
+| Saudi Arabia | SA |
+| Senegal | SN |
+| Serbia | RS |
+| Seychelles | SC |
+| Sierra Leone | SL |
+| Singapore | SG |
+| Sint Maarten | SX |
+| Slovakia (Slovak Republic) | SK |
+| Slovenia | SI |
+| Solomon Islands | SB |
+| Somalia | SO |
+| South Africa | ZA |
+| South Georgia and the South Sandwich Islands | GS |
+| South Sudan | SS |
+| Spain | ES |
+| Sri Lanka | LK |
+| St. Pierre and Miquelon | PM |
+| Sudan | SD |
+| Suriname | SR |
+| Svalbard and Jan Mayen Islands | SJ |
+| Swaziland | SZ |
+| Sweden | SE |
+| Switzerland | CH |
+| Syrian Arab Republic | SY |
+| Taiwan | TW |
+| Tajikistan | TJ |
+| Tanzania, United Republic of | TZ |
+| Thailand | TH |
+| The Netherlands | NL |
+| Timor-Leste | TL |
+| Togo | TG |
+| Tokelau | TK |
+| Tonga | TO |
+| Trinidad and Tobago | TT |
+| Tunisia | TN |
+| Turkey | TR |
+| Turkmenistan | TM |
+| Turks and Caicos Islands | TC |
+| Tuvalu | TV |
+| Uganda | UG |
+| Ukraine | UA |
+| United Arab Emirates | AE |
+| United Kingdom | GB |
+| United States | US |
+| United States Minor Outlying Islands | UM |
+| Uruguay | UY |
+| Uzbekistan | UZ |
+| Vanuatu | VU |
+| Vatican City State (Holy See) | VA |
+| Venezuela | VE |
+| Vietnam | VN |
+| Virgin Islands (British) | VG |
+| Virgin Islands (U.S.) | VI |
+| Wallis and Futuna Islands | WF |
+| Western Sahara | EH |
+| Yemen | YE |
+| Zambia | ZM |
+| Zimbabwe | ZW |
+
+## Process an Order [POST /orders]
+
+**Process an order with a Hosted Payment Page**
+
+The following lists describe the mandatory and optional parameters for processing an Order request. For a detailed description of the attributes listed in these tables, please refer to the [Order object](#order-object)
+
+Required Parameters:
+* merchantRefNum
+* currencyCode
+* totalAmount
+
+Optional Parameters:
+* customerIp
+
+**NOTE** Though the customerIp parameter is not mandatory, NETBANX recommends including it for additional security. 
+
+See [Order object](#order-object) for more optional parameters
+
+* As a result of a successful call to the API, NETBANX will provide you with a hosted_payment URL, which is the URL of the payment page. To load the payment page, visit the link, or redirect your customer to the link from your shopping cart/back-end system. By default, the payment page is locked to the IP address that was passed in via the original request.
+* The link section is an array. It is necessary to iterate through this array to identify the hosted_payment rel, and redirect your customer to the URI specified.
+* The status of the transaction can be tracked using the *self* URL, or you can specify a callback address in the initial call (see callback Object)
+
+**WARNING** The secure version of the ID returned in the response (53616c7465645f5ffeb47c2287dbf903bbb4627b16929a27b8d09b37db190a0f6ce44f8ea1461be2 in the example) must be used to load payment pages because there is no API key present in the payment URL. The normal ID (i.e. 25TWPTLHRR81AIG1LF) can be used for the other API calls because the merchant must use their API key for those calls.
+
+<br></br>
+**Process an order with a Silent Post**
+
+A Silent Post (or Direct Post) order enables customer data to be posted directly from a merchant-hosted payment page to NETBANX systems without using a Hosted Page. This can avoid full PCI compliance overhead, since card data does not touch merchant systems on the server side. However, since the introduction of PCI DSS v3.0 there are some important caveats to consider with this approach.
+
+<br></br>
+**NOTE** PCI DSS v3.0 introduces a new self-assessment requirement, A-EP, for merchants processing card transactions using the Silent Post (or Direct Post) model. Please refer to [PCI DSS guidelines](https://www.pcisecuritystandards.org/documents/PCI_DSS_v3.pdf) for more details.
+<br></br>
+
+The following lists describe the mandatory and optional parameters for processing an Order request. For a detailed description of the attributes listed in these tables, please refer to the [Order object](#order-object)
+
+Required Parameters:
+* merchantRefNum
+* currencyCode
+* totalAmount
+* extendedOptions
+  * key = silentPost
+  * value = true
+
+Once you receive a successful response, create a post to the hosted_payment URL you have just received in the response, and include the credit card parameters from the following table, which you will have collected from your e-commerce site:
+
+| Element | Type | Required | Description |
+|---- |---  |--- |---  |
+| cardNum | string<br>`length=8-20` | yes | This is the full card number. |
+| cardExpiryMonth | integer<br>`length<=2` | yes | This is the month the card expires. |
+| cardExpiryYear | integer<br>`length=4` | yes | This is the year the card expires. |
+| cvdNumber | string<br>`length=3-4` | yes | This is the 3- or 4-digit security code that usually appears on the back of the card. |
+| storeCardIndicator | boolean || This indicates whether the customer has granted permission to store card details for future use within their associated profile (if applicable).  |
+
+* The SUBMIT action of your payment form should be to the *hosted_payment* URL.
+* If 3D Secure is enabled, then after a Silent Post the 3D Secure challenge will appear in a full, unbranded page on the NETBANX system. After the 3D Secure challenge, the system will redirect as per the *rel* / *uri* values that you specified (see [redirect Object](#redirect-object)).
+
+**NOTE** Depending on your payment method, you may have to post different parameters to the *hosted_payment* URL. See [Silent Post Considerations](#silent-post-considerations) for details.
+
+<br></br>
+<a name=create-a-profile-with-an-order></a>
+**Create a Profile with an Order**
+
+The Hosted Payments API allows merchants to create customer profiles for their customers inline with the order request. Once a customer profile is created, it can be used to accept payments from the customer. 
+The profile information is also used to populate the customer name field of the billing address displayed on the payment page. See [profile Object](#profile-object) for details on adding a profile object to the order JSON structure.
+The Hosted Payments API customer profile feature allows your customers to securely store their card details with NETBANX for future use during order processing. When the customer is redirected to the Hosted Payments page, they will see an option to store their card details. If this option is selected by the customer, the next time the payment page is displayed their stored card data will be displayed providing the profile id (see [profile Object](#profile-object)) is passed in with the order creation request.
+
+<br></br>
+**NOTE** *paymentToken* is only returned once a payment has been successfully processed against the order, e.g. in the GET request on a successful order, or in the callback parameters (if requested).
+
+![](https://developer.optimalpayments.com/confluence/NBXHPAPI/attachments/5084749/6291546.gif)
+
+The Hosted Payments API customer profile feature offers customers the following options on the Hosted Payments page:
+* Store multiple cards
+* Set a card as default
+* Forget (remove) cards
+* Edit card expiry dates
+* Add/edit billing addresses
+
+<a name=process-an-order-with-a-payment-token></a>
+**Process an Order with a Payment Token**
+
+After a customer profile (see [profile Object](#profile-order) has been created and a payment processed (assuming the customer has selected the option to store card details), a profile *paymentToken* is created, and stored against the order. This can be retrieved via a GET request, or retrieved as a callback option, depending on how your order has been configured.
+
+Providing the *paymentToken* (along with the associated profile *id*) in the profile section of a new order will select the card used in the initial transaction on the hosted page.
+
+<a name=process-an-order-with-a-profile-id></a>
+
+Once a customer profile has been created (see [profile Object](#profile-object)), the *id* can be used to securely store the customer's card details with NETBANX for future use. When the customer is redirected to the Hosted Payments page, they will see an option to store their card details. When the profile *id* is passed in with subsequent order requests, all card information associated with profile will be displayed to the customer. The customer can then select the payment card they want to use for the order. If no cards are yet associated with the profile id, then any other profile information, like the customer's address, will be displayed on the payment page.
+
+
++ Request Process an Order with a Hosted Page (application/json)
+
+  + Attributes
+        + merchantRefNum (string, required) - This is your own transaction ID, for your reference purposes. This should be unique for each transaction.
+        + currencyCode (string, required) - This is the currency in which to process the transaction. See Currency Codes for a list
+        + totalAmount (string, required) - This is the total amount of the transaction. Merchants can provide zero (0) as an amount, if they need to process a verification with no value on the card. In this case, the authType must be set to auth, using the extendedOptions feature.
+        + customerIp (string,optional) - The value should be the incoming IP address of your customer, which will restrict the payment page to being viewable only from this IP address.
+
+  + Headers
+            
+            Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+
+  + Body
+
+                {
+                    "customerIp" : "123.123.123.123",
+                    "merchantRefNum" : "MERCHANT_REF_123",
+                    "currencyCode" : "GBP",
+                    "totalAmount" : 1125,
+                    "customerNotificationEmail" : "john.smith@email.com"
+                }
+        
++ Response 200 (application/json)
+       
+  + Body
+    
+            {
+                "link" : [
+                    {
+                        "rel" : "hosted_payment",
+                        "uri" : "https://api.netbanx.com/hosted/v1/payment/53616c7465645f5ffeb47c2287dbf903bbb4627b16929a27b8d09b37db190a0f6ce44f8ea1461be2"
+                    },
+                    {
+                        "rel" : "self",
+                        "uri" : "https://dlTXGAJJWsEdFdJn2SBP:NAA6942c974f7de6e5cd690@api.netbanx.com/hosted/v1/order/25TWPTLHRR81AIG1LF"
+                    }
+                ],
+                "currencyCode" : "GBP",
+                "amount" : 1125,
+                "mode" : "live",
+                "type" : "order",
+                "id" : "25TWPTLHRR81AIG1LF",
+                "merchantRefNum" : "MERCHANT_REF_123"
+            }
+            
+            
++ Request Process an Order with a Silent Post (application/json)
+
+  + Attributes
+        + merchantRefNum (string, required) - This is your own transaction ID, for your reference purposes. This should be unique for each transaction.
+        + currencyCode (string, required) - This is the currency in which to process the transaction. See Currency Codes for a list
+        + totalAmount (string, required) - This is the total amount of the transaction. Merchants can provide zero (0) as an amount, if they need to process a verification with no value on the card. In this case, the authType must be set to auth, using the extendedOptions feature.
+        + customerIp (string,optional) - The value should be the incoming IP address of your customer, which will restrict the payment page to being viewable only from this IP address.
+        + extendedOptions (extendedOptionsSilentPost,required) - extendedOptions object containing silentPost=true
+    
+ + Headers
+ 
+             Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+            
+ + Body
+    
+            {
+                "merchantRefNum": "MERCHANT_REF_123",
+                "currencyCode": "GBP",
+                "totalAmount": 1125,
+                "customerNotificationEmail": "jane.smythe@emailhost.com",
+                "redirect": [
+                    {
+                        "rel": "on_success",
+                        "uri": "https://api.netbanx.com/echo?payment=success"
+                    },
+                    {
+                        "rel": "on_decline",
+                        "uri": "https://api.netbanx.com/echo?payment=failure"
+                    },
+                    {
+                        "rel": "on_error",
+                        "uri": "https://api.netbanx.com/echo?payment=error"
+                    }
+                ],
+                "extendedOptions": [
+                    {
+                        "key": "silentPost",
+                        "value": "true"
+                    }
+                ]
+            }
+            
++ Response 200 (application/json)
+       
+  + Body
+    
+            {
+                "merchantRefNum": "MERCHANT_REF_123",
+                "currencyCode": "GBP",
+                "totalAmount": 1125,
+                "customerNotificationEmail": "jane.smythe@emailhost.com",
+                "redirect": [
+                    {
+                        "rel": "on_success",
+                        "uri": "https://api.netbanx.com/echo?payment=success"
+                    },
+                    {
+                        "rel": "on_decline",
+                        "uri": "https://api.netbanx.com/echo?payment=failure"
+                    },
+                    {
+                        "rel": "on_error",
+                        "uri": "https://api.netbanx.com/echo?payment=error"
+                    }
+                ],
+                "extendedOptions": [
+                    {
+                        "key": "silentPost",
+                        "value": "true"
+                    }
+                ]
+            }
+
+
++ Request Create a Profile with an Order (application/json)
+    
+   + Headers
+            
+            Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+            
+   + Body
+    
+                {
+                "customerIp" : "123.123.123.123",
+                "merchantRefNum" : "MERCHANT_REF_123",
+                "currencyCode" : "GBP",
+                "totalAmount" : 1125,
+                "profile" : {
+                    "merchantCustomerId" : "jane.smythe@emailhost.com",
+                    "firstName" : "Jane",
+                    "lastName" : "Smythe"
+               },
+                "customerNotificationEmail" : "jane.smythe@emailhost.com"
+            }
+    
+    
++ Response 200 (application/json)
+       
+  + Body
+    
+                {
+                "link" : [
+                    {
+                        "rel" : "hosted_payment",
+                        "uri" : "https://api.netbanx.com/hosted/v1/payment/53616c7465645f5ffeb47c2287dbf903bbb4627b16929a27b8d09b37db190a0f6ce44f8ea1461be2"
+                    },
+                    {
+                        "rel" : "self",
+                        "uri" : "https://dlTXGAJJWsEdFdJn2SBP:NAA6942c974f7de6e5cd690@api.netbanx.com/hosted/v1/orders/25TWPTLHRR81AIG1LF"
+                    }
+                ],
+                "currencyCode" : "GBP",
+                "totalAmount" : 1125,
+                "mode" : "live",
+                "type" : "order",
+                "id" : "25TWPTLHRR81AIG1LF",
+                "merchantRefNum" : "MERCHANT_REF_123",
+                "profile" : {
+                  "id" : "ef4c09ac-213e-11e4-8ac3-74cde64e5c68",
+                  "merchantCustomerId" : "jane.smythe@emailhost.com",
+                  "paymentToken" : "SJsww3Eq33ezNvhM+jQRNoH/U4o7j0XJ4yrXtDMenLM",
+                  "firstName" : "Jane",
+                  "lastName" : "Smythe"
+             } 
+            }
+    
+
+
+<a name="cancel-an-order"></a>
+## Cancel an Order [DELETE /orders/{order_id}]
+
+In order to cancel an order, call DELETE on an order URL. 
+
+* If the order has been created but no card authorization has taken place, then the same structure as for a GET status will be returned, except that the *status* will be set to cancelled.
+* If the order has been created and a card authorization has taken place but has not yet been settled, then the system will attempt to process a reversal on the authorization. The same structure as for a GET status will be returned, except that the *status* will be set to cancelled, and *transaction.reversed* will be set to true/false depending on the outcome of the reversal.
+
++ Parameters
+    + order_id (required, string, `25TWPTLHRR81AIG1LF`) - Order ID
+    
++ Request Delete an Order (application/json)
+
+  + Headers
+            
+            Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+            
++ Response 200 (application/json)
+       
+  + Body
+    
+            {
+                "currencyCode" : "GBP",
+                "extendedOptions" : [],
+                "link" : [
+                    {
+                        "rel" : "self",
+                        "uri" : "https://dlTXGAJJWsEdFdJn2SBP:NAA6942c974f7de6e5cd690@api.netbanx.com/hosted/v1/25TWPTLHRR81AIG1LF"
+                    } 
+                ],
+                "merchantRefNum" : "QLB8W1BF6D3JDX4XKC",
+                "id" : "25TWPTLHRR81AIG1LF",
+                "totalAmount" : 7557,
+                "transaction" : {
+                    "amount" : 7557,
+                    "associatedTransactions" : [],
+                    "authType" : "purchase",
+                "settled" : false,
+                    "currencyCode" : "GBP",
+                    "lastUpdate" : "2012-06-01T17:12:14",
+                    "merchantRefNum" : "QLB8W1BF6D3JDX4XKC",
+                "paymentType" : "card",
+                    "refunded" : false,
+                    "status" : "cancelled"
+               }
+            }
+    
+
+
+<a name="cancel-a-held-order"></a>
+## Cancel a Held Order [PUT /orders/{order_id}]
+
+In order to cancel an order with a *transaction.status* of *held*, call PUT on an order URL with a status of cancelled. 
+
+Required Parameters:
+* status
+
+An update response will have the same structure as GET status except  that when you update a held order, the status will be updated. See [Get an Order Status](#get-an-order-status).
+
++ Parameters
+  
+    + order_id (required, string, `25TWPTLHRR81AIG1LF`) - Order ID
+
++ Request (application/json)
+ 
+     
+ + Headers
+            
+            Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+    
+ + Body
+    
+            {
+                "transaction" : {
+                "status": "cancelled"
+                  }
+            }
+            
+
+            
++ Response 200 (application/json)
+       
+  + Body
+
+            {
+                "currencyCode" : "GBP",
+                "transaction" : {
+                    "status" : "cancelled",
+                    "lastUpdate" : "2012-05-14T15:12:18",
+                    "authType" : "purchase",
+                    "merchantRefNum" : "MERCHANT_REF_123",
+                    "associatedTransactions" : [],
+                    "currencyCode" : "GBP",
+                    "refunded" : false,
+                    "amount" : 1000,
+                    "paymentType" : "card",
+                    "settled" : false
+                },
+                "totalAmount" : 1000,
+                "id" : "25TWPTLHRR81AIG1LF",
+                "merchantRefNum" : "MERCHANT_REF_123"
+            }
+            
+<a name="resend-an-order-callback"></a>
+## Resend an Order Callback [GET /orders/{order_id}/resend_callback]
+
+Providing a suitable callback has been configured against the order, callbacks can be resent as shown in the example.
+
+See [callback Object](#callback-object) for more details about callbacks.
+
++ Parameters
+    + order_id (required, string, `25TWPTLHRR81AIG1LF`) - Order ID
+    
++ Request (application/json)
+
+    + Headers
+            
+            Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+
++ Response 200 
+
+<a name="process-a-rebill"></a>   
+
+There are two ways of processing a rebill:
+
+* [Process a Rebill Using an Order ID](#process-a-rebill-using-an-orderid)
+* [Process a Rebill Using a Profile](#process-a-rebill-using-a-profile)
+
+**Note** Cancelling a rebill request works in the same way as order cancellation. See Cancel an Order for details. 
+
+<a name="process-a-rebill-using-an-orderid"></a>    
+## Process a Rebill using an Orderid [POST /orders/{order_id}]
+
+Rebills can be processed against your customer’s card by using a previously successful order ID. The rebill can be immediate or can be set up to run at a future date. 
+A rebill request has the same parameter requirements as an order creation request, with the following exceptions:
+
+* Do not include links and redirects, which are not applicable.
+* If the rebill is for a future date, then you must include the *dueDate* parameter.
+
++ Parameters
+    + order_id (required, string, `25TWPTLHRR81AIG1LF`) - Order ID
+    
++ Request Immedidate Rebill Request (application/json)
+
+ + Headers
+            
+            Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+
+ + Body
+   
+               { "totalAmount": 100, 
+                "currencyCode" : "GBP",
+                "merchantRefNum": "MERCHANT_REF_123" 
+            }
+
++ Response 200 (application/json)
+
+ + Body
+   
+               {
+                "currencyCode" : "GBP",
+                "id" : "25TWPTLHRR81AIG1LF",
+                "link" : [
+                    {
+                        "rel" : "hosted_payment",
+                        "uri" : "https://api.netbanx.com/hosted/v1/payment/53616c7465645f5f628f1d45eba0ea540fa7051156f896fedfce5ef1c9593809f06335dc3274cb6a"
+                    },
+                    {
+                        "rel" : "self",
+                        "uri" : "https://dlTXGAJJWsEdFdJn2SBP:NAA6942c974f7de6e5cd690@api.netbanx.com/hosted/v1/orders/25TWPTLHRR81AIG1LF"
+                    },
+                    {
+                        "rel" : "resend_callback",
+                        "uri" : "https://dlTXGAJJWsEdFdJn2SBP:NAA6942c974f7de6e5cd690@api.netbanx.com/hosted/v1/orders/25TWPTLHRR81AIG1LF/resend_callback"
+                    }
+                ],
+                "merchantRefNum" : "MERCHANT_REF_123",
+                "totalAmount" : 100,
+                "transaction" : {
+                    "amount" : 100,
+                    "associatedTransactions" : [ ],
+                    "authCode" : "119490",
+                    "authType" : "purchase",
+                    "card" : {
+                        "brand" : "visa",
+                        "expiry" : "02/2019",
+                        "lastDigits" : 1111,
+                        "type" : "credit"
+                    },
+                    "confirmationNumber" : "269659940",
+                    "currencyCode" : "CAD",
+                    "houseNumberVerification" : "Matched",
+                    "merchantRefNum" : "MERCHANT_REF_123",
+                    "paymentType" : "card",
+                    "status" : "success",
+                    "zipVerification" : "Matched"
+                }
+            }
+
++ Request Future Rebill Request (application/json)
+
+  + Headers
+            
+            Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+
+   + Body
+
+            {
+                "totalAmount": 100,
+                "currencyCode": "GBP",
+                "merchantRefNum": "MERCHANT_REF_123",
+                "dueDate": "2014-09-24"
+            }
+            
++ Response 200 (application/json)
+
+   + Body
+   
+               {
+                "currencyCode": "GBP",
+                "dueDate": "2014-09-24",
+                "id": "25TWPTLHRR81AIG1LF",
+                "link": [
+                    {
+                        "rel": "hosted_payment",
+                        "uri": "https://api.netbanx.com/hosted/v1/payment/53616c7465645f5f3f5446ca6c2d015eeb15b5a78acb761c1c0f3f217c2c7e506511a0a24a18b503"
+                    },
+                    {
+                        "rel": "self",
+                        "uri": "https://dlTXGAJJWsEdFdJn2SBP:NAA6942c974f7de6e5cd690@api.netbanx.com/hosted/v1/orders/25TWPTLHRR81AIG1LF"
+                    },
+                    {
+                        "rel": "resend_callback",
+                        "uri": "https://dlTXGAJJWsEdFdJn2SBP:NAA6942c974f7de6e5cd690@api.netbanx.com/hosted/v1/orders/25TWPTLHRR81AIG1LF/resend_callback"
+                    }
+                ],
+                "merchantRefNum": "MERCHANT_REF_123",
+                "mode": "live",
+                "totalAmount": 100,
+                "type": "order"
+            }
+
+<a name="process-a-rebill-using-a-profile"></a>    
+## Process a Rebill using a Profile [POST /orders/{order_id}]
+
+Rebills can be processed against your customer’s card by using a customer profile.   
+A rebill request has the same parameter requirements as an order creation request, with the following exceptions:
+
+* Do not include links and redirects, which are not applicable.
+* If the rebill is for a future date, then you must include the *dueDate* parameter.
+
+Required Parameters:
+* profile.id
+* profile.paymentToken
+* extendedOptions.recurringIndicator
+
+The *recurringIndicator* option allows a payment to be processed without prompting the user to pick a card (or enter a new card) via the Hosted Payments page, or without resending the CVV when using a Silent Post (or Direct Post).
+
++ Parameters
+    + order_id (required, string, `25TWPTLHRR81AIG1LF`) - Order ID
+
++ Request (application/json)
+
+  + Headers
+            
+            Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+
+  + Body
+  
+              {
+                "totalAmount" : "100",
+                "currencyCode" : "GBP",
+                "merchantRefNum" : "MERCHANT_REF_123",
+                "profile" : {
+                    "id" : "123456",
+                    "paymentToken": "LgM8x0ymeXozGG1"
+                },
+                "extendedOptions": [
+                    {
+                    "key" : "recurringIndicator",
+                    "value" : true
+                    }
+                ]
+            }
+  
++ Response 200 (application/json)  
+
+  + Body
+  
+              {
+                "currencyCode" : "GBP",
+                "id" : "25TWPTLHRR81AIG1LF",
+                "extendedOptions" : [
+                {
+                    "key" : "recurringIndicator", 
+                    "value" : "true"
+                }
+                ],
+                "link" : [
+                    {
+                        "rel" : "hosted_payment",
+                        "uri" : "https://api.netbanx.com/hosted/v1/payment/53616c7465645f5f628f1d45eba0ea540fa7051156f896fedfce5ef1c9593809f06335dc3274cb6a"
+                    },
+                    {
+                        "rel" : "self",
+                        "uri" : "https://dlTXGAJJWsEdFdJn2SBP:NAA6942c974f7de6e5cd690@api.netbanx.com/hosted/v1/orders/25TWPTLHRR81AIG1LF"
+                    },
+                    {
+                        "rel" : "resend_callback",
+                        "uri" : "https://dlTXGAJJWsEdFdJn2SBP:NAA6942c974f7de6e5cd690@api.netbanx.com/hosted/v1/orders/25TWPTLHRR81AIG1LF/resend_callback"
+                    }
+                ],
+                "merchantRefNum" : "MERCHANT_REF_123",
+                "profile" : {
+                    "id" : "123456",
+                    "paymentToken": "LgM8x0ymeXozGG1"
+                },
+                "totalAmount" : 100,
+                "type" : "order"
+            }
+
+<a name="get-an-order-status"></a>
+## Get an Order Status [GET /orders/{order_id}]
+To determine the status of an order request, use the self link (which is returned in the order creation response from NETBANX) from your application or from the command line. 
+The parameters included in the order status response may include the parameters that were part of the original transaction request (see [Process an Order with a Hosted Page](#process-an-order-with-a-hosted-page)).
+
+The response contains all of the information you provided in the initial call, in the same structure, but with two additional elements:
+* transaction
+* link
+
+In this example the status is *pending*, which means that the transaction has not been processed. This status will be updated if a payment is made and accepted
+
++ Parameters
+    + order_id (required, string, `25TWPTLHRR81AIG1LF`) - Order ID
+
++ Response 200 (application/json)  
+
+  + Body
+  
+              {
+                "link" : [
+                    {
+                        "rel" : "hosted_payment",
+                        "uri" : "https://api.netbanx.com/hosted/v1/payment/53616c7465645f5ffeb47c2287dbf903bbb4627b16929a27b8d09b37db190a0f6ce44f8ea1461be2"
+                    },
+                    {
+                        "rel" : "self",
+                        "uri" : "https://dlTXGAJJWsEdFdJn2SBP:NAA6942c974f7de6e5cd690@api.netbanx.com/hosted/v1/orders/25TWPTLHRR81AIG1LF"
+                    }
+                ],
+                "currencyCode" : "GBP",
+                "transaction" : {
+                    "status" : "pending",
+                    "lastUpdate" : "2012-05-14T15:12:18",
+                    "authType" : "purchase",
+                    "merchantRefNum" : "MERCHANT_REF_123",
+                    "associatedTransactions" : [],
+                    "currencyCode" : "GBP",
+                    "refunded" : false,
+                    "amount" : 1000,
+                    "paymentType" : "card",
+                    "settled" : false
+                },
+                "totalAmount" : 1000,
+                "id" : "25TWPTLHRR81AIG1LF",
+                "merchantRefNum" : "MERCHANT_REF_123"
+            }
+  
+
+<a name="update-an-order"></a>
+It is possible to update a subset of items relating to an order after it has been set up. NETBANX supports the following updates:
+
+* [Update a Held Order](#update-a-held-order)
+* [Update a Rebill Order](#update-a-rebill-order)
+
+<a name="update-a-held-order"></a>
+## Update a Held Order [PUT /orders/{order_id}]
+
+If an order has been held, the *transaction.status* of an order can be updated from *held* to either *success* or *cancelled*. 
+
+**Note** The merchant's account must be configured by NETBANX to be able to place transactions on hold.
+For example, a merchant might want to accept high-risk payments but review them before accepting the successful authorization.
+
+**Note** When a held order is set to *cancelled*, an authorization reversal will be attempted.
+
+The example releases an order to a status of *success*.   
+
+See [Order Status Response Parameters](#order-status-response-parameters) to see additional parameters that may be included in the response.
+
++ Parameters
+   + order_id (required, string, `25TWPTLHRR81AIG1LF`) - Order ID
+    
++ Request Get an Order Status (application/json)
+    
+  + Headers
+            
+            Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+
+ + Body
+    
+            {
+                "transaction" : {
+                "status": "success"
+              }
+            }
+
+
++ Response 200 (application/json)
+
+  + Body
+  
+            {
+                "currencyCode" : "CAD",
+                "status" : "success",
+                "id" : "25TWPTLHRR81AIG1LF",
+                "link" : [
+                    {
+                        "rel" : "hosted_payment",
+                        "uri" : "https://api.netbanx.com/hosted/v1/payment/53616c7465645f5f4c747be10b6a34c447742147e74712ddf398dc3114dc7a469974b15a7d188d0c"
+                    },
+                    {
+                        "rel" : "self",
+                        "uri" : "https://dlTXGAJJWsEdFdJn2SBP:NAA6942c974f7de6e5cd690@api.netbanx.com/hosted/v1/orders/25TWPTLHRR81AIG1LF"
+                    },
+                    {
+                        "rel" : "resend_callback",
+                        "uri" : "https://dlTXGAJJWsEdFdJn2SBP:NAA6942c974f7de6e5cd690@api.netbanx.com/hosted/v1/orders/25TWPTLHRR81AIG1LF/resend_callback"
+                    }
+                ],
+                "merchantRefNum" : "MERCHANT_REF_123",
+                "mode" : "live",
+                "totalAmount" : 1250,
+                "type" : "order"
+            }
+
+<a name="update-a-rebill-order"></a>
+## Update a Rebill Order [PUT /orders/{order_id}]
+
+If a rebill has not been processed, any details associated with that rebill can be updated (see [Process a Rebil](#process-a-rebill))
+
+The example modifies the amount and date of a rebill. 
+
+
+See [Order Status Response Parameters](#order-status-response-parameters) to see additional parameters that may be included in the response.
+
+
++ Parameters
+   + order_id (required, string, `25TWPTLHRR81AIG1LF`) - Order ID
+    
++ Request Get an Order Status (application/json)
+    
+  + Headers
+            
+            Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+
+ + Body
+ 
+             {
+                "dueDate" : "2015-06-01",
+                "merchantRefNum" : "MERCHANT_REF_123",
+                "currencyCode" : "CAD",
+                "totalAmount" : 1250
+            }
+
++ Response 200 (application/json)
+
+  + Body
+  
+              {
+                "currencyCode" : "CAD",
+                "dueDate" : "2015-06-01",
+                "id" : "25TWPTLHRR81AIG1LF",
+                "link" : [
+                    {
+                        "rel" : "hosted_payment",
+                        "uri" : "https://api.netbanx.com/hosted/v1/payment/53616c7465645f5f4c747be10b6a34c447742147e74712ddf398dc3114dc7a469974b15a7d188d0c"
+                    },
+                    {
+                        "rel" : "self",
+                        "uri" : "https://dlTXGAJJWsEdFdJn2SBP:NAA6942c974f7de6e5cd690@api.netbanx.com/hosted/v1/orders/25TWPTLHRR81AIG1LF"
+                    },
+                    {
+                        "rel" : "resend_callback",
+                        "uri" : "https://dlTXGAJJWsEdFdJn2SBP:NAA6942c974f7de6e5cd690@api.netbanx.com/hosted/v1/orders/25TWPTLHRR81AIG1LF/resend_callback"
+                    }
+                ],
+                "merchantRefNum" : "MERCHANT_REF_123",
+                "mode" : "live",
+                "totalAmount" : 1250,
+                "type" : "order"
+            }
+  
+  
+# Get an Order Report [GET /orders?num={num}&start={start}]
+
+A list of recently created/processed orders can be retrieved via the Hosted Payments API using a GET request.
+* You can include an offset.
+* You can include the number of records to return (up to 100).
+* Use next and prev links, relative to the offset, to obtain the next/previous records (as applicable).
+
+The following table includes the optional parameters for an order report. 
+
+| Element | Type | Description |
+|---- |---  |---  |
+|num | integer<br>`max=100` | This is the number of records to return.|
+|start | integer | This is the record number at which to start. For example, setting the value to 20 would start the report at the twentieth order.|
+
+Many of the parameters included in the order report response are the same as those included in the order status response (see [Order Status Response Parameters](#order-status-response-parameters)). If everything is set up correctly, the server will respond with a JSON structure.
+The full order (including all passed parameters and extended options) is returned in the array.
+In the event that all orders are returned, no next/prev links will be supplied.
+
+
++ Parameters
+    + num (integer,required) - This is the number of records to return.
+    + start (integer,optional) - This is the record number at which to start. For example, setting the value to 20 would start the report at the twentieth order.
+
++ Request Get an Order Report
+
+ + Headers
+            
+            Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+
++ Response 200 (application/json)
+       
+ + Body
+    
+                {
+                "count" : 2,
+                "navigation" : {
+                    "prev" : "https://api.netbanx.com/hosted/v1/orders?num=2&start=0",
+                    "next" : "https://api.netbanx.com/hosted/v1/orders?num=2&start=0"
+                },
+                "records" : [
+                    {
+                        "currencyCode" : "GBP",
+                        "extendedOptions" : [],
+                        "merchantRefNum" : "AFHXRY6PS2WFQNXR0K",
+                        "id" : "25TWPTLHRR81AIG1LF",
+                        "totalAmount" : 125,
+                        "transaction" : {
+                            "amount" : 125,
+                            "associatedTransactions" : [],
+                            "authType" : "purchase",
+                            "settled" : false,
+                            "currencyCode" : "GBP",
+                            "lastUpdate" : "2012-05-31T09:08:32",
+                            "merchantRefNum" : "AFHXRY6PS2WFQNXR0K",
+                            "paymentType" : "card",
+                            "refunded" : false,
+                            "status" : "Success"
+                        }
+                    },
+                  {
+                        "currencyCode" : "GBP",
+                        "customerIp" : "127.0.0.1",
+                        "extendedOptions" : [],
+                        "merchantRefNum" : "1",
+                        "paymentMethod" : [
+                            "card"
+                        ],
+                        "id" : "25TWPTLHRR81AIG1LF",
+                        "totalAmount" : 150,
+                        "transaction" : {
+                            "amount" : 150,
+                            "associatedTransactions" : [],
+                            "authType" : "purchase",
+                            "settled" : false,
+                            "currencyCode" : "GBP",
+                            "lastUpdate" : "2012-06-01T11:44:56",
+                            "merchantRefNum" : "1",
+                            "paymentType" : "card",
+                            "refunded" : false,
+                            "status" : "Success"
+                        }
+                    }
+                ],
+                "num" : 2
+            }
+
+
+<a name="settle-an-order"></a>
+## Settle an Order [POST /orders/{order_id}/settlement]
+
+Depending on the merchant integration type, transactions may need to be settled at some point after the original authorization (e.g. if goods will ship after a few days). The settlement API works in the same way as for refunds.
+
+If no amount parameter is provided then the request will settle for the full amount. Optional parameters for *amount* and *merchantRefNum* can also be passed.
+
+
+|Element                 |Type                      |Description |
+|---                     |---                       |--- |
+|amount                  | integer | This is the amount of the payment in minor units e.g. 999 would be $9.99. It is not possible to settle an amount greater than the original amount authorized. **NOTE** If an amount is not specified, the full transaction is settled.|
+|merchantRefNum          | string<br>`length<=40` | This is an optional merchant transaction ID, for reference purposes. This should be unique for each transaction. |
+
+The server will return a response containing the following parameters for an order settlement: 
+
+| Field | Type | Description |
+|---    |---  |--- |
+| amount | integer | | This is the amount of the transaction that was settled, in minor units e.g. 999 would be $9.99. |
+| authType | enumeration | This is the transaction type. It will be set to **settlement** |
+| confirmationNumber | integer | This is the confirmation number returned by NETBANX in response to the settlement request. |
+| currencyCode | enumeration | This is the currency in which the transaction was settled. See [Currency Codes](#currency-codes). |
+| mode | enumeration | This element is for internal use only. Possible values are currently: * live |
+| originalMerchantRefNum | string</br>`length=40` | This is the merchant transaction ID assigned in the original order request, for reference purposes.  |
+| id | string</br>`length<=128` | This is the order ID against which the settlement has been requested.  |
+
+
++ Parameters
+   + order_id (required, string, `25TWPTLHRR81AIG1LF`) - Order ID
+    
++ Request Get an Order Status (application/json)
+    
+  + Headers
+            
+            Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+
+ + Body
+ 
+            {
+                "amount" : 9999,
+                "merchantRefNum" : "MERCHANT_REF_123"
+            }
+
++ Response 200 (application/json)
+
+  + Body
+  
+              {
+                "amount" : 9999,
+                "authType" : "settlement",
+                "confirmationNumber" : 1998572559920972,
+                "currencyCode" : "GBP",
+                "mode" : "live",
+                "originalMerchantRefNum" : null,
+                "id" : "25TWPTLHRR81AIG1LF"
+            }
+
+<a name="cancel-a-settlement"></a>
+## Cancel a Settlement [DELETE /orders/{order_id}/settlement]
+If a settlement request has been sent but the amount has not yet been settled, it is possible to cancel the settlement using the ID returned by NETBANX in the settlement response (see [Settle an Order](#settle-an-order)). 
+The same response as for [Get an Order Status](#get-an-order-status) will be returned with the status set to *cancelled* upon success.
+See [Cancel an Order](#cancel-an-order) for full details on how to cancel a request.
+
++ Parameters
+   + order_id (required, string, `25TWPTLHRR81AIG1LF`) - Order ID
+
+  + Headers
+            
+            Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+
++ Response 200 (application/json)  
+
+  + Body
+  
+              {
+                "link" : [
+                    {
+                        "rel" : "hosted_payment",
+                        "uri" : "https://api.netbanx.com/hosted/v1/payment/53616c7465645f5ffeb47c2287dbf903bbb4627b16929a27b8d09b37db190a0f6ce44f8ea1461be2"
+                    },
+                    {
+                        "rel" : "self",
+                        "uri" : "https://dlTXGAJJWsEdFdJn2SBP:NAA6942c974f7de6e5cd690@api.netbanx.com/hosted/v1/orders/25TWPTLHRR81AIG1LF"
+                    }
+                ],
+                "currencyCode" : "GBP",
+                "transaction" : {
+                    "status" : "cancelled",
+                    "lastUpdate" : "2012-05-14T15:12:18",
+                    "authType" : "purchase",
+                    "merchantRefNum" : "MERCHANT_REF_123",
+                    "associatedTransactions" : [],
+                    "currencyCode" : "GBP",
+                    "refunded" : false,
+                    "amount" : 1000,
+                    "paymentType" : "card",
+                    "settled" : false
+                },
+                "totalAmount" : 1000,
+                "id" : "25TWPTLHRR81AIG1LF",
+                "merchantRefNum" : "MERCHANT_REF_123"
+            }
+  
+
+<a name="refund-an-order"></a>
+## Refund an Order [POST /orders/{order_id}/refund]
+
+The Hosted Payments API allows orders that have been processed against the merchant integration to be refunded. A refund can be processed against an order ID where the funds have been settled. 
+
+**NOTE** Until an order has been fully processed and funds cleared, it may be necessary to issue a cancellation instead of a refund.
+
+By default, the refund operation will refund the full amount. Alternatively, the merchant can include the optional *amount* parameter for partial refunds.
+An optional *merchantRefNum* parameter can also be included.
+
+**NOTE** It is not currently possible to process refunds with the Hosted Payments API for the following payment types:
+
+* Giropay
+* iDEAL
+* Pingit
+* POLi
+* Sofort Banking
+* Ukash
+
+You will need to issue refunds via your merchant account with the relevant payment method.
+
+
+The response parameters are described below:
+
+| Element | Type | Description |
+|---      |---   |---          |
+| amount | Integer | E.g., 999 would be $9.99 | This is the amount of the transaction that was refunded.  |
+| authType | Enumeration | This is the transaction type. It will be set to: *   refund |
+| confirmationNumber | Integer | This is the confirmation number returned by NETBANX in response to the refund request. |
+| currencyCode | Enumeration | This is the currency in which the transaction was refunded. See [Currency Codes](#currency-codes). |
+| mode | Enumeration | This element is for internal use only. Possible values are currently: *   live ||
+| originalMerchantRefNum | String</br>`length<=40` | This is the merchant transaction ID assigned in the original order request, for reference purposes. |
+| id | String</br>`length<=128` | This is the order ID against which the refund has been requested. |
+
++ Parameters
+   + order_id (required, string, `25TWPTLHRR81AIG1LF`) - Order ID
+    
++ Request Get an Order Status (application/json)
+    
+  + Headers
+            
+            Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+
+ + Body
+ 
+            {
+                "amount" : 9999,
+                "merchantRefNum" : "MERCHANT_REF_123"
+            }
+
++ Response 200 (application/json)
+
+  + Body
+  
+            {
+                "currencyCode" : "GBP",
+                "amount" : 100,
+                "originalMerchantRefNum" : "MERCHANTREF12346",
+                "mode" : "live",
+                "confirmationNumber" : 1997160616609792,
+                "authType" : "refund",
+                "id" : "25TWPTLHRR81AIG1LF"
+            }
+            
+
+<a name="original-credits"></a>
+## Original Credits
+
+Original Credits allow gaming merchants to issue winnings as credits to cardholders. The merchant category codes (MCC) for gaming merchants are 7994 and 7995. These credits do not require a previous authorization/settlement.
+
+*   In order to issue an original credit, you must have successfully processed a previous order for your customer, in order to have access to their payment information.
+*   Because an original credit is not tied to a previous settlement, you are not limited to a settlement amount when issuing this credit type.
+
+You can issue an Original Credit in two ways:
+
+*   Using an existing [order ID](#issue-an-original-credit-using-an-order-id)
+*   Using a [customer's profile](#issue-an-original-credit-using-a-profile)
+
+With either method, your request must include the [*extendedOption*](#extendedoptions-object) value *authType* set to *oct*. See [extendedOptions Key/Value Pairs](#extendedoptions-keyvalue-pairs) for more details.
+
+**Note** Only gaming merchants with the appropriate MCC can process Original Credits. To issue other types of credits to a cardholder's credit card see [Refunds](#refunds)
+
+            
+<a name="issue-an-original-credit-using-an-order-ID"></a>
+## Issue an original credit using an order ID [POST /orders/{order_id}]
+
+Rebills can be processed against a customer’s card by using a previously successful order ID. You can use a rebill request to issue an original credit.
+See [Process a Rebill Using an Order ID](#process-a-rebill-using-an-order-id) for full requirements for this request type.
+
+
++ Parameters
+   + order_id (required, string, `25TWPTLHRR81AIG1LF`) - Order ID
+
++ Request (application/json)
+    
+  + Headers
+            
+            Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+            
+   + Body
+
+            {
+                "totalAmount": 100,
+                "currencyCode": "GBP",
+                "merchantRefNum": "testmerchref",
+                "extendedOptions": [
+                    {
+                        "key": "authType",
+                        "value": "oct"
+                    }
+                ]
+            }
+
++ Response 200 (application/json)  
+
+  + Body
+  
+            {
+               "link" : [
+                  {
+                     "rel" : "hosted_payment",
+                     "uri" : "https://api.netbanx.com/hosted/v1/payment/53616c7465645f5f5e3ed641b29fb8eeccd7cb195c729dc0dd762f5a97c1320489b5c2b529aa1f40"
+                  },
+                  {
+                     "rel" : "self",
+                     "uri" : "https://Qtz9UWrNEod1aKJuuDKQ:NAAd6bef4be7deaeea2aeb5@api.netbanx.com/hosted/v1/orders/25TWPTLHRR81AIG1LF"
+                  },
+                  {
+                     "rel" : "resend_callback",
+                     "uri" : "https://Qtz9UWrNEod1aKJuuDKQ:NAAd6bef4be7deaeea2aeb5@api.netbanx.com/hosted/v1/orders/25TWQVC3GLDXRY01L8/resend_callback"
+                  }
+               ],
+               "totalAmount" : 100,
+               "currencyCode" : "GBP",
+               "mode" : "live",
+               "type" : "order",
+               "id" : "25TWPTLHRR81AIG1LF",
+               "merchantRefNum" : "testmerchref"
+            }
+            
+<a name="issue-an-original-credit-using-a-profile"></a>
+## Issue an original credit using a Profile [POST /orders]
+
+Once a customer profile has been created (see [profile Object](#profile-object)), the *id* can be used to securely store the customer's card details with NETBANX for future use. You can use this profile information to issue an original credit.
+
++ Request (application/json)
+    
+  + Headers
+            
+            Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+            
+   + Body
+
+            {
+                "merchantRefNum": "IZPKU7KP0MYB607GG4",
+                "currencyCode": "GBP",
+                "totalAmount": "100",
+                "profile": {
+                    "paymentToken": "CU1g0NQQaI6GLXi",
+                    "id": "e813e737-c119-4c72-9d7e-a61c8e764615"
+                },
+                "extendedOptions": [
+                    {
+                        "key": "recurringIndicator",
+                        "value": true
+                    },
+                    {
+                        "key": "authType",
+                        "value": "oct"
+                    }
+                ]
+            }
+
++ Response 200 (application/json)  
+
+  + Body
+  
+            {
+                "profile": {
+                    "paymentToken": "CU1g0NQQaI6GLXi",
+                    "id": "e813e737-c119-4c72-9d7e-a61c8e764615"
+                },
+                "link": [
+                    {
+                        "rel": "hosted_payment",
+                        "uri": "https://api.netbanx.com/hosted/v1/payment/53616c7465645f5f803ea15056d4f089654c4d134aa2560395380f377a68a7ed04fb9d6f3542c4ce"
+                    },
+                    {
+                        "rel": "self",
+                        "uri": "https://Qtz9UWrNEod1aKJuuDKQ:NAAd6bef4be7deaeea2aeb5@api.netbanx.com/hosted/v1/orders/25TWQVC218Z9UMP1LL"
+                    },
+                    {
+                        "rel": "resend_callback",
+                        "uri": "https://Qtz9UWrNEod1aKJuuDKQ:NAAd6bef4be7deaeea2aeb5@api.netbanx.com/hosted/v1/orders/25TWQVC218Z9UMP1LL/resend_callback"
+                    }
+                ],
+                "totalAmount": "100",
+                "currencyCode": "GBP",
+                "merchantRefNum": "IZPKU7KP0MYB607GG4",
+                "extendedOptions": [
+                    {
+                        "value": "1",
+                        "key": "recurringIndicator"
+                    },
+                    {
+                        "value": "oct",
+                        "key": "authType"
+                    }
+                ],
+                "transaction": {
+                    "authCode": "100148",
+                    "confirmationNumber": "275034620",
+                    "status": "success",
+                    "associatedTransactions": [],
+                    "authType": "oct",
+                    "settled": false,
+                    "paymentType": "card",
+                    "refunded": false,
+                    "reversed": false,
+                    "cvdVerification": "Not Checked",
+                    "currencyCode": "GBP",
+                    "zipVerification": "Not Checked",
+                    "merchantRefNum": "IZPKU7KP0MYB607GG4",
+                    "houseNumberVerification": "Not Checked",
+                    "riskReasonCode": null,
+                    "card": {
+                        "lastDigits": "1230",
+                        "country": "pe",
+                        "expiry": "02/2017",
+                        "type": "credit",
+                        "brand": "visa"
+                    },
+                    "amount": "100",
+                    "lastUpdate": "2014-10-07T13:39:48"
+                },
+                "id": "25TWQVC218Z9UMP1LL"
+            }
+            
+# Data Structures
+
+## extendedOptionsSilentPost
+- key:silentPost (enum) - Enable silent post
+- value:true (enum) - Must be set to true to enable silent post
