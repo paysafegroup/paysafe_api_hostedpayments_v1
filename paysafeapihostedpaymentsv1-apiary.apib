@@ -28,7 +28,7 @@ and comply with PCI guidelines regarding the handling of card data.
 
 **NOTE** NETBANX may add additional elements in future releases of this API, so ensure that your integration is flexible enough to ignore any unrecognized response fields.
 
-![Hosted Checkout Flow](https://developer.optimalpayments.com/confluence/NBXHPAPI/attachments/5088271/6291544.gif)
+![Hosted Checkout Flow](https://raw.githubusercontent.com/paysafegroup/paysafe_api_hostedpayments_v1/master/images/HostedAPIOverview_Hosted.gif?token=AMmqfj1-JtdYFYuzexvjc733_qVFt8LCks5W6D8XwA%3D%3D)
 
 # Authentication
 
@@ -123,7 +123,7 @@ You can use this id to find out information about your order at any time.
 The order response also provides you with a link section. The first link refers to the hosted_payment URL – this is the URL of the payment page. Your system should take this URL from the order and use it to redirect your customer to the hosted payment page, where they can enter payment details.
 A second link, self is the URL to call to find out the status of the transaction.
 
-![](https://developer.optimalpayments.com/confluence/NBXHPAPI/attachments/5084360/6291512.png)
+![](https://raw.githubusercontent.com/paysafegroup/paysafe_api_hostedpayments_v1/master/images/Hosted_Screen1.png?token=AMmqfmPn-8ov7YAzZWPbojwF7humlaZPks5W6D-RwA%3D%3D)
 
 <a name="process-an-order-using-a-silent-post"></a>
 ## Process an Order Using a Silent Post
@@ -185,7 +185,7 @@ method="POST" >
     </td
 ```
 
-![](https://developer.optimalpayments.com/confluence/NBXHPAPI/attachments/5084364/6291545.gif)
+![](https://raw.githubusercontent.com/paysafegroup/paysafe_api_hostedpayments_v1/master/images/HostedAPISilentPost.gif?token=AMmqflPw89NujMcfZg-ThFbtE5MLA2Ohks5W6D_2wA%3D%3D)
 
 <a name="process-an-order-with-settlement"></a>
 ## Process an Order with Settlement
@@ -484,6 +484,8 @@ If everything in your order is set up correctly, the server will return an order
 |profile.id              |string</br>`length<=80`   |This is the customer ID of the profile created during the order request. It can be used for subsequent order requests (see [Process an order with a Payment token](#process-an-order-with-a-payment-token))|
 |profile.paymentToken    |string</br>`length<=80`   |This is the payment token used, or created, to process the transaction.|
 
+*Example*
+
 ```apib
 {
     "link" : [
@@ -716,114 +718,6 @@ On most standard Apache configurations this is the default, in which case no act
 
 ```RewriteEngine On RewriteRule ^/(fp/.*) https://h.online-metrix.net/$1 [L,R]```
 
-<a name="order status response parameters"></a>
-## Order Status Response Parameters
-In addition to the parameters that were part of the original transaction request, the order status response may contain the following parameters.
-
-Generic order status response parameters:
-
-| Parameter | Type | Description |
-|--- |--- |--- |---
-| id | string<br>`length<=128` | This is the ID provided in the original order status transaction request. |
-| currencyCode | enumeration | This is the currency in which the transaction was processed. See [Currency Codes](#currency-codes). |
-| merchantRefNum | string<br>`length<=40` | This is the merchant's transaction ID, included in the initial order request. |
-| totalAmount | integer | This is the amount of the order that was processed. It is the sum of all _shoppingCart_ items + _ancillaryFees_ (if provided). E.g., 999 would be $9.99  |
-| transaction.amount | integer | This is the amount of the transaction that was processed. E.g., 999 would be $9.99 |
-| transaction.associatedTransactions | [associatedTransactions Object](#associatedtransactions-object) \[\] | This returns a JSON array of other transactions associated with the order, e.g., refunds and completions. Each member of the list refers to a specific operation that was executed against the order. For example, three refunds of $1.00 would show up as three individual _associatedTransactions_ refunds, not as one refund of $3.00. See [associatedTransactions Object](#associatedtransactions-object) for a description of associated parameters. |
-| transaction.authCode | string<br>`length=50` | This is the authorization code assigned by the issuing bank and returned by NETBANX for the transaction. |
-| transaction.authType | enumeration | This is the transaction type. Possible values are:<ul><li>auth – This is an authorization-only transaction.</li><li>purchase – This is a transaction with immediate billing.</li><li>settlement – This transaction is the settlement of a previous authorization-only transaction. </li><li>refund – This is a refund transaction. </li></ul>
-| transaction.availableToRefund | integer | E.g., 999 would be $9.99 | This is the amount available to refund on the initial order. |
-| transaction.card.brand | enumeration | This is the brand of the card used. Possible values are:<ul><li>amex (American Express)</li><li>cb (Carte Bleue)</li><li>discover</li><li>diners</li><li>international maestro </li><li>jcb</li><li>mastercard </li><li>mastercard debit </li><li>maestro </li><li>visa </li><li>visa debit</li><li>visa electron</li></ul>
-| transaction.card.country | string<br>`length=2` | This is the country of origin for the card used. See [Country Codes](#country-codes). |
-| transaction.card.expiry | string<br>`length=7`| This is the expiry date of the card used. Format = mm/yyyy |
-| transaction.card.lastDigits | string<br>`length=4` | This is the last four digits of the card used. |
-| transaction.card.threeDEnrolment | enumeration | This indicates the enrollment status of the card in the 3D Secure program. Possible values are:<ul><li>Y – Authentication available </li><li>N – Cardholder not enrolled</li><li>U – Authentication unavailable</li><li>E – Error </li></ul>
-| transaction.card.threeDResult | enumeration | This indicates the outcome of the authentication request. Possible values are:<ul><li>Y – Cardholder successfully authenticated with their Card Issuer.</li><li>A – Cardholder authentication was attempted.</li><li>N – Cardholder failed to successfully authenticate with their Card Issuer.</li><li>U – Authentication with the Card Issuer was unavailable.</li><li>E – Error </li></ul>
-| transaction.card.type | enumeration | This is the type of card used. Possible values are:<ul><li>debit</li><li>credit </li></ul>
-| transaction.prepaidcard.lastDigits | string<br>`length=4` | This is the last four digits of the prepaid card that was used for the transaction. |
-| transaction.cleared | boolean | The transaction has been sent to the bank for clearing. |
-| transaction.settled | boolean | The authorization-only transaction has been settled. |
-| transaction.confirmationNumber | string<br>`length=20` | This is the confirmation number returned by NETBANX in response to the transaction request. |
-| transaction.lastUpdate | dateTime UTC | This is the date and time of the last change made to the transaction, e.g., a refund. |
-| transaction.paymentType | string<br>`length<=20` | This is the type of payment used for the transaction. Value will be set to:<ul><li>card</li><li>giropay</li><li>ideal</li><li>interac</li><li>masterpass</li><li>neteller</li><li>paypal</li><li>pingit</li><li>poli</li><li>prepaidcard</li><li>sofortbanking</li><li>ukash</li></ul>
-| transaction.refunded | boolean | This indicates that the transaction has been either fully or partially refunded.<br></br><br></br>**Note** If this value is set to _true_, then check the value for _availableToRefund_ before attempting to issue a refund request. |
-| transaction.reversed | boolean | This indicates whether a reversal has been attempted (e.g. a successful transaction that fails an AVS check, or a successful authorization that has been subsequently cancelled).|
-| transaction.status | enumeration | This indicates the status of the transaction. Possible values are:<ul><li>success – Transaction has been authorized by bank/NETBANX.</li><li>cancelled – Transaction has been cancelled.</li><li>declined – Transaction has been declined by bank/NETBANX.</li><li>pending – Transaction has been created and is awaiting consumer interaction.</li><li>abandoned – Transaction was abandoned part way through by the consumer.</li><li>held – Transaction has been placed on hold due to risk rules results. See _transaction.riskReasonCode_ for the reason codes.</li><li>errored – An error occurred and the transaction could not be completed <br></br><br></br>**NOTE** The merchant's account must be configured by NETBANX to be able to place transactions on hold. </li></ul>
-| transaction.errorCode | integer | If an error occurs, this is the error number. |
-| transaction.errorMessage | string | If an error occurs, this is the error message. |
-| transaction.riskReasonCode | integer | If the transaction has a status of held, these are the reason codes. |
-| transaction.zipVerification | enumeration | This is the result of the AVS check received from the bank. Possible values are:<ul><li>Matched – The zip value provided matches the zip value associated with the card.</li><li>Not Matched – The zip value provided does not match the zip value associated with the card.</li><li>Not Checked – The zip value was not processed. </li></ul>
-| transaction.houseNumberVerification | enumeration | This is the result of the AVS check received from the bank. Possible values are:<ul><li>Matched – The house number value provided matches the house number value associated with the card.</li><li>Not Matched – The house number value provided does not match the house number value associated with the card.</li><li>Not Checked – The house number value was not processed. </li></ul>
-| transaction.cvdVerification | enumeration | This is the result of the CVD check received from the bank. Possible values are:<ul><li>Matched – The CVD value provided matches the CVD value associated with the card.</li><li>Not Matched – The CVD value provided does not match the CVD value associated with the card.</li><li>Not Checked – The CVD value was not processed. </li></ul>
-| profile.paymentToken | string<br>`length<=80` | This is the payment token returned by NETBANX in response to the transaction request. It can be used to process a repeat payment. |
-| profile.id  | string<br>`length<=80` | This is the customer ID of the profile created during the order request. |
-| dueDate | date</br>`YYYY-MM-DD (UTC)`| This is the date the order request will be processed. |
-
-Payment method–specific order status response parameters:
-
-| Parameter | Type | Description |
-|--- |---  |--- |
-| transaction.giropay.giropay.TxId | string | This is the giropay transaction ID. Please consult Giropay documentation for information about field lengths and constraints on field values. |
-| transaction.giropay.paymentPurposeLine_1 | string | This is a Giropay merchant reference. |
-| transaction.giropay.paymentPurposeLine_2 | string | This is a Giropay merchant reference. |
-| transaction.giropay.transactionId | integer | This is a Giropay transaction ID. |
-| transaction.giropay.fullBankResponse | string | This is the bank response code. |
-| transaction.giropay.authCode | string | This is a Giropay authorization code. |
-| transaction.giropay.operatorId | string | This is Giropay’s unique merchant identification. |
-| transaction.giropay.beneficiaryName_1 | string | This is the first part of the beneficiary’s name. |
-| transaction.giropay.beneficiaryName_2 | string | This is the second part of the beneficiary’s name. |
-| transaction.giropay.beneficiaryAcctNo | integer | This is the beneficiary’s bank account number. |
-| transaction.giropay.beneficiaryBankBlz | integer | This is the beneficiary’s bank ID. |
-| transaction.giropay.beneficiaryBic | string | This is the beneficiary’s international Bank Identifier Code. |
-| transaction.giropay.beneficiaryIban | string | This is the beneficiary’s International Bank Account Number. |
-| transaction.giropay.customerAcctNo | integer | This is the customer’s bank account number. |
-| transaction.giropay.customerBankBlz | integer | This is the customer’s bank ID. |
-| transaction.giropay.customerBic | string | This is the customer’s international Bank Identifier Code. |
-| transaction.giropay.customerIban | string | This is the customer’s International Bank Account Number. |
-| transaction.giropay.transType | integer | This is the transaction type ID. |
-| transaction.giropay.email | string | This is the customer’s email address. |
-| transaction.giropay.currency | string | This is the 3-character currency code. |
-| transaction.giropay.authResult | string | This is the result of the authorization. |
-| transaction.giropay.extensionSic | integer | This is the expanded status code. |
-| transaction.giropay.rc | integer | This is the return code. |
-| transaction.giropay.merchantId | string | This is the merchant ID. |
-| transaction.giropay.merchantReference | string | This is the merchant reference ID. |
-| transaction.giropay.amount | integer | This is the amount of the payment. |
-| transaction.giropay.merchantNumber | integer | This is the merchant number. |
-| transaction.ideal.IdealTxId  | string</br>`length<=27` | This is the iDEAL transaction ID. |
-| transaction.paypalToken | string | This is the PayPal token. Please consult PayPal documentation for information about field lengths and constraints on field values. |
-| transaction.paypalTransactionId | string | This is the PayPal transaction reference ID. |
-| transaction.neteller.net_account | string | This is the NETELLER account ID. Please consult NETELLER documentation for information about field lengths and constraints on field values. |
-| transaction.neteller.neteller_type | string | This is the type of NETELLER payment. |
-| transaction.neteller.fxrate | string | This is the foreign exchange rate applied (if applicable). |
-| transaction.neteller.da_amount | string | The amount of the transfer that is being withdrawn from the bank account registered with the member’s NETELLER account. The amount may have decimal places but no currency symbols. |
-| transaction.neteller.total_fee | string | This is the total fee charged for the transfer if it was a Direct Accept transaction (i.e., fee plus dafee). |
-| transaction.neteller.trans_id | string | This is the NETELLER transaction ID. |
-| transaction.neteller.dafee | string | The additional fee charged for the transfer if it was a Direct Accept transaction. |
-| transaction.neteller.client_amount | string | This is the amount taken from the client’s NETELLER account. |
-| transaction.neteller.client_currency | string | This is the client’s currency. |
-| transaction.neteller.merchant_amount | string | The amount moved to to the merchant’s account. |
-| transaction.neteller.merchant_currency | string | This is the merchant’s currency. |
-| transaction.poli.poliRef | string | This is the state of the transaction. |
-| transaction.poli.poliToken | string | This is an encrypted POLi ID. |
-| transaction.poli.state | string | This is the state of the transaction. |
-| transaction.sofortBanking.sofortBankingTxId | string | This is the Sofort Banking transaction ID. Please consult Sofort Banking documentation for information about field lengths and constraints on field values. |
-| transaction.sofortBanking.internationalTransaction | boolean | This is the flag for international transactions. |
-| transaction.ukash.voucherValue | string | This is the value of the voucher. Please consult Ukash documentation for information about field lengths and constraints on field values. |
-| transaction.ukash.settleAmount | string | This is the amount deducted from the voucher. |
-| transaction.ukash.changeVoucherCurrency | string | This is the currency of the change voucher the customer receives. |
-| transaction.ukash.changeIssueAmount | string | This is the amount of the change voucher the customer receives. |
-| transaction.ukash.amount | string | This is the amount processed for the transaction request. |
-| transaction.ukash.changeIssueExpDate | string | This is the expiry date of the change voucher. |
-| transaction.ukash.redemptionType | string | This is the Ukash redemption type. |
-| transaction.ukash.ukashTransactionId | string | This is the Ukash transaction ID. |
-| transaction.ukash.voucherNumber | string | This is the Ukash voucher number. |
-| transaction.masterpass.id  | string | This is the MasterPass transaction ID. |
-| transaction.masterpass.reward.id | string | This is the ID associated with the reward program. |
-| transaction.masterpass.reward.number | string | This is the consumer’s reward number associated with the reward program |
-| transaction.masterpass.reward.name | string | This is the name of the reward program. |
-| transaction.masterpass.reward.expiry.month | integer | This is the month the reward program expires. |
-| transaction.masterpass.reward.expiry.year | integer | This is the year the reward program expires. |
 
 <a name="testing-instructions"></a>
 # Testing Instructions
@@ -2116,7 +2010,7 @@ Once you receive a successful response, create a post to the hosted_payment URL 
 <br></br>
 <a name=create-a-profile-with-an-order></a>
 **Create a Profile with an Order**
-
+nma
 The Hosted Payments API allows merchants to create customer profiles for their customers inline with the order request. Once a customer profile is created, it can be used to accept payments from the customer. 
 The profile information is also used to populate the customer name field of the billing address displayed on the payment page. See [profile Object](#profile-object) for details on adding a profile object to the order JSON structure.
 The Hosted Payments API customer profile feature allows your customers to securely store their card details with NETBANX for future use during order processing. When the customer is redirected to the Hosted Payments page, they will see an option to store their card details. If this option is selected by the customer, the next time the payment page is displayed their stored card data will be displayed providing the profile id (see [profile Object](#profile-object)) is passed in with the order creation request.
@@ -2124,7 +2018,7 @@ The Hosted Payments API customer profile feature allows your customers to secure
 <br></br>
 **NOTE** *paymentToken* is only returned once a payment has been successfully processed against the order, e.g. in the GET request on a successful order, or in the callback parameters (if requested).
 
-![](https://developer.optimalpayments.com/confluence/NBXHPAPI/attachments/5084749/6291546.gif)
+![](https://raw.githubusercontent.com/paysafegroup/paysafe_api_hostedpayments_v1/master/images/store_profile1.gif?token=AMmqfh8uXn5zfUN6dvlqObK8OzV2eLUtks5W6EFxwA%3D%3D)
 
 The Hosted Payments API customer profile feature offers customers the following options on the Hosted Payments page:
 * Store multiple cards
@@ -2264,6 +2158,52 @@ Once a customer profile has been created (see [profile Object](#profile-object))
                 ]
             }
 
++ Request Process an order with a Payment Token (application/json)
+
+ + Headers
+            
+            Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+
+ + Body
+
+            {
+                "customerIp" : "123.123.123.123",
+                "merchantRefNum" : "MERCHANT_REF_123",
+                "currencyCode" : "GBP",
+                "totalAmount" : 1125,
+                "profile" : {
+                     "id": "0275e76c-2141-11e4-8ac3-74cde64e5c68",
+                     "paymentToken" : "SJsww3Eq33ezNvhM+jQRNoH/U4o7j0XJ4yrXtDMenLM"
+               },
+                "customerNotificationEmail" : "jane.smythe@emailhost.com"
+            }
+
++ Response 200 (application/json)
+       
+  + Body
+    
+            {
+                "link" : [
+                    {
+                        "rel" : "hosted_payment",
+                        "uri" : "https://pay.netbanx.com/hosted/v1/payment/53616c7465645f5ffeb47c2287dbf903bbb4627b16929a27b8d09b37db190a0f6ce44f8ea1461be2"
+                    },
+                    {
+                        "rel" : "self",
+                        "uri" : "https://dlTXGAJJWsEdFdJn2SBP:NAA6942c974f7de6e5cd690@api.netbanx.com/hosted/v1/order/25TWPTLHRR81AIG1LF"
+                    }
+                ],
+                "currencyCode" : "GBP",
+                "amount" : 1125,
+                "mode" : "live",
+                "type" : "order",
+                "id" : "25TWPTLHRR81AIG1LF",
+                "merchantRefNum" : "MERCHANT_REF_123",
+                "profile" : {
+                    "id" : "0275e76c-2141-11e4-8ac3-74cde64e5c68",
+                    "paymentToken" : "SJsww3Eq33ezNvhM+jQRNoH/U4o7j0XJ4yrXtDMenLM"
+                    }
+                }    
 
 + Request Create a Profile with an Order (application/json)
     
@@ -2319,8 +2259,9 @@ Once a customer profile has been created (see [profile Object](#profile-object))
     
 
 
-<a name="cancel-an-order"></a>
+
 ## Cancel an Order [DELETE /orders/{order_id}]
+<a name="cancel-an-order"></a>
 
 In order to cancel an order, call DELETE on an order URL. 
 
@@ -2366,10 +2307,8 @@ In order to cancel an order, call DELETE on an order URL.
                }
             }
     
-
-
-<a name="cancel-a-held-order"></a>
 ## Cancel a Held Order [PUT /orders/{order_id}]
+<a name="cancel-a-held-order"></a>
 
 In order to cancel an order with a *transaction.status* of *held*, call PUT on an order URL with a status of cancelled. 
 
@@ -2422,8 +2361,9 @@ An update response will have the same structure as GET status except  that when 
                 "merchantRefNum" : "MERCHANT_REF_123"
             }
             
-<a name="resend-an-order-callback"></a>
+
 ## Resend an Order Callback [GET /orders/{order_id}/resend_callback]
+<a name="resend-an-order-callback"></a>
 
 Providing a suitable callback has been configured against the order, callbacks can be resent as shown in the example.
 
@@ -2440,6 +2380,8 @@ See [callback Object](#callback-object) for more details about callbacks.
 
 + Response 200 
 
+# Group Rebill
+
 <a name="process-a-rebill"></a>   
 
 There are two ways of processing a rebill:
@@ -2449,8 +2391,9 @@ There are two ways of processing a rebill:
 
 **Note** Cancelling a rebill request works in the same way as order cancellation. See Cancel an Order for details. 
 
-<a name="process-a-rebill-using-an-orderid"></a>    
+
 ## Process a Rebill using an Orderid [POST /orders/{order_id}]
+<a name="process-a-rebill-using-an-orderid"></a>    
 
 Rebills can be processed against your customer’s card by using a previously successful order ID. The rebill can be immediate or can be set up to run at a future date. 
 A rebill request has the same parameter requirements as an order creation request, with the following exceptions:
@@ -2561,8 +2504,9 @@ A rebill request has the same parameter requirements as an order creation reques
                 "type": "order"
             }
 
-<a name="process-a-rebill-using-a-profile"></a>    
+  
 ## Process a Rebill using a Profile [POST /orders/{order_id}]
+<a name="process-a-rebill-using-a-profile"></a>  
 
 Rebills can be processed against your customer’s card by using a customer profile.   
 A rebill request has the same parameter requirements as an order creation request, with the following exceptions:
@@ -2640,8 +2584,12 @@ The *recurringIndicator* option allows a payment to be processed without prompti
                 "type" : "order"
             }
 
-<a name="get-an-order-status"></a>
+
+# Group Order Status
+
 ## Get an Order Status [GET /orders/{order_id}]
+<a name="get-an-order-status"></a>
+
 To determine the status of an order request, use the self link (which is returned in the order creation response from NETBANX) from your application or from the command line. 
 The parameters included in the order status response may include the parameters that were part of the original transaction request (see [Process an Order with a Hosted Page](#process-an-order-with-a-hosted-page)).
 
@@ -2686,7 +2634,119 @@ In this example the status is *pending*, which means that the transaction has no
                 "id" : "25TWPTLHRR81AIG1LF",
                 "merchantRefNum" : "MERCHANT_REF_123"
             }
+
+# Group Order Status Response
+<a name="order-status-response-parameters"></a>
+
+In addition to the parameters that were part of the original transaction request, the order status response may contain the following parameters.
+
+Generic order status response parameters:
+
+| Parameter | Type | Description |
+|--- |--- |--- |---
+| id | string<br>`length<=128` | This is the ID provided in the original order status transaction request. |
+| currencyCode | enumeration | This is the currency in which the transaction was processed. See [Currency Codes](#currency-codes). |
+| merchantRefNum | string<br>`length<=40` | This is the merchant's transaction ID, included in the initial order request. |
+| totalAmount | integer | This is the amount of the order that was processed. It is the sum of all _shoppingCart_ items + _ancillaryFees_ (if provided). E.g., 999 would be $9.99  |
+| transaction.amount | integer | This is the amount of the transaction that was processed. E.g., 999 would be $9.99 |
+| transaction.associatedTransactions | [associatedTransactions Object](#associatedtransactions-object) \[\] | This returns a JSON array of other transactions associated with the order, e.g., refunds and completions. Each member of the list refers to a specific operation that was executed against the order. For example, three refunds of $1.00 would show up as three individual _associatedTransactions_ refunds, not as one refund of $3.00. See [associatedTransactions Object](#associatedtransactions-object) for a description of associated parameters. |
+| transaction.authCode | string<br>`length=50` | This is the authorization code assigned by the issuing bank and returned by NETBANX for the transaction. |
+| transaction.authType | enumeration | This is the transaction type. Possible values are:<ul><li>auth – This is an authorization-only transaction.</li><li>purchase – This is a transaction with immediate billing.</li><li>settlement – This transaction is the settlement of a previous authorization-only transaction. </li><li>refund – This is a refund transaction. </li></ul>
+| transaction.availableToRefund | integer | E.g., 999 would be $9.99 | This is the amount available to refund on the initial order. |
+| transaction.card.brand | enumeration | This is the brand of the card used. Possible values are:<ul><li>amex (American Express)</li><li>cb (Carte Bleue)</li><li>discover</li><li>diners</li><li>international maestro </li><li>jcb</li><li>mastercard </li><li>mastercard debit </li><li>maestro </li><li>visa </li><li>visa debit</li><li>visa electron</li></ul>
+| transaction.card.country | string<br>`length=2` | This is the country of origin for the card used. See [Country Codes](#country-codes). |
+| transaction.card.expiry | string<br>`length=7`| This is the expiry date of the card used. Format = mm/yyyy |
+| transaction.card.lastDigits | string<br>`length=4` | This is the last four digits of the card used. |
+| transaction.card.threeDEnrolment | enumeration | This indicates the enrollment status of the card in the 3D Secure program. Possible values are:<ul><li>Y – Authentication available </li><li>N – Cardholder not enrolled</li><li>U – Authentication unavailable</li><li>E – Error </li></ul>
+| transaction.card.threeDResult | enumeration | This indicates the outcome of the authentication request. Possible values are:<ul><li>Y – Cardholder successfully authenticated with their Card Issuer.</li><li>A – Cardholder authentication was attempted.</li><li>N – Cardholder failed to successfully authenticate with their Card Issuer.</li><li>U – Authentication with the Card Issuer was unavailable.</li><li>E – Error </li></ul>
+| transaction.card.type | enumeration | This is the type of card used. Possible values are:<ul><li>debit</li><li>credit </li></ul>
+| transaction.prepaidcard.lastDigits | string<br>`length=4` | This is the last four digits of the prepaid card that was used for the transaction. |
+| transaction.cleared | boolean | The transaction has been sent to the bank for clearing. |
+| transaction.settled | boolean | The authorization-only transaction has been settled. |
+| transaction.confirmationNumber | string<br>`length=20` | This is the confirmation number returned by NETBANX in response to the transaction request. |
+| transaction.lastUpdate | dateTime UTC | This is the date and time of the last change made to the transaction, e.g., a refund. |
+| transaction.paymentType | string<br>`length<=20` | This is the type of payment used for the transaction. Value will be set to:<ul><li>card</li><li>giropay</li><li>ideal</li><li>interac</li><li>masterpass</li><li>neteller</li><li>paypal</li><li>pingit</li><li>poli</li><li>prepaidcard</li><li>sofortbanking</li><li>ukash</li></ul>
+| transaction.refunded | boolean | This indicates that the transaction has been either fully or partially refunded.<br></br><br></br>**Note** If this value is set to _true_, then check the value for _availableToRefund_ before attempting to issue a refund request. |
+| transaction.reversed | boolean | This indicates whether a reversal has been attempted (e.g. a successful transaction that fails an AVS check, or a successful authorization that has been subsequently cancelled).|
+| transaction.status | enumeration | This indicates the status of the transaction. Possible values are:<ul><li>success – Transaction has been authorized by bank/NETBANX.</li><li>cancelled – Transaction has been cancelled.</li><li>declined – Transaction has been declined by bank/NETBANX.</li><li>pending – Transaction has been created and is awaiting consumer interaction.</li><li>abandoned – Transaction was abandoned part way through by the consumer.</li><li>held – Transaction has been placed on hold due to risk rules results. See _transaction.riskReasonCode_ for the reason codes.</li><li>errored – An error occurred and the transaction could not be completed <br></br><br></br>**NOTE** The merchant's account must be configured by NETBANX to be able to place transactions on hold. </li></ul>
+| transaction.errorCode | integer | If an error occurs, this is the error number. |
+| transaction.errorMessage | string | If an error occurs, this is the error message. |
+| transaction.riskReasonCode | integer | If the transaction has a status of held, these are the reason codes. |
+| transaction.zipVerification | enumeration | This is the result of the AVS check received from the bank. Possible values are:<ul><li>Matched – The zip value provided matches the zip value associated with the card.</li><li>Not Matched – The zip value provided does not match the zip value associated with the card.</li><li>Not Checked – The zip value was not processed. </li></ul>
+| transaction.houseNumberVerification | enumeration | This is the result of the AVS check received from the bank. Possible values are:<ul><li>Matched – The house number value provided matches the house number value associated with the card.</li><li>Not Matched – The house number value provided does not match the house number value associated with the card.</li><li>Not Checked – The house number value was not processed. </li></ul>
+| transaction.cvdVerification | enumeration | This is the result of the CVD check received from the bank. Possible values are:<ul><li>Matched – The CVD value provided matches the CVD value associated with the card.</li><li>Not Matched – The CVD value provided does not match the CVD value associated with the card.</li><li>Not Checked – The CVD value was not processed. </li></ul>
+| profile.paymentToken | string<br>`length<=80` | This is the payment token returned by NETBANX in response to the transaction request. It can be used to process a repeat payment. |
+| profile.id  | string<br>`length<=80` | This is the customer ID of the profile created during the order request. |
+| dueDate | date</br>`YYYY-MM-DD (UTC)`| This is the date the order request will be processed. |
+
+Payment method–specific order status response parameters:
+
+| Parameter | Type | Description |
+|--- |---  |--- |
+| transaction.giropay.giropay.TxId | string | This is the giropay transaction ID. Please consult Giropay documentation for information about field lengths and constraints on field values. |
+| transaction.giropay.paymentPurposeLine_1 | string | This is a Giropay merchant reference. |
+| transaction.giropay.paymentPurposeLine_2 | string | This is a Giropay merchant reference. |
+| transaction.giropay.transactionId | integer | This is a Giropay transaction ID. |
+| transaction.giropay.fullBankResponse | string | This is the bank response code. |
+| transaction.giropay.authCode | string | This is a Giropay authorization code. |
+| transaction.giropay.operatorId | string | This is Giropay’s unique merchant identification. |
+| transaction.giropay.beneficiaryName_1 | string | This is the first part of the beneficiary’s name. |
+| transaction.giropay.beneficiaryName_2 | string | This is the second part of the beneficiary’s name. |
+| transaction.giropay.beneficiaryAcctNo | integer | This is the beneficiary’s bank account number. |
+| transaction.giropay.beneficiaryBankBlz | integer | This is the beneficiary’s bank ID. |
+| transaction.giropay.beneficiaryBic | string | This is the beneficiary’s international Bank Identifier Code. |
+| transaction.giropay.beneficiaryIban | string | This is the beneficiary’s International Bank Account Number. |
+| transaction.giropay.customerAcctNo | integer | This is the customer’s bank account number. |
+| transaction.giropay.customerBankBlz | integer | This is the customer’s bank ID. |
+| transaction.giropay.customerBic | string | This is the customer’s international Bank Identifier Code. |
+| transaction.giropay.customerIban | string | This is the customer’s International Bank Account Number. |
+| transaction.giropay.transType | integer | This is the transaction type ID. |
+| transaction.giropay.email | string | This is the customer’s email address. |
+| transaction.giropay.currency | string | This is the 3-character currency code. |
+| transaction.giropay.authResult | string | This is the result of the authorization. |
+| transaction.giropay.extensionSic | integer | This is the expanded status code. |
+| transaction.giropay.rc | integer | This is the return code. |
+| transaction.giropay.merchantId | string | This is the merchant ID. |
+| transaction.giropay.merchantReference | string | This is the merchant reference ID. |
+| transaction.giropay.amount | integer | This is the amount of the payment. |
+| transaction.giropay.merchantNumber | integer | This is the merchant number. |
+| transaction.ideal.IdealTxId  | string</br>`length<=27` | This is the iDEAL transaction ID. |
+| transaction.paypalToken | string | This is the PayPal token. Please consult PayPal documentation for information about field lengths and constraints on field values. |
+| transaction.paypalTransactionId | string | This is the PayPal transaction reference ID. |
+| transaction.neteller.net_account | string | This is the NETELLER account ID. Please consult NETELLER documentation for information about field lengths and constraints on field values. |
+| transaction.neteller.neteller_type | string | This is the type of NETELLER payment. |
+| transaction.neteller.fxrate | string | This is the foreign exchange rate applied (if applicable). |
+| transaction.neteller.da_amount | string | The amount of the transfer that is being withdrawn from the bank account registered with the member’s NETELLER account. The amount may have decimal places but no currency symbols. |
+| transaction.neteller.total_fee | string | This is the total fee charged for the transfer if it was a Direct Accept transaction (i.e., fee plus dafee). |
+| transaction.neteller.trans_id | string | This is the NETELLER transaction ID. |
+| transaction.neteller.dafee | string | The additional fee charged for the transfer if it was a Direct Accept transaction. |
+| transaction.neteller.client_amount | string | This is the amount taken from the client’s NETELLER account. |
+| transaction.neteller.client_currency | string | This is the client’s currency. |
+| transaction.neteller.merchant_amount | string | The amount moved to to the merchant’s account. |
+| transaction.neteller.merchant_currency | string | This is the merchant’s currency. |
+| transaction.poli.poliRef | string | This is the state of the transaction. |
+| transaction.poli.poliToken | string | This is an encrypted POLi ID. |
+| transaction.poli.state | string | This is the state of the transaction. |
+| transaction.sofortBanking.sofortBankingTxId | string | This is the Sofort Banking transaction ID. Please consult Sofort Banking documentation for information about field lengths and constraints on field values. |
+| transaction.sofortBanking.internationalTransaction | boolean | This is the flag for international transactions. |
+| transaction.ukash.voucherValue | string | This is the value of the voucher. Please consult Ukash documentation for information about field lengths and constraints on field values. |
+| transaction.ukash.settleAmount | string | This is the amount deducted from the voucher. |
+| transaction.ukash.changeVoucherCurrency | string | This is the currency of the change voucher the customer receives. |
+| transaction.ukash.changeIssueAmount | string | This is the amount of the change voucher the customer receives. |
+| transaction.ukash.amount | string | This is the amount processed for the transaction request. |
+| transaction.ukash.changeIssueExpDate | string | This is the expiry date of the change voucher. |
+| transaction.ukash.redemptionType | string | This is the Ukash redemption type. |
+| transaction.ukash.ukashTransactionId | string | This is the Ukash transaction ID. |
+| transaction.ukash.voucherNumber | string | This is the Ukash voucher number. |
+| transaction.masterpass.id  | string | This is the MasterPass transaction ID. |
+| transaction.masterpass.reward.id | string | This is the ID associated with the reward program. |
+| transaction.masterpass.reward.number | string | This is the consumer’s reward number associated with the reward program |
+| transaction.masterpass.reward.name | string | This is the name of the reward program. |
+| transaction.masterpass.reward.expiry.month | integer | This is the month the reward program expires. |
+| transaction.masterpass.reward.expiry.year | integer | This is the year the reward program expires. |
   
+
+# Group Update Orders
 
 <a name="update-an-order"></a>
 It is possible to update a subset of items relating to an order after it has been set up. NETBANX supports the following updates:
@@ -2694,8 +2754,9 @@ It is possible to update a subset of items relating to an order after it has bee
 * [Update a Held Order](#update-a-held-order)
 * [Update a Rebill Order](#update-a-rebill-order)
 
-<a name="update-a-held-order"></a>
+
 ## Update a Held Order [PUT /orders/{order_id}]
+<a name="update-a-held-order"></a>
 
 If an order has been held, the *transaction.status* of an order can be updated from *held* to either *success* or *cancelled*. 
 
@@ -2754,8 +2815,8 @@ See [Order Status Response Parameters](#order-status-response-parameters) to see
                 "type" : "order"
             }
 
-<a name="update-a-rebill-order"></a>
 ## Update a Rebill Order [PUT /orders/{order_id}]
+<a name="update-a-rebill-order"></a>
 
 If a rebill has not been processed, any details associated with that rebill can be updated (see [Process a Rebil](#process-a-rebill))
 
@@ -2811,7 +2872,8 @@ See [Order Status Response Parameters](#order-status-response-parameters) to see
                 "type" : "order"
             }
   
-  
+# Group Reports
+
 # Get an Order Report [GET /orders?num={num}&start={start}]
 
 A list of recently created/processed orders can be retrieved via the Hosted Payments API using a GET request.
@@ -2819,7 +2881,7 @@ A list of recently created/processed orders can be retrieved via the Hosted Paym
 * You can include the number of records to return (up to 100).
 * Use next and prev links, relative to the offset, to obtain the next/previous records (as applicable).
 
-The following table includes the optional parameters for an order report. 
+The following table lists the optional parameters for an order report:
 
 | Element | Type | Description |
 |---- |---  |---  |
@@ -2899,111 +2961,11 @@ In the event that all orders are returned, no next/prev links will be supplied.
             }
 
 
-<a name="settle-an-order"></a>
-## Settle an Order [POST /orders/{order_id}/settlement]
 
-Depending on the merchant integration type, transactions may need to be settled at some point after the original authorization (e.g. if goods will ship after a few days). The settlement API works in the same way as for refunds.
+# Group Refund
 
-If no amount parameter is provided then the request will settle for the full amount. Optional parameters for *amount* and *merchantRefNum* can also be passed.
-
-
-|Element                 |Type                      |Description |
-|---                     |---                       |--- |
-|amount                  | integer | This is the amount of the payment in minor units e.g. 999 would be $9.99. It is not possible to settle an amount greater than the original amount authorized. **NOTE** If an amount is not specified, the full transaction is settled.|
-|merchantRefNum          | string<br>`length<=40` | This is an optional merchant transaction ID, for reference purposes. This should be unique for each transaction. |
-
-The server will return a response containing the following parameters for an order settlement: 
-
-| Field | Type | Description |
-|---    |---  |--- |
-| amount | integer | | This is the amount of the transaction that was settled, in minor units e.g. 999 would be $9.99. |
-| authType | enumeration | This is the transaction type. It will be set to **settlement** |
-| confirmationNumber | integer | This is the confirmation number returned by NETBANX in response to the settlement request. |
-| currencyCode | enumeration | This is the currency in which the transaction was settled. See [Currency Codes](#currency-codes). |
-| mode | enumeration | This element is for internal use only. Possible values are currently: * live |
-| originalMerchantRefNum | string</br>`length=40` | This is the merchant transaction ID assigned in the original order request, for reference purposes.  |
-| id | string</br>`length<=128` | This is the order ID against which the settlement has been requested.  |
-
-
-+ Parameters
-   + order_id (required, string, `25TWPTLHRR81AIG1LF`) - Order ID
-    
-+ Request Get an Order Status (application/json)
-    
-  + Headers
-            
-            Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
-
- + Body
- 
-            {
-                "amount" : 9999,
-                "merchantRefNum" : "MERCHANT_REF_123"
-            }
-
-+ Response 200 (application/json)
-
-  + Body
-  
-              {
-                "amount" : 9999,
-                "authType" : "settlement",
-                "confirmationNumber" : 1998572559920972,
-                "currencyCode" : "GBP",
-                "mode" : "live",
-                "originalMerchantRefNum" : null,
-                "id" : "25TWPTLHRR81AIG1LF"
-            }
-
-<a name="cancel-a-settlement"></a>
-## Cancel a Settlement [DELETE /orders/{order_id}/settlement]
-If a settlement request has been sent but the amount has not yet been settled, it is possible to cancel the settlement using the ID returned by NETBANX in the settlement response (see [Settle an Order](#settle-an-order)). 
-The same response as for [Get an Order Status](#get-an-order-status) will be returned with the status set to *cancelled* upon success.
-See [Cancel an Order](#cancel-an-order) for full details on how to cancel a request.
-
-+ Parameters
-   + order_id (required, string, `25TWPTLHRR81AIG1LF`) - Order ID
-
-  + Headers
-            
-            Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
-
-+ Response 200 (application/json)  
-
-  + Body
-  
-              {
-                "link" : [
-                    {
-                        "rel" : "hosted_payment",
-                        "uri" : "https://api.netbanx.com/hosted/v1/payment/53616c7465645f5ffeb47c2287dbf903bbb4627b16929a27b8d09b37db190a0f6ce44f8ea1461be2"
-                    },
-                    {
-                        "rel" : "self",
-                        "uri" : "https://dlTXGAJJWsEdFdJn2SBP:NAA6942c974f7de6e5cd690@api.netbanx.com/hosted/v1/orders/25TWPTLHRR81AIG1LF"
-                    }
-                ],
-                "currencyCode" : "GBP",
-                "transaction" : {
-                    "status" : "cancelled",
-                    "lastUpdate" : "2012-05-14T15:12:18",
-                    "authType" : "purchase",
-                    "merchantRefNum" : "MERCHANT_REF_123",
-                    "associatedTransactions" : [],
-                    "currencyCode" : "GBP",
-                    "refunded" : false,
-                    "amount" : 1000,
-                    "paymentType" : "card",
-                    "settled" : false
-                },
-                "totalAmount" : 1000,
-                "id" : "25TWPTLHRR81AIG1LF",
-                "merchantRefNum" : "MERCHANT_REF_123"
-            }
-  
-
-<a name="refund-an-order"></a>
 ## Refund an Order [POST /orders/{order_id}/refund]
+<a name="refund-an-order"></a>
 
 The Hosted Payments API allows orders that have been processed against the merchant integration to be refunded. A refund can be processed against an order ID where the funds have been settled. 
 
@@ -3065,10 +3027,115 @@ The response parameters are described below:
                 "authType" : "refund",
                 "id" : "25TWPTLHRR81AIG1LF"
             }
+# Group Settlements
+
+## Settle an Order [POST /orders/{order_id}/settlement]
+<a name="settle-an-order"></a>
+
+Depending on the merchant integration type, transactions may need to be settled at some point after the original authorization (e.g. if goods will ship after a few days). The settlement API works in the same way as for refunds.
+
+If no amount parameter is provided then the request will settle for the full amount. Optional parameters for *amount* and *merchantRefNum* can also be passed.
+
+
+|Element                 |Type                      |Description |
+|---                     |---                       |--- |
+|amount                  | integer | This is the amount of the payment in minor units e.g. 999 would be $9.99. It is not possible to settle an amount greater than the original amount authorized. **NOTE** If an amount is not specified, the full transaction is settled.|
+|merchantRefNum          | string<br>`length<=40` | This is an optional merchant transaction ID, for reference purposes. This should be unique for each transaction. |
+
+The server will return a response containing the following parameters for an order settlement: 
+
+| Field | Type | Description |
+|---    |---  |--- |
+| amount | integer | | This is the amount of the transaction that was settled, in minor units e.g. 999 would be $9.99. |
+| authType | enumeration | This is the transaction type. It will be set to **settlement** |
+| confirmationNumber | integer | This is the confirmation number returned by NETBANX in response to the settlement request. |
+| currencyCode | enumeration | This is the currency in which the transaction was settled. See [Currency Codes](#currency-codes). |
+| mode | enumeration | This element is for internal use only. Possible values are currently: * live |
+| originalMerchantRefNum | string</br>`length=40` | This is the merchant transaction ID assigned in the original order request, for reference purposes.  |
+| id | string</br>`length<=128` | This is the order ID against which the settlement has been requested.  |
+
+
++ Parameters
+   + order_id (required, string, `25TWPTLHRR81AIG1LF`) - Order ID
+    
++ Request Get an Order Status (application/json)
+    
+  + Headers
             
+            Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+
+ + Body
+ 
+            {
+                "amount" : 9999,
+                "merchantRefNum" : "MERCHANT_REF_123"
+            }
+
++ Response 200 (application/json)
+
+  + Body
+  
+              {
+                "amount" : 9999,
+                "authType" : "settlement",
+                "confirmationNumber" : 1998572559920972,
+                "currencyCode" : "GBP",
+                "mode" : "live",
+                "originalMerchantRefNum" : null,
+                "id" : "25TWPTLHRR81AIG1LF"
+            }
+
+
+## Cancel a Settlement [DELETE /orders/{order_id}/settlement]
+<a name="cancel-a-settlement"></a>
+If a settlement request has been sent but the amount has not yet been settled, it is possible to cancel the settlement using the ID returned by NETBANX in the settlement response (see [Settle an Order](#settle-an-order)). 
+The same response as for [Get an Order Status](#get-an-order-status) will be returned with the status set to *cancelled* upon success.
+See [Cancel an Order](#cancel-an-order) for full details on how to cancel a request.
+
++ Parameters
+   + order_id (required, string, `25TWPTLHRR81AIG1LF`) - Order ID
+
+  + Headers
+            
+            Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+
++ Response 200 (application/json)  
+
+  + Body
+  
+              {
+                "link" : [
+                    {
+                        "rel" : "hosted_payment",
+                        "uri" : "https://api.netbanx.com/hosted/v1/payment/53616c7465645f5ffeb47c2287dbf903bbb4627b16929a27b8d09b37db190a0f6ce44f8ea1461be2"
+                    },
+                    {
+                        "rel" : "self",
+                        "uri" : "https://dlTXGAJJWsEdFdJn2SBP:NAA6942c974f7de6e5cd690@api.netbanx.com/hosted/v1/orders/25TWPTLHRR81AIG1LF"
+                    }
+                ],
+                "currencyCode" : "GBP",
+                "transaction" : {
+                    "status" : "cancelled",
+                    "lastUpdate" : "2012-05-14T15:12:18",
+                    "authType" : "purchase",
+                    "merchantRefNum" : "MERCHANT_REF_123",
+                    "associatedTransactions" : [],
+                    "currencyCode" : "GBP",
+                    "refunded" : false,
+                    "amount" : 1000,
+                    "paymentType" : "card",
+                    "settled" : false
+                },
+                "totalAmount" : 1000,
+                "id" : "25TWPTLHRR81AIG1LF",
+                "merchantRefNum" : "MERCHANT_REF_123"
+            }
+  
+            
+# Group Original Credits
 
 <a name="original-credits"></a>
-## Original Credits
 
 Original Credits allow gaming merchants to issue winnings as credits to cardholders. The merchant category codes (MCC) for gaming merchants are 7994 and 7995. These credits do not require a previous authorization/settlement.
 
@@ -3085,8 +3152,9 @@ With either method, your request must include the [*extendedOption*](#extendedo
 **Note** Only gaming merchants with the appropriate MCC can process Original Credits. To issue other types of credits to a cardholder's credit card see [Refunds](#refunds)
 
             
-<a name="issue-an-original-credit-using-an-order-ID"></a>
+
 ## Issue an original credit using an order ID [POST /orders/{order_id}]
+<a name="issue-an-original-credit-using-an-order-ID"></a>
 
 Rebills can be processed against a customer’s card by using a previously successful order ID. You can use a rebill request to issue an original credit.
 See [Process a Rebill Using an Order ID](#process-a-rebill-using-an-order-id) for full requirements for this request type.
@@ -3142,8 +3210,9 @@ See [Process a Rebill Using an Order ID](#process-a-rebill-using-an-order-id) fo
                "merchantRefNum" : "testmerchref"
             }
             
-<a name="issue-an-original-credit-using-a-profile"></a>
+
 ## Issue an original credit using a Profile [POST /orders]
+<a name="issue-an-original-credit-using-a-profile"></a>
 
 Once a customer profile has been created (see [profile Object](#profile-object)), the *id* can be used to securely store the customer's card details with NETBANX for future use. You can use this profile information to issue an original credit.
 
