@@ -1,5 +1,5 @@
 FORMAT: 1A
-HOST: https://test.api.netbanx.com/hosted/v1/
+HOST: https://api.test.netbanx.com/hosted/v1/
 
 # NETBANX Hosted Payments API
 
@@ -1002,6 +1002,7 @@ This is a summary of all errors that could be returned when using the Hosted Pay
 | ---         |"Invalid Id"|You have provided an invalid ID with your request.|
 | ---         |"Invalid profileId"|A profile could not be loaded for the *profileId* provided.|
 | 401         |"Not authorized"|You have provided an invalid API key with your request.|
+| 400         |"Authorization denied" |The authorization was denied because both a payment token and a credit card number were submitted with the request.|
 | 400         |"Amount exceeds refundable amount"|You are attempting to refund an amount that is greater than the original transaction amount (minus the sum of any existing refunds against the transaction).|
 | 400         |"Request validation failed: currency_code invalid: ' ' is not a valid ISO 4217 currency code"|You have provided an invalid currencyCode parameter with your request.|
 | 400         |"Request validation failed: merchant\_ref_num invalid: required field"|You have provided an invalid *merchantRefNum* parameter with your request.|
@@ -1298,12 +1299,13 @@ The *extendedOptions* array may contain the following key/value pairs.
 | callbackEmail | string</br>`length<=256` | This allows merchants to receive an email that contains the same data they would receive if they were to query the *self* URL returned from the API. |
 | disableAddingPaymentMethods | boolean | This prevents the customer from adding a new payment method on the hosted payment page.|
 | disableAllProfileActions | boolean | This removes all "edit" and "add new card" functions from the hosted payment page. |
+| disableCardWithToken | boolean | This prevents processing a transaction in the case where the original order request was created with a payment token, but where an additional credit card is also supplied in the Silent Post to the *hosted_payment* URL. By default this is set to *false*.|
 | disableDuplicateMerchantRefCheck | boolean | This allows merchants to submit an order using a duplicate *merchantRefNum* parameter. By default this is set to *false*.
 | disableDupCardCheckWithinProfile | boolean | This allows the same card to be added against a profile multiple times without inducing an error message. |
 | disablePaymentMethodStorage | boolean | If passed as *true* this removes the "Store my details for future use" check box from the hosted payment page and sets the flag value to ***false*** |
 | disableProfileEditing | boolean | This prevents the customer from editing profile details on the hosted payment page. |
 | disableRemovingPaymentMethods | boolean | This prevents the customer from removing a previously stored payment method from a profile on the hosted payment page. |
-|dupCheckCardMaxAllowed |string |This indicates the number of existing customer profiles that are allowed to contain the same card number. For example, if *dupCheckCardMaxAllowed* is assigned a value of 2, then the card can be added to two profiles.<ul><li>In order to enforce complete uniqueness, assign *dupCheckCardMaxAllowed* a value of 1.</li><li>If *dupCheckCardMaxAllowed* is not included, then the card can be added to an unlimited number of profiles.</li></ul>
+| dupCheckCardMaxAllowed |string |This indicates the number of existing customer profiles that are allowed to contain the same card number. For example, if *dupCheckCardMaxAllowed* is assigned a value of 2, then the card can be added to two profiles.<ul><li>In order to enforce complete uniqueness, assign *dupCheckCardMaxAllowed* a value of 1.</li><li>If *dupCheckCardMaxAllowed* is not included, then the card can be added to an unlimited number of profiles.</li></ul>
 | emailNotEditable | boolean | This prevents the customer from changing their email address on the hosted payment page.|
 | forcePaymentMethodStorage | boolean | If passed as *true* this removes the "Store my details for future use" check box from the hosted payment page and sets the flag value to ***true*** |
 | houseNumberNotEditable | boolean | This prevents the customer from changing their address on the hosted payment page.|
