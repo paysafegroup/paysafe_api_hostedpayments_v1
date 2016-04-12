@@ -7,6 +7,7 @@ HOST: https://api.test.netbanx.com/hosted/v1/
 
 | Version | Date | Details |
 |---      |---  |---      |
+| 1.3.5 | October 2015 | <ul><li>Added functionality for China UnionPay</li><li>Ukash functionality removed</li></ul>
 | 1.3.4 | January 2015 | <ul><li>Added functionality for Pingit</li></ul>|
 | 1.3.3 | October 2014 | <ul><li>Added *accordD* functionality for select merchants</li><li>Added *oct* as an *authType* for Original Credit requests</li></ul>|
 | 1.3.2 | May 2014 | <ul><li>Added authCode parameter to order status response table and to Return Keys appendix</li><li>Updated HTML example in ThreatMetrix appendix</li><li>Added functionality for Giropay, NETELLER, PayPal, Sofort Banking and Ukash</li><li>Updated extended options key/value pairs table</li><li>Updated values for transaction.status parameter</li></ul>|
@@ -525,7 +526,6 @@ Consult the appropriate payment method, as required.
 *   [Silent Post for NETELLER](#silent-post-for-neteller)
 *   [Silent Post for Prepaid Cards](#silent-post-for-prepaid-cards)
 *   [Silent Post for Sofort Banking](#silent-post-for-sofort-banking)
-*   [Silent Post for Ukash](#silent-post-for-ukash)
 
 For the following payment methods, no additional parameters need to be passed with the Silent Post order, as the redirect occurs immediately and no intermediary page is displayed:
 
@@ -535,6 +535,7 @@ For the following payment methods, no additional parameters need to be passed wi
 *   paypal
 *   pingit
 *   poli
+*   unionpay
 
 <a name="silent-post-for-customer-profile"></a>
 ###Silent Post for Customer Profile
@@ -602,17 +603,6 @@ To process a [Silent Post order](../process-an-order-with-a-silent-post) using
 
 **Note** Please consult Sofort Banking documentation for field length constraints
 
-<a name="silent-post-for-ukash"></a>
-###Silent Post for Sofort ukash
-To process a [Silent Post order](../process-an-order-with-a-silent-post) using *ukash* as the *paymentMethod*, the fields in the following table must be provided in the POST to the *hosted_payment* URL that was received in the order response. 
-
-| Field | Type | Required | Description |
-|---    |---   |--- |--- |
-| voucherNumber | integer | Yes | This is the Ukash voucher number.  |
-| voucherValue | integer | Yes | This is the value of the Ukash voucher. |
-
-**Note** Please consult the Ukash documentation for field length constraints
-
 <a name="payment-method-notes"></a>
 ## Payment Method Notes
 This table provides the following additional information on each payment method:
@@ -635,7 +625,7 @@ This table provides the following additional information on each payment method:
 | poli | Yes | No |
 | prepaidcard | No | Yes |
 | sofortbanking | Yes | No |
-| ukash | Yes | No | The Ukash change voucher (and expiry date) should be returned to the voucher holder at the end of the transaction process in the event that the amount paid is less than the voucher value. |
+| unionpay | Yes | Yes | <ul><li>The following parameters are **mandatory** when processing an order using *unionpay* as the payment method:</li><ul><li>profile.firstName</li>profile.lastName<li>profile.dateOfBirth.year</li>profile.dateOfBirth.month<li>profile.dateOfBirth.day</li><li>billingDetails.street</li><li>billingDetails.city</li><li>billingDetails.state</li><li>billingDetails.zip</li><li>billingDetails.country</li><li>customerNotificationEmail</li></ul><li>You cannot process a rebill using unionpay.</li><li>You cannot process an order with a profile ID using unionpay.</li><li>Because unionpay requests can take an extended period of time to complete, the on_success and on_failure callbacks and redirects will not work. Instead, use the on_pending callbacks and redirects.</li></ul>   |
 
 <a name="implementing=-threatmetrix-for-a-silent-post-order"></a>
 ## Implementing ThreatMetrix for a Silent Post Order
@@ -1229,6 +1219,9 @@ The callback return keys may contain the following parameters.
 | transaction.paymentType | This is the type of payment used for the transaction. |
 | transaction.sofortBanking.sofortBankingTxId | This is the Sofort Banking transaction ID. Please consult Sofort Banking documentation for all Sofort Banking maximum/minimum field values. |
 | transaction.sofortBanking.internationalTransaction | This is the flag for international transactions. |
+| transaction.unionpay.status | This is the status of the transaction. |
+| transaction.unionpay.message | This is the message returned, if required. |
+| transaction.unionpay.transId | This is the Union Pay transaction ID. |
 | transaction.status | This indicates the status of the transaction. |
 | transaction.errorCode | If an error occurs, this is the error number. |
 | profile.paymentToken | This is the payment token returned by NETBANX in response to the transaction request. It can be used to process a repeat payment. |
@@ -1260,7 +1253,6 @@ This table provides the following additional information on each payment method:
 | poli | Yes | No |
 | prepaidcard | No | Yes |
 | sofortbanking | Yes | No |
-| ukash | Yes | No | The Ukash change voucher (and expiry date) should be returned to the voucher holder at the end of the transaction process in the event that the amount paid is less than the voucher value. |
 | unionpay | Yes | Yes | <ul><li>The following parameters are mandatory when processing an order using unionpay as the payment method: <ul><li>profile.firstName</li><li>profile.lastName</li><li>profile.dateOfBirth.year<li><li>profile.dateOfBirth.month</li><li>profile.dateOfBirth.day</li><li>billingDetails.street</li><li>billingDetails.city</li><li>billingDetails.state</li><li>billingDetails.zip</li><li>billingDetails.country</li><li>customerNotificationEmail</li></ul></li><li>You cannot process a rebill using unionpay.</li><li>You cannot process an order with a profile ID using unionpay.</li><li>Because unionpay requests can take an extended period of time to complete, the on_success and on_failure callbacks and redirects will not work. Instead, use the on_pending callbacks and redirects.</li></ul> |
 
 
@@ -1400,7 +1392,7 @@ For more information on profiles, see [Create a Profile with an Order](#create-a
 |[callback](#callback-Object) |complex|| This allows you to add callbacks to the order. <br></br><br></br>**NOTE** You can avoid callbacks if you poll the self endpoint for the Transaction ID. See the link.rel parameter in [Order Response](#order-response) |
 |[redirect](#redirect-Object) |complex|| This allows you to add redirects to the order. Redirects cause a connection back to the merchant system via the customer's browser. |]
 |[link](#link-Object) |complex|| This allows you to add links to the order. You can add different links – e.g., to cancel a payment and return to the shopping cart.|
-|paymentMethod | enumeration [] ||Array of payment methods. This allows you to add payment methods to the order. Possible values are: <ul><li>card</li><li>giropay</li><li>ideal</li>interact</li><li>masterpass</li><li>neteller</li></li>paynearme</li><li>paypal</li><li>pingit</li>poli</li><li>prepaidcard</li><li>sofortbanking</li><li>sofortbanking</li><li>ukash</li></ul> <br></br><br></br>**NOTE** This value defaults to card. See [Payment Method Notes](#payment-method-notes) for additional information on each payment method.|
+|paymentMethod | enumeration [] ||Array of payment methods. This allows you to add payment methods to the order. Possible values are: <ul><li>card</li><li>giropay</li><li>ideal</li>interact</li><li>masterpass</li><li>neteller</li></li>paynearme</li><li>paypal</li><li>pingit</li>poli</li><li>prepaidcard</li><li>sofortbanking</li><li>unionpay</li></ul> <br></br><br></br>**NOTE** This value defaults to card. See [Payment Method Notes](#payment-method-notes) for additional information on each payment method.|
 |addendumData |||This allows you to specify additional data (e.g., affiliate codes, session IDs, etc.) to be stored against the transaction and returned to you in status calls, reports, etc.|
 |locale|enumeration||This allows you to display your payment/receipt pages and emails using the locale requested. Possible values are: <ul><li>en_GB - UK English</li><li>en_US - American English</li><li>fr_CA - Canadian French</li><li>fr_FR - European French</li></ul><br></br><br></br>**NOTE** If the locale parameter is not passed or if an unsupported ISO 639-1 code is sent to the API then the default value provided in the merchant’s integration configuration will be used.|
 |[extendedOptions](#extendedOptions-object)|complex||This allows you to activate/deactivate certain features in the payment system.|
@@ -1457,6 +1449,9 @@ The redirect return keys may contain the following parameters.
 | transaction.errorCode | If an error occurs, this is the error number. |
 | transaction.errorMessage | If an error occurs, this is the description of the error. |
 | transaction.riskReasonCode | If the transaction has a status of held, these are the reason codes.  |
+| transaction.unionpay.status | This is the status of the transaction. |
+| transaction.unionpay.message | This is the message returned, if required. |
+| transaction.unionpay.transId | This is the Union Pay transaction ID. |
 
 <a name="shippingdetails-object"></a>
 ## shippingDetails Object
@@ -2713,7 +2708,7 @@ Generic order status response parameters:
 | transaction.settled | boolean | The authorization-only transaction has been settled. |
 | transaction.confirmationNumber | string<br>`length=20` | This is the confirmation number returned by NETBANX in response to the transaction request. |
 | transaction.lastUpdate | dateTime UTC | This is the date and time of the last change made to the transaction, e.g., a refund. |
-| transaction.paymentType | string<br>`length<=20` | This is the type of payment used for the transaction. Value will be set to:<ul><li>card</li><li>giropay</li><li>ideal</li><li>interac</li><li>masterpass</li><li>neteller</li><li>paypal</li><li>pingit</li><li>poli</li><li>prepaidcard</li><li>sofortbanking</li><li>ukash</li></ul>
+| transaction.paymentType | string<br>`length<=20` | This is the type of payment used for the transaction. Value will be set to:<ul><li>card</li><li>giropay</li><li>ideal</li><li>interac</li><li>masterpass</li><li>neteller</li><li>paypal</li><li>pingit</li><li>poli</li><li>prepaidcard</li><li>sofortbanking</li><li>unionpay</li></ul>
 | transaction.refunded | boolean | This indicates that the transaction has been either fully or partially refunded.<br></br><br></br>**Note** If this value is set to _true_, then check the value for _availableToRefund_ before attempting to issue a refund request. |
 | transaction.reversed | boolean | This indicates whether a reversal has been attempted (e.g. a successful transaction that fails an AVS check, or a successful authorization that has been subsequently cancelled).|
 | transaction.status | enumeration | This indicates the status of the transaction. Possible values are:<ul><li>success – Transaction has been authorized by bank/NETBANX.</li><li>cancelled – Transaction has been cancelled.</li><li>declined – Transaction has been declined by bank/NETBANX.</li><li>pending – Transaction has been created and is awaiting consumer interaction.</li><li>abandoned – Transaction was abandoned part way through by the consumer.</li><li>held – Transaction has been placed on hold due to risk rules results. See _transaction.riskReasonCode_ for the reason codes.</li><li>errored – An error occurred and the transaction could not be completed <br></br><br></br>**NOTE** The merchant's account must be configured by NETBANX to be able to place transactions on hold. </li></ul>
@@ -2777,15 +2772,6 @@ Payment method–specific order status response parameters:
 | transaction.poli.state | string | This is the state of the transaction. |
 | transaction.sofortBanking.sofortBankingTxId | string | This is the Sofort Banking transaction ID. Please consult Sofort Banking documentation for information about field lengths and constraints on field values. |
 | transaction.sofortBanking.internationalTransaction | boolean | This is the flag for international transactions. |
-| transaction.ukash.voucherValue | string | This is the value of the voucher. Please consult Ukash documentation for information about field lengths and constraints on field values. |
-| transaction.ukash.settleAmount | string | This is the amount deducted from the voucher. |
-| transaction.ukash.changeVoucherCurrency | string | This is the currency of the change voucher the customer receives. |
-| transaction.ukash.changeIssueAmount | string | This is the amount of the change voucher the customer receives. |
-| transaction.ukash.amount | string | This is the amount processed for the transaction request. |
-| transaction.ukash.changeIssueExpDate | string | This is the expiry date of the change voucher. |
-| transaction.ukash.redemptionType | string | This is the Ukash redemption type. |
-| transaction.ukash.ukashTransactionId | string | This is the Ukash transaction ID. |
-| transaction.ukash.voucherNumber | string | This is the Ukash voucher number. |
 | transaction.masterpass.id  | string | This is the MasterPass transaction ID. |
 | transaction.masterpass.reward.id | string | This is the ID associated with the reward program. |
 | transaction.masterpass.reward.number | string | This is the consumer’s reward number associated with the reward program |
@@ -3029,7 +3015,6 @@ An optional *merchantRefNum* parameter can also be included.
 * Pingit
 * POLi
 * Sofort Banking
-* Ukash
 
 You will need to issue refunds via your merchant account with the relevant payment method.
 
@@ -3461,7 +3446,7 @@ Once a customer profile has been created (see [profile Object](#profile-object))
    + poli
    + prepaidcard
    + sofortbanking
-   + ukash
+   + unionpay
 - refunded: false (boolean) - This indicates that the transaction has been either fully or partially refunded. Note If this value is set to true, then check the value for availableToRefund before attempting to issue a refund request.
 - reversed: false (boolean) - This indicates whether a reversal has been attempted (e.g. a successful transaction that fails an AVS check, or a successful authorization that has been subsequently cancelled).
 - status (enum) - This indicates the status of the transaction
