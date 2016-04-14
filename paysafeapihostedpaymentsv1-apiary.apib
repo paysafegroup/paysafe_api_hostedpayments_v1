@@ -29,7 +29,7 @@ and comply with PCI guidelines regarding the handling of card data.
 
 **NOTE** NETBANX may add additional elements in future releases of this API, so ensure that your integration is flexible enough to ignore any unrecognized response fields.
 
-![Hosted Checkout Flow](https://raw.githubusercontent.com/paysafegroup/paysafe_api_hostedpayments_v1/master/images/HostedAPIOverview_Hosted.gif?token=AMmqfj1-JtdYFYuzexvjc733_qVFt8LCks5W6D8XwA%3D%3D)
+![Hosted Checkout Flow](https://github.com/paysafegroup/paysafe_api_hostedpayments_v1/raw/master/images/HostedAPIOverview_Hosted.gif)
 
 # Authentication
 
@@ -121,10 +121,10 @@ A successful order request will result in a response with the following structur
 This response confirms that the NETBANX system has accepted your order and is prepared to process the payment.
 It will contain basic information about the order received, including the *currencyCode*, *merchantRefNum*, *totalAmount* and the order *id* which is the unique reference that the NETBANX system has assigned to your order request.
 You can use this id to find out information about your order at any time. 
-The order response also provides you with a link section. The first link refers to the hosted_payment URL – this is the URL of the payment page. Your system should take this URL from the order and use it to redirect your customer to the hosted payment page, where they can enter payment details.
+The order response also provides you with a link section. The first link refers to the hosted_payment URL – this is the URL of the payment page. Your system should take this URL from the order and use it to redirect your customer to the hosted payment page (shown below), where they can enter payment details.
 A second link, self is the URL to call to find out the status of the transaction.
 
-![](https://raw.githubusercontent.com/paysafegroup/paysafe_api_hostedpayments_v1/master/images/Hosted_Screen1.png?token=AMmqfmPn-8ov7YAzZWPbojwF7humlaZPks5W6D-RwA%3D%3D)
+![](https://github.com/paysafegroup/paysafe_api_hostedpayments_v1/raw/master/images/Hosted_Screen1.png)
 
 <a name="process-an-order-using-a-silent-post"></a>
 ## Process an Order Using a Silent Post
@@ -186,7 +186,7 @@ method="POST" >
     </td
 ```
 
-![](https://raw.githubusercontent.com/paysafegroup/paysafe_api_hostedpayments_v1/master/images/HostedAPISilentPost.gif?token=AMmqflPw89NujMcfZg-ThFbtE5MLA2Ohks5W6D_2wA%3D%3D)
+![](https://github.com/paysafegroup/paysafe_api_hostedpayments_v1/raw/master/images/HostedAPISilentPost.gif)
 
 <a name="process-an-order-with-settlement"></a>
 ## Process an Order with Settlement
@@ -214,7 +214,8 @@ $ curl -X POST -H "Content-Type: application/json" \
       { 
             "key" : " authType", 
             "value" : "auth" 
-      }
+      } 
+      ]
     }'
 ```
 
@@ -625,7 +626,7 @@ This table provides the following additional information on each payment method:
 | poli | Yes | No |
 | prepaidcard | No | Yes |
 | sofortbanking | Yes | No |
-| unionpay | Yes | Yes | <ul><li>The following parameters are **mandatory** when processing an order using *unionpay* as the payment method:</li><ul><li>profile.firstName</li>profile.lastName<li>profile.dateOfBirth.year</li>profile.dateOfBirth.month<li>profile.dateOfBirth.day</li><li>billingDetails.street</li><li>billingDetails.city</li><li>billingDetails.state</li><li>billingDetails.zip</li><li>billingDetails.country</li><li>customerNotificationEmail</li></ul><li>You cannot process a rebill using unionpay.</li><li>You cannot process an order with a profile ID using unionpay.</li><li>Because unionpay requests can take an extended period of time to complete, the on_success and on_failure callbacks and redirects will not work. Instead, use the on_pending callbacks and redirects.</li></ul>   |
+| unionpay | Yes | Yes | <ul><li>The following parameters are **mandatory** when processing an order using *unionpay* as the payment method:</li><ul><li>profile.firstName</li>profile.lastName<li>profile.dateOfBirth.year</li><li>profile.dateOfBirth.month</li><li>profile.dateOfBirth.day</li><li>billingDetails.street</li><li>billingDetails.city</li><li>billingDetails.state</li><li>billingDetails.zip</li><li>billingDetails.country</li><li>customerNotificationEmail</li></ul><li>You cannot process a rebill using unionpay.</li><li>You cannot process an order with a profile ID using unionpay.</li><li>Because unionpay requests can take an extended period of time to complete, the on_success and on_failure callbacks and redirects will not work. Instead, use the on_pending callbacks and redirects.</li></ul>   |
 
 <a name="implementing=-threatmetrix-for-a-silent-post-order"></a>
 ## Implementing ThreatMetrix for a Silent Post Order
@@ -1253,7 +1254,7 @@ This table provides the following additional information on each payment method:
 | poli | Yes | No |
 | prepaidcard | No | Yes |
 | sofortbanking | Yes | No |
-| unionpay | Yes | Yes | <ul><li>The following parameters are mandatory when processing an order using unionpay as the payment method: <ul><li>profile.firstName</li><li>profile.lastName</li><li>profile.dateOfBirth.year<li><li>profile.dateOfBirth.month</li><li>profile.dateOfBirth.day</li><li>billingDetails.street</li><li>billingDetails.city</li><li>billingDetails.state</li><li>billingDetails.zip</li><li>billingDetails.country</li><li>customerNotificationEmail</li></ul></li><li>You cannot process a rebill using unionpay.</li><li>You cannot process an order with a profile ID using unionpay.</li><li>Because unionpay requests can take an extended period of time to complete, the on_success and on_failure callbacks and redirects will not work. Instead, use the on_pending callbacks and redirects.</li></ul> |
+| unionpay | Yes | Yes | <ul><li>The following parameters are mandatory when processing an order using unionpay as the payment method: <ul><li>profile.firstName</li><li>profile.lastName</li><li>profile.dateOfBirth.year</li><li>profile.dateOfBirth.month</li><li>profile.dateOfBirth.day</li><li>billingDetails.street</li><li>billingDetails.city</li><li>billingDetails.state</li><li>billingDetails.zip</li><li>billingDetails.country</li><li>customerNotificationEmail</li></ul></li><li>You cannot process a rebill using unionpay.</li><li>You cannot process an order with a profile ID using unionpay.</li><li>Because unionpay requests can take an extended period of time to complete, the on_success and on_failure callbacks and redirects will not work. Instead, use the on_pending callbacks and redirects.</li></ul> |
 
 
 <a name="extendedoptions-object"></a>
@@ -1448,7 +1449,7 @@ The redirect return keys may contain the following parameters.
 | transaction.status | This indicates the status of the transaction. |
 | transaction.errorCode | If an error occurs, this is the error number. |
 | transaction.errorMessage | If an error occurs, this is the description of the error. |
-| transaction.riskReasonCode | If the transaction has a status of held, these are the reason codes.  |
+| transaction.riskReasonCode | If the transaction has a status of held, this value holds the reason code.  |
 | transaction.unionpay.status | This is the status of the transaction. |
 | transaction.unionpay.message | This is the message returned, if required. |
 | transaction.unionpay.transId | This is the Union Pay transaction ID. |
@@ -2018,7 +2019,7 @@ The Hosted Payments API customer profile feature allows your customers to secure
 <br></br>
 **NOTE** *paymentToken* is only returned once a payment has been successfully processed against the order, e.g. in the GET request on a successful order, or in the callback parameters (if requested).
 
-![](https://raw.githubusercontent.com/paysafegroup/paysafe_api_hostedpayments_v1/master/images/store_profile1.gif?token=AMmqfh8uXn5zfUN6dvlqObK8OzV2eLUtks5W6EFxwA%3D%3D)
+![](https://github.com/paysafegroup/paysafe_api_hostedpayments_v1/raw/master/images/store_profile1.gif)
 
 The Hosted Payments API customer profile feature offers customers the following options on the Hosted Payments page:
 * Store multiple cards
@@ -2047,12 +2048,12 @@ Once a customer profile has been created (see [profile Object](#profile-object))
 
   + Attributes
         + merchantRefNum (string, required) - This is your own transaction ID, for your reference purposes. This should be unique for each transaction.
-        + currencyCode : `GBP` (string, required) - This is the currency in which to process the transaction. See [Currency Codes](#currency-codes) for a list of codes.
-        + totalAmount : 1125 (number, required) - This is the total amount of the transaction. Merchants can provide zero (0) as an amount, if they need to process a verification with no value on the card. In this case, the authType must be set to auth, using the extendedOptions feature.
-        + customerIp : `123.123.123.123` (string,optional) - The value should be the incoming IP address of your customer, which will restrict the payment page to being viewable only from this IP address.
+        + currencyCode:GBP (string, required) - This is the currency in which to process the transaction. See [Currency Codes](#currency-codes) for a list of codes.
+        + totalAmount:1125 (number, required) - This is the total amount of the transaction. Merchants can provide zero (0) as an amount, if they need to process a verification with no value on the card. In this case, the authType must be set to auth, using the extendedOptions feature.
+        + customerIp:123.123.123.123 (string,optional) - The value should be the incoming IP address of your customer, which will restrict the payment page to being viewable only from this IP address.
         + id: 25TWPTLHRR81AIG1LF (string,optional)  - This ID represents the original order request. This ID will be used for subsequent transactions associated with the original request, such as making a payment or requesting an order status.
-        + customerNotificationEmail : `john.smith@email` (string,optional) - This is the consumer’s email address, to which notifications regarding the purchase request are sent. 
-        + merchantNotificationEmail : 'sample.merchant@email.com` (string,optional) - This is the merchant’s email address, to which notifications regarding the purchase request are sent.
+        + customerNotificationEmail :john.smith@email (string,optional) - This is the consumer’s email address, to which notifications regarding the purchase request are sent. 
+        + merchantNotificationEmail :sample.merchant@email.com (string,optional) - This is the merchant’s email address, to which notifications regarding the purchase request are sent.
         + profile (profile, optional) - The [profile object](#profile-object) allows you to create a customer profile with the order.
         + shoppingCart (array[shoppingCart], optional) - The [shoppingCart object](#shoppingCart-object) allows you to add shopping cart information to the order.
         + ancillaryFees (array[ancillaryFees], optional) - The [ancillaryFees object](#ancillaryFees-object) allows you to add ancillary fees to the order.
@@ -2086,7 +2087,7 @@ Once a customer profile has been created (see [profile Object](#profile-object))
         + associatedTransactions (array[associatedTransactions],optional) - In a response, this is any transaction relating to the original request (e.g., the refund of a settlement). 
         + accordD (accordD,optional) - The accordD object allows the merchant to specify a financing plan along with the regular order. 
         + visaAdditionalAuthData (visaAdditionalAuthData,optional) - This allows additional authorization data to be included with a request using Visa as a payment method. 
-        + dueData:'2019-01-20' (string,optional) - The date the order request will be processed in YYYY-MM-DD (UTC) format. Include this parameter only when processing a rebill ([see Process a Rebill Using an Order ID](#see-process-a-rebill-using-an-orderid).
+        + dueDate:`2019-01-20` (string,optional) - The date the order request will be processed in YYYY-MM-DD (UTC) format. Include this parameter only when processing a rebill ([see Process a Rebill Using an Order ID](#see-process-a-rebill-using-an-orderid).
 
   + Body
 
@@ -2099,7 +2100,18 @@ Once a customer profile has been created (see [profile Object](#profile-object))
                 }
         
 + Response 200 (application/json)
-       
+
+  + Attributes
+        + link (array[link],optional) - The [link object](#link-object) returns the following links for an order: self which points to the order and hosted_payment which contains the hosted payment URL)
+        + currencyCode:GBP (enum) - This is the currency used for the order. See [Currency Codes](#currency-codes).
+        + amount:999 (number) - This is the amount of the transaction in minor units e.g. 999 = $9.99.
+        + mode (enum) - This element is for internal use only. live is currently the only possible value
+           + live
+        + type (enum) - This is the transaction type. It will be set to order
+           + order
+        + id:25TWPTLHRR81AIG1LF (string) - This is the order ID provided by netbanx
+        + merchantRefNum:MERCHANT_REF_123 (string) - This is the merchant transaction ID assigned in the order request, for reference purposes.
+        
   + Body
     
             {
@@ -2123,12 +2135,6 @@ Once a customer profile has been created (see [profile Object](#profile-object))
             
             
 + Request Process an Order with a Silent Post (application/json)
-
-  + Attributes
-        + merchantRefNum (string, required) - This is your own transaction ID, for your reference purposes. This should be unique for each transaction.
-        + currencyCode : `GBP` (string, required) - This is the currency in which to process the transaction. See [Currency Codes](#currency-codes) for a list of codes.
-        + totalAmount : 1125 (number, required) - This is the total amount of the transaction. Merchants can provide zero (0) as an amount, if they need to process a verification with no value on the card. In this case, the authType must be set to auth, using the extendedOptions feature.
-        + extendedOptions (extendedOptionsSilentPost,required) - extendedOptions object containing silentPost=true
 
  + Headers
  
@@ -2168,30 +2174,22 @@ Once a customer profile has been created (see [profile Object](#profile-object))
   + Body
     
             {
-                "merchantRefNum": "MERCHANT_REF_123",
-                "currencyCode": "GBP",
-                "totalAmount": 1125,
-                "customerNotificationEmail": "jane.smythe@emailhost.com",
-                "redirect": [
+                "link" : [
                     {
-                        "rel": "on_success",
-                        "uri": "https://api.netbanx.com/echo?payment=success"
+                        "rel" : "hosted_payment",
+                        "uri" : "https://api.netbanx.com/hosted/v1/payment/53616c7465645f5ffeb47c2287dbf903bbb4627b16929a27b8d09b37db190a0f6ce44f8ea1461be2"
                     },
                     {
-                        "rel": "on_decline",
-                        "uri": "https://api.netbanx.com/echo?payment=failure"
-                    },
-                    {
-                        "rel": "on_error",
-                        "uri": "https://api.netbanx.com/echo?payment=error"
+                        "rel" : "self",
+                        "uri" : "https://dlTXGAJJWsEdFdJn2SBP:NAA6942c974f7de6e5cd690@api.netbanx.com/hosted/v1/order/25TWPTLHRR81AIG1LF"
                     }
                 ],
-                "extendedOptions": [
-                    {
-                        "key": "silentPost",
-                        "value": "true"
-                    }
-                ]
+                "currencyCode" : "GBP",
+                "amount" : 1125,
+                "mode" : "live",
+                "type" : "order",
+                "id" : "25TWPTLHRR81AIG1LF",
+                "merchantRefNum" : "MERCHANT_REF_123"
             }
 
 + Request Process an order with a Payment Token (application/json)
@@ -2305,7 +2303,7 @@ In order to cancel an order, call DELETE on an order URL.
 * If the order has been created and a card authorization has taken place but has not yet been settled, then the system will attempt to process a reversal on the authorization. The same structure as for a GET status will be returned, except that the *status* will be set to cancelled, and *transaction.reversed* will be set to true/false depending on the outcome of the reversal.
 
 + Parameters
-    + order_id (required, string, `25TWPTLHRR81AIG1LF`) - Order ID
+    + order_id:25TWPTLHRR81AIG1LF (required, string) - Order ID
     
 + Request Delete an Order (application/json)
 
@@ -2355,7 +2353,7 @@ An update response will have the same structure as GET status except  that when 
 
 + Parameters
   
-    + order_id (required, string, `25TWPTLHRR81AIG1LF`) - Order ID
+    + order_id:25TWPTLHRR81AIG1LF (required, string) - Order ID
 
 + Request (application/json)
  
@@ -2406,7 +2404,7 @@ Providing a suitable callback has been configured against the order, callbacks c
 See [callback Object](#callback-object) for more details about callbacks.
 
 + Parameters
-    + order_id (required, string, `25TWPTLHRR81AIG1LF`) - Order ID
+    + order_id:25TWPTLHRR81AIG1LF (required, string) - Order ID
     
 + Request (application/json)
 
@@ -2438,7 +2436,7 @@ A rebill request has the same parameter requirements as an order creation reques
 * If the rebill is for a future date, then you must include the *dueDate* parameter.
 
 + Parameters
-    + order_id (required, string, `25TWPTLHRR81AIG1LF`) - Order ID
+    + order_id:25TWPTLHRR81AIG1LF (required, string) - Order ID
     
 + Request Immedidate Rebill Request (application/json)
 
@@ -2558,7 +2556,7 @@ Required Parameters:
 The *recurringIndicator* option allows a payment to be processed without prompting the user to pick a card (or enter a new card) via the Hosted Payments page, or without resending the CVV when using a Silent Post (or Direct Post).
 
 + Parameters
-    + order_id (required, string, `25TWPTLHRR81AIG1LF`) - Order ID
+    + order_id:25TWPTLHRR81AIG1LF (required, string) - Order ID
 
 + Request (application/json)
 
@@ -2642,11 +2640,11 @@ In this example the status is *pending*, which means that the transaction has no
 
 + Attributes
   + id (string,required) - This is the ID provided in the original order status transaction request.
-  + currencyCode: 'GBP' (enum,required) - This is the currency in which the transaction was processed. See [Currency Codes](#currency-codes)
+  + currencyCode: GBP (enum,required) - This is the currency set for the order. See [Currency Codes](#currency-codes)
   + merchantRefNum(string,required)  - This is the merchant's transaction ID, included in the initial order request.
   + totalAmount (number) - This is the amount of the order that was processed in minor units e.g. 999 is $9.99. It is the sum of all shoppingCart items + ancillaryFees (if provided).
-  + transaction (transaction) - The transaction assocation with the order
-  
+  + transaction (transaction) - The order transaction details.
+  + link (array[link]) - an array of links for this order
   + Body
   
               {
@@ -2711,10 +2709,10 @@ Generic order status response parameters:
 | transaction.paymentType | string<br>`length<=20` | This is the type of payment used for the transaction. Value will be set to:<ul><li>card</li><li>giropay</li><li>ideal</li><li>interac</li><li>masterpass</li><li>neteller</li><li>paypal</li><li>pingit</li><li>poli</li><li>prepaidcard</li><li>sofortbanking</li><li>unionpay</li></ul>
 | transaction.refunded | boolean | This indicates that the transaction has been either fully or partially refunded.<br></br><br></br>**Note** If this value is set to _true_, then check the value for _availableToRefund_ before attempting to issue a refund request. |
 | transaction.reversed | boolean | This indicates whether a reversal has been attempted (e.g. a successful transaction that fails an AVS check, or a successful authorization that has been subsequently cancelled).|
-| transaction.status | enumeration | This indicates the status of the transaction. Possible values are:<ul><li>success – Transaction has been authorized by bank/NETBANX.</li><li>cancelled – Transaction has been cancelled.</li><li>declined – Transaction has been declined by bank/NETBANX.</li><li>pending – Transaction has been created and is awaiting consumer interaction.</li><li>abandoned – Transaction was abandoned part way through by the consumer.</li><li>held – Transaction has been placed on hold due to risk rules results. See _transaction.riskReasonCode_ for the reason codes.</li><li>errored – An error occurred and the transaction could not be completed <br></br><br></br>**NOTE** The merchant's account must be configured by NETBANX to be able to place transactions on hold. </li></ul>
+| transaction.status | enumeration | This indicates the status of the transaction. Possible values are:<ul><li>success – Transaction has been authorized by bank/NETBANX.</li><li>cancelled – Transaction has been cancelled.</li><li>declined – Transaction has been declined by bank/NETBANX.</li><li>pending – Transaction has been created and is awaiting consumer interaction.</li><li>abandoned – Transaction was abandoned part way through by the consumer.</li><li>held – Transaction has been placed on hold due to risk rules results. See *transaction.riskReasonCode* for the reason code.</li><li>errored – An error occurred and the transaction could not be completed <br></br><br></br>**NOTE** The merchant's account must be configured by NETBANX to be able to place transactions on hold. </li></ul>
 | transaction.errorCode | integer | If an error occurs, this is the error number. |
 | transaction.errorMessage | string | If an error occurs, this is the error message. |
-| transaction.riskReasonCode | integer | If the transaction has a status of held, these are the reason codes. |
+| transaction.riskReasonCode | integer | If the transaction has a status of held, this value holds the reason code. |
 | transaction.zipVerification | enumeration | This is the result of the AVS check received from the bank. Possible values are:<ul><li>Matched – The zip value provided matches the zip value associated with the card.</li><li>Not Matched – The zip value provided does not match the zip value associated with the card.</li><li>Not Checked – The zip value was not processed. </li></ul>
 | transaction.houseNumberVerification | enumeration | This is the result of the AVS check received from the bank. Possible values are:<ul><li>Matched – The house number value provided matches the house number value associated with the card.</li><li>Not Matched – The house number value provided does not match the house number value associated with the card.</li><li>Not Checked – The house number value was not processed. </li></ul>
 | transaction.cvdVerification | enumeration | This is the result of the CVD check received from the bank. Possible values are:<ul><li>Matched – The CVD value provided matches the CVD value associated with the card.</li><li>Not Matched – The CVD value provided does not match the CVD value associated with the card.</li><li>Not Checked – The CVD value was not processed. </li></ul>
@@ -2804,7 +2802,7 @@ The example releases an order to a status of *success*.
 See [Order Status Response Parameters](#order-status-response-parameters) to see additional parameters that may be included in the response.
 
 + Parameters
-   + order_id (required, string, `25TWPTLHRR81AIG1LF`) - Order ID
+   + order_id:25TWPTLHRR81AIG1LF (required, string) - Order ID
     
 + Request Get an Order Status (application/json)
     
@@ -2861,7 +2859,7 @@ See [Order Status Response Parameters](#order-status-response-parameters) to see
 
 
 + Parameters
-   + order_id (required, string, `25TWPTLHRR81AIG1LF`) - Order ID
+   + order_id:25TWPTLHRR81AIG1LF (required, string) - Order ID
     
 + Request Get an Order Status (application/json)
     
@@ -2938,6 +2936,12 @@ In the event that all orders are returned, no next/prev links will be supplied.
             Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
 
 + Response 200 (application/json)
+
+  + Attributes
+     + count (number) - number of order records returned.
+     + navigation (navigation) - Contains links to the prev or next set of records.
+     + records (array[record]) - An array of records containing the data for each order. See [Order Status Response](#order-status-response) for all available parameters.
+     + num (number) - number of order records requested.
        
  + Body
     
@@ -3043,7 +3047,7 @@ The response parameters are described below:
 
  + Attributes
         + amount: 999 (number) - This is the amount to refund in minor units e.g., 999 would be $9.99. It is not possible to refund an amount greater than the amount settled. If an amount is not specified, the full transaction is refunded.
-        + merchantRefNum: 'MERCHANT_REF_123' (string) - This is an optional merchant transaction ID, for reference purposes. This should be unique for each transaction.
+        + merchantRefNum:MERCHANT_REF_123 (string) - This is an optional merchant transaction ID, for reference purposes. This should be unique for each transaction.
             
 
  + Body
@@ -3059,11 +3063,11 @@ The response parameters are described below:
         + amount: 999 (number) - This is the amount of the transaction that was refunded in minor units. 
         + authType (enum) - This is the transaction type. It will be set to refund
            + refund
-        + confirmationNumber (number) - This is the confirmation number returned by NETBANX in response to the refund request.
-        + currencyCode (enum) - This is the currency in which the transaction was refunded. See [Currency Codes](#currency-codes).
+        + confirmationNumber: 1997160616609792 (number) - This is the confirmation number returned by NETBANX in response to the refund request.
+        + currencyCode: GBP (enum) - This is the currency in which the transaction was refunded. See [Currency Codes](#currency-codes).
         + mode (enum) - This element is for internal use only. Live is currently the only possible value
            + live
-        + originalMerchantRefNum: 'MERCHANT_REF_123' (string) - This is the merchant transaction ID assigned in the original order request, for reference purposes.
+        + originalMerchantRefNum:MERCHANT_REF_123 (string) - This is the merchant transaction ID assigned in the original order request, for reference purposes.
         + id (string) - This is the order ID against which the refund has been requested. 
 
 
@@ -3116,8 +3120,8 @@ The server will return a response containing the following parameters for an ord
             Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
 
   + Attributes
-        + amount: 999 (number) - This is the amount of the payment in minor units e.g. 999 = $9.99. It is not possible to settle an amount greater than the original amount authorized. If an amount is not specified, the full transaction is settled.
-        + merchantRefNum: 'MERCHANT_REF_123' (string) - This is an optional merchant
+        + amount: 999 (number,optional) - This is the amount of the payment in minor units e.g. 999 = $9.99. It is not possible to settle an amount greater than the original amount authorized. If an amount is not specified, the full transaction is settled.
+        + merchantRefNum:MERCHANT_REF_123 (string,optional) -  This is an optional merchant transaction ID, for reference purposes. This should be unique for each transaction.
        
  + Body
  
@@ -3129,13 +3133,15 @@ The server will return a response containing the following parameters for an ord
 + Response 200 (application/json)
 
   + Attributes
-        + amount: 999 (number) - This is the amount of the transaction that was settled, in minor units.
-        + authType: 'settlement' (string) - This is the transaction type. It will be set to settlement
-        + confirmationNumber: '1998572559920972' (number) - This is the confirmation number returned by
-        + currencyCode: 'GBP' (enum) - This is the currency in which the transaction was settled. See [Currency Codes](#currency-codes). 
-        + mode: live (enum) - This element is for internal use only. The only possible value is live
+        + amount:999 (number) - This is the amount that was settled, in minor units.
+        + authType (enum) - This is the transaction type. It will be set to settlement
+            + settlement
+        + confirmationNumber:1998572559920972 (number) - This is the confirmation number returned by NETBANX in response to the settlement request.
+        + currencyCode:GBP (enum) - This is the currency in which the transaction was settled. See [Currency Codes](#currency-codes). 
+        + mode (enum) - This element is for internal use only. The only possible value is live
+           + live
         + originalMerchantRefNum (string) - This is the merchant transaction ID assigned in the original order request, for reference purposes
-        + id:'25TWPTLHRR81AIG1LF' (string) - This is the order ID against which the settlement has been requested.
+        + id:25TWPTLHRR81AIG1LF (string) - This is the order ID against which the settlement has been requested.
    
   + Body
   
@@ -3157,7 +3163,7 @@ The same response as for [Get an Order Status](#get-an-order-status) will be ret
 See [Cancel an Order](#cancel-an-order) for full details on how to cancel a request.
 
 + Parameters
-   + order_id (required, string, `25TWPTLHRR81AIG1LF`) - Order ID
+   + order_id:25TWPTLHRR81AIG1LF (required, string) - Order ID
 
   + Headers
             
@@ -3225,7 +3231,7 @@ See [Process a Rebill Using an Order ID](#process-a-rebill-using-an-order-id) fo
 
 
 + Parameters
-   + order_id (required, string, `25TWPTLHRR81AIG1LF`) - Order ID
+   + order_id:25TWPTLHRR81AIG1LF (required, string) - Order ID
 
 + Request (application/json)
     
@@ -3379,25 +3385,25 @@ Once a customer profile has been created (see [profile Object](#profile-object))
 - financingType (enum,required)
   + DEFERRED_PAYMENT - Deferred payment financing 
   + EQUAL_PAYMENT - Equal payment financing
-- plan: '123' (string,required) - This is the plan number for this financing transaction.
-- gracePeriod: '12' (number,optional) - This is the grace period, in months, associated with deferred payment transactions. The maximum value is 99
-- term: '6' (number,optional) - This is the number of payments, in months, for equal payment transactions. The maximum value is 99
+- plan:123 (string,required) - This is the plan number for this financing transaction.
+- gracePeriod:12 (number,optional) - This is the grace period, in months, associated with deferred payment transactions. The maximum value is 99
+- term:6 (number,optional) - This is the number of payments, in months, for equal payment transactions. The maximum value is 99
 
 ## addendumData
-- key: 'affiliate_code (string) - This is a description of the data being added to the order.
-- value: 'test12345' (string) - This is the value for the key/value pair.
+- key:affiliate_code (string) - This is a description of the data being added to the order.
+- value:test12345 (string) - This is the value for the key/value pair.
 
 ## ancillaryFees
 - amount: 999 (number,required) - This is the amount of the fee in minor unit e.g. 999 would be $9.99. This value can be negative to indicate a discount. The totalAmount provided in the initial order must include any ancillary fees (and shopping cart items) passed in the ancillaryFees section. 
 - description: Postage (string,required) - This is the description of the fee. 
 
 ## billingDetails
-- city: 'Cambridge' (string,optional) - This is the city in the billing address.
-- country: 'GB' (string,required) - This is the country in the billing address. See [Country Codes](#country-codes)
-- recipientName: 'Jane Smith' (string, optional) - This is the name of the recipient in the billing address.
-- street: '321 Daffodil Lane' (string,optional) - This is the first line of the street address in the billing address.
-- street2: '#12'(string,optional) - This is the second line of the street address in the billing address.
-- zip:'EL321' (string,required) - This is the postal/zip code in the billing address.
+- city:Cambridge (string,optional) - This is the city in the billing address.
+- country:GB (string,required) - This is the country in the billing address. See [Country Codes](#country-codes)
+- recipientName:Jane Smith (string, optional) - This is the name of the recipient in the billing address.
+- street:321 Daffodil Lane (string,optional) - This is the first line of the street address in the billing address.
+- street2:No. 12 (string,optional) - This is the second line of the street address in the billing address.
+- zip:EL321 (string,required) - This is the postal/zip code in the billing address.
 - state (string,optional) - This is the state/province/region in the billing address. For Canada, see [Province Codes](#province-codes).For the U.S., see [State Codes](#state-codes)
 - phone (string,optional) - This is the telephone number in the billing address.
 - useAsShippingAddress (boolean,optional) - This indicates whether this address should also be used as the shipping address.
@@ -3416,12 +3422,13 @@ Once a customer profile has been created (see [profile Object](#profile-object))
 - retries:3 (number) - This specifies the number of callback attempts to make on the system after receiving an error from the merchant endpoint. (0-10)
 - returnKeys - This is an array of additional parameter names to be passed back to the URL in the format specified. All addendumData parameters are returned by default. See [Callback Return Keys](#callback-returnkeys)
 - synchronous:false (boolean) - This parameter specifies that the callback should be made in-line with the authorization. The system will time out any synchronous callback that takes longer than 20 seconds to complete. This value defaults to false. NETBANX recommends that this flag is set to false. Callbacks will be made back to the merchant within 10 minutes of a transaction attempt.
-- uri: https://success.example.com/transaction_success.php (string,required) - This is the URL to which to send the callback. If this is an HTTPS address, please ensure that the certificate is valid – otherwise, the callback will fail. (max 1024 chars)
-- delimiter (string) - This specifies the delimiter to use when parameters are sent to the callback URI (e.g, “;” “&” “$”). By default an ampersand (&) is used. The delimiter parameter is supported only when the format parameter is set to get or form-urlencoded.
+- uri: https://success.example.com/transaction_success.php (string,required) - This is the URL to which to send the callback. If this is an HTTPS address, please ensure that the certificate is valid – otherwise, the callback will fail.
+- delimiter:& (string) - This specifies the delimiter to use when parameters are sent to the callback URI (e.g, “;” “&” “$”). By default an ampersand (&) is used. The delimiter parameter is supported only when the format parameter is set to get or form-urlencoded.
+
 
 ## transaction
-- amount (number) - This is the amount of the transaction that was processed in minor units. E.g., 999 would be $9.99
-- associatedTransactions (array[associatedTransactions])
+- amount (number) - This is the total amount of the transaction that was processed in minor units. E.g., 999 would be $9.99
+- associatedTransactions (array[associatedTransactions]) - This returns a JSON array of other transactions associated with the order, e.g., refunds and completions. Each member of the list refers to a specific operation that was executed against the order. For example, three refunds of $1.00 would show up as three individual associatedTransactions refunds, not as one refund of $3.00. 
 - authCode (enum)
   + auth - This is an authorization-only transaction.
   + purchase - This is a transaction with immediate billing.
@@ -3429,11 +3436,11 @@ Once a customer profile has been created (see [profile Object](#profile-object))
   + refund - This is a refund transaction
 - availableToRefund (number)
 - card (card) - details of the card used for the transaction
-- prepaidcard (string)  - CHECK ME !!! This is the last four digits of the prepaid card that was used for the transaction.
-- cleared (boolean) - The transaction has been sent to the bank for clearing.
-- settled (boolean) - The authorization-only transaction has been settled.
-- confirmationNumber (number) - This is the confirmation number returned by NETBANX in response to the transaction request.
-- lastUpdate: '2012-05-14T15:12:18' (string) - This is the date and time of the last change made to the transaction, e.g., a refund
+- prepaidcard (prepaidcard)  - details of the prepaidcard used for the transaction.
+- cleared:false (boolean) - The transaction has been sent to the bank for clearing.
+- settled:false (boolean) - The authorization-only transaction has been settled.
+- confirmationNumber:1408001529971919 (number) - This is the confirmation number returned by NETBANX in response to the transaction request.
+- lastUpdate:2012-05-14T15:12:18 (string) - This is the date and time of the last change made to the transaction, e.g., a refund
 - paymentType (enum) - This is the type of payment used for the transaction
    + card
    + giropay
@@ -3455,21 +3462,21 @@ Once a customer profile has been created (see [profile Object](#profile-object))
    + declined - Transaction has been declined by bank/NETBANX.
    + pending - Transaction has been created and is awaiting consumer interaction.
    + abandoned - Transaction was abandoned part way through by the consumer.
-   + held - Transaction has been placed on hold due to risk rules results. See riskReasonCode for the reason codes.
+   + held - Transaction has been placed on hold due to risk rules results. See riskReasonCode for the reason code.
    + errored - An error occurred and the transaction could not be completed
 - errorCode (number) - If an error occurs, this is the error number.
 - errorMessage (string) - If an error occurs, this is the error message.
-- riskReasonCode (enum) - If the transaction has a status of held, these are the reason codes.
+- riskReasonCode (number) - If the transaction has a status of held, this value holds the reason code.
 - zipVerification - This is the result of the AVS check received from the bank
-  + Matched – The zip value provided matches the zip value associated with the card.
+  + Matched - The zip value provided matches the zip value associated with the card.
   + Not Matched - The zip value provided does not match the zip value associated with the card.
   + Not Checked – The zip value was not processed
 - houseNumberVerification (enum)
-  + Matched – The house number value provided matches the house number value associated with the card.
+  + Matched - The house number value provided matches the house number value associated with the card.
   + Not Matched - The house number value provided does not match the house number value associated with the card.
   + Not Checked – The house number value was not processed
 - cvdVerification (enum)
-  + Matched – The CVD value provided matches the CVD value associated with the card.
+  + Matched - The CVD value provided matches the CVD value associated with the card.
   + Not Matched - The CVD value value provided does not match the CVD value associated with the card.
   + Not Checked – The CVD value was not processed
 - profile (profileResponse) - This is the profile created during the order request
@@ -3482,6 +3489,9 @@ Once a customer profile has been created (see [profile Object](#profile-object))
 - sofortBanking (sofortBanking) - If the sofortBanking payment method is used then this parameter is added with details about the transaction
 - paypalToken (string) - This is the PayPal token. Please consult PayPal documentation for more information
 - paypalTransactionId (string) - This is the PayPal transaction reference ID.
+
+## prepaidcard
+- lastDigits (string) - This is the last four digits of the prepaid card that was used for the transaction.
 
 ## card
 - brand (enum) - The brand of the card
@@ -3516,22 +3526,22 @@ Once a customer profile has been created (see [profile Object](#profile-object))
    + credit
 
 ## extendedOptions 
-- key: 'callbackEmail' (string) - This is a description of the option being added to the order.
-- value: 'john.smith@email.com' (string) - This is the value for the key/value pair.
+- key:callbackEmail (string) - This is a description of the option being added to the order.
+- value:john.smith@email.com (string) - This is the value for the key/value pair.
 
 ## extendedOptionsSilentPost
 - key:silentPost (enum) - Enable silent post
 - value:true (enum) - Must be set to true to enable silent post
 
 ## associatedTransactions
-- amount: 500 (number) - This is the total amount in minor units of any transaction associated with the order (e.g., a refund).  E.g., 999 would be $9.99
+- amount: 500 (number) - This is the total amount in minor units of any transaction associated with the order (e.g. a refund). For example, 999 would be $9.99
 - authType(enum) - This is the transaction type.
  + auth - This is an authorization-only transaction.
  + purchase - This is a transaction with immediate billing.
  + settlement - This transaction is the settlement of a previous authorization-only transaction. 
  + refund - This is a refund transaction.
-- dateTime: '2014-01-26T10:32:28Z' (string) - This is the UTC date and time at which the associated transaction was processed.
-- reference: '25TWPTLHRR81AIG1LF' (string) - This is the NETBANX reference for the associated transaction.
+- dateTime:`2014-01-26T10:32:28Z` (string) - This is the UTC date and time at which the associated transaction was processed.
+- reference:25TWPTLHRR81AIG1LF (string) - This is the NETBANX reference for the associated transaction.
 
 ## link
 - rel (enum,required) - This is the link type, allowing different endpoints to be targeted depending on the end state of the transaction. 
@@ -3544,15 +3554,13 @@ Once a customer profile has been created (see [profile Object](#profile-object))
 - uri(string,required) - This is the URL to which to send the link. If this is an HTTPS address, please ensure that the certificate is valid. Otherwise, the link will cause the browser to display a certificate warning.
 
 ## profile
-- merchantCustomerId: 'jane.smythe@emailhost.com' (string) - This is the customer ID that the merchant has assigned to the customer. When this parameter is included in the request, a customer profile will be created.
-- firstName: 'Jane' (string) - This is the customer’s first name.
-- lastName: 'Smythe' (string) - This is the customer’s last name.
-- id (string) - This is the customer ID returned by NETBANX when the profile is created (see [Order Response](#order-response)). If the id is included in an order request, then the customer profile associated with that ID will be used for the transaction. See [Process an Order with a Profile ID](#process-an-order-with-a-profile-id) for more information.
-- paymentToken (string) - This is the payment token returned by NETBANX when the profile is created (see [Order Status Response Parameters](#order-status-response-parameters)). If the paymentToken is included in an order request, then the card number associated with that token will be used for the transaction. See [Process an Order with a Payment Token](#process-an-order-with-a-payment-token) for more information.
+- merchantCustomerId:jane.smythe@emailhost.com (string) - This is the customer ID that the merchant has assigned to the customer. When this parameter is included in the request, a customer profile will be created.
+- firstName:Jane (string) - This is the customer’s first name.
+- lastName:Smythe (string) - This is the customer’s last name.
 
 ## profileResponse
-- id (string) - This is the customer ID returned by NETBANX when the profile is created (see [Order Response](#order-response)). If the id is included in an order request, then the customer profile associated with that ID will be used for the transaction. See [Process an Order with a Profile ID](#process-an-order-with-a-profile-id) for more information.
-- paymentToken (string) - This is the payment token returned by NETBANX when the profile is created (see [Order Status Response Parameters](#order-status-response-parameters)). If the paymentToken is included in an order request, then the card number associated with that token will be used for the transaction. See [Process an Order with a Payment Token](#process-an-order-with-a-payment-token) for more information.
+- id:0275e76c-2141-11e4-8ac3-74cde64e5c68 (string) - This is the customer ID returned by NETBANX when the profile is created (see [Order Response](#order-response)). If the id is included in an order request, then the customer profile associated with that ID will be used for the transaction. See [Process an Order with a Profile ID](#process-an-order-with-a-profile-id) for more information.
+- paymentToken:SJsww3Eq33ezNvhM+jQRNoH/U4o7j0XJ4yrXtDMenLM (string) - This is the payment token returned by NETBANX when the profile is created (see [Order Status Response Parameters](#order-status-response-parameters)). If the paymentToken is included in an order request, then the card number associated with that token will be used for the transaction. See [Process an Order with a Payment Token](#process-an-order-with-a-payment-token) for more information.
 
 
 ## redirect
@@ -3568,14 +3576,14 @@ Once a customer profile has been created (see [profile Object](#profile-object))
 - delimiter - This specifies the delimiter to use in the query string when parameters are sent to the redirect URI (e.g, “;” “&” “$”). By default an ampersand (&) is used.
 
 ## shippingDetails
-- city: 'Cambridge' (string,optional) - This is the city in the shipping address
-- country: 'GB' (string,required) - This is the country in the shipping address. See [Country Codes](#country-codes)
-- recipientName: 'Jane Smith' (string, optional) - This is the name of the recipient in the shipping address.
-- street: '321 Daffodil Lane' (string,optional) - This is the first line of the street address in the shipping address.
-- street2: '#12'(string,optional) - This is the second line of the street address in the shipping address.
-- zip:'EL321' (string,required) - This is the postal/zip code in the shipping address.
+- city:Cambridge (string,optional) - This is the city in the shipping address
+- country:GB (string,required) - This is the country in the shipping address. See [Country Codes](#country-codes)
+- recipientName:Jane Smith (string, optional) - This is the name of the recipient in the shipping address.
+- street:321 Daffodil Lane (string,optional) - This is the first line of the street address in the shipping address.
+- street2:No. 12 (string,optional) - This is the second line of the street address in the shipping address.
+- zip:EL321 (string,required) - This is the postal/zip code in the shipping address.
 - state (string,optional) - This is the state/province/region in the shipping address. For Canada, see [Province Codes](#province-codes).For the U.S., see (#state-codes)
-- phone: '4412345785' (string,optional) - This is the telephone number in the shipping address.
+- phone:4412345785 (string,optional) - This is the telephone number in the shipping address.
 - carrier (enum,optional) - This is the shipment carrier.
   + APC - APC Overnight
   + APS - AnPost
@@ -3594,13 +3602,13 @@ Once a customer profile has been created (see [profile Object](#profile-object))
 
 ## shoppingCart
 - amount:999 (number,required) - This is the total amount for this item in the shopping cart in minor units e.g. 999 would be $9.99
-- description: 'Wrench' (string,required) - This is the merchant's description of the shopping cart item. It will appear on the payment page. The description label on the payment page is not localized, regardless of the language specified in the locale settings (see [Localization](#localization)). So, for example, if the description included were "Hammer", and the localization settings were for French, "Hammer" would be displayed on the payment page, and not "Marteau".
-- sku:'id/sku-1' (string,optional) - This is your ID for the shopping cart item (e.g., the merchant's internal SKU or ID). It is not displayed on the payment page, but is reflected back upon querying an order status.
+- description:Wrench (string,required) - This is the merchant's description of the shopping cart item. It will appear on the payment page. The description label on the payment page is not localized, regardless of the language specified in the locale settings (see [Localization](#localization)). So, for example, if the description was "Hammer", and the localization settings were for French, "Hammer" would be displayed on the payment page, and not "Marteau".
+- sku:`id/sku-1` (string,optional) - This is your ID for the shopping cart item (e.g. the merchant's internal SKU or ID). It is not displayed on the payment page, but is reflected back upon querying an order status.
 - quantity:1 (number,optional) - This is the quantity of the shopping cart item. It will appear on the payment page. 
 
 ## settlement
 - amount:999 (number) - This is the amount of the payment minor units e.g. 999 would be $9.99. It is not possible to settle an amount greater than the original amount authorized. If an amount is not specified, the full transaction is settled.
-- merchantRefNum (string) - This is an optional merchant transaction ID, for reference purposes. This should be unique for each transaction.
+- merchantRefNum:MERCHANTREF123 (string) - This is an optional merchant transaction ID, for reference purposes. This should be unique for each transaction.
 
 ## recipientDateOfBirth
 - day:29 (number,required) - This is the recipient's day of birth (1-31)
@@ -3609,16 +3617,16 @@ Once a customer profile has been created (see [profile Object](#profile-object))
 
 ## refund
 - amount:999 (number) - This is the amount of the payment minor units e.g. 999 would be $9.99. It is not possible to settle an amount greater than the original amount authorized. If an amount is not specified, the full transaction is settled.
-- merchantRefNum: 'MERCHANT_REF_123' (string) - This is an optional merchant transaction ID, for reference purposes. This should be unique for each transaction.
+- merchantRefNum:MERCHANTREF123 (string) - This is an optional merchant transaction ID, for reference purposes. This should be unique for each transaction.
 
 ## visaAdditionalAuthData
 - recipientDateOfBirth (recipientDateOfBirth,optional) - Include recipientDateOfBirth elements if your Merchant Category Code is 6012 and your registered trading address is in the United Kingdom. If you have any questions, contact your account manager. All fields are optional, however scheme fines may apply if data is consistently not supplied and chargebacks persist.
-- recipientZip: 'CB24 9AD' (string,optional) - This is the recipient‘s postcode. Note the last 3 characters are not sent to the banking network.
-- recipientLastName: 'Smith'  (string,optional) - This is the recipient‘s last name or surname. Note only the first 6 characters are sent to the banking network
-- recipientAccountNumber: 'ABC1234567890' (string,optional) - This is the recipient‘s account number, e.g., a loan agreement number or customer ID. In the case where the recipient account is a prepaid card, the card number may be sent in full. Note Only the first 6 and last 4 characters are sent to the banking network and will be masked accordingly within the back office and any other reports, to comply with PCI regulations.
+- recipientZip:CB24 9AD (string,optional) - This is the recipient‘s postcode. Note the last 3 characters are not sent to the banking network.
+- recipientLastName:Smith  (string,optional) - This is the recipient‘s last name or surname. Note only the first 6 characters are sent to the banking network
+- recipientAccountNumber:ABC1234567890 (string,optional) - This is the recipient‘s account number, e.g., a loan agreement number or customer ID. In the case where the recipient account is a prepaid card, the card number may be sent in full. Note Only the first 6 and last 4 characters are sent to the banking network and will be masked accordingly within the back office and any other reports, to comply with PCI regulations.
 
 ## giropay
-- TxId (string) - This is the giropay transaction ID. Please consult Giropay documentation for all Giropay maximum/minimum field values.
+- TxId (string) - This is the giropay transaction ID. Please consult Giropay documentation for further details concerning these parameters.
 - paymentPurposeLine_1 (string) - This is a Giropay merchant reference.
 - paymentPurposeLine_2 (string) - This is a Giropay merchant reference.
 - transactionId (number) - This is a Giropay transaction ID.
@@ -3650,7 +3658,7 @@ Once a customer profile has been created (see [profile Object](#profile-object))
 - IdealTxId (string) - This is the iDEAL transaction ID.
 
 ## neteller
-- neteller_type (string) - This is the type of NETELLER payment.
+- neteller_type (string) - This is the type of NETELLER payment. Please consult Neteller documentation for further details concerning these parameters. 
 - fxrate (string) - This is the foreign exchange rate applied (if applicable).
 - da_amount (string) - The amount of the transfer that is being withdrawn from the bank account registered with the member’s NETELLER account. The amount may have decimal places but no currency symbols.
 - total_fee (string) - This is the total fee charged for the transfer if it was a Direct Accept transaction (i.e., fee plus dafee).
@@ -3662,16 +3670,16 @@ Once a customer profile has been created (see [profile Object](#profile-object))
 - merchant_currency (string) - This is the merchant’s currency.
 
 ## poli
-- poliRef (string)  - This is the state of the transaction. Please consult Poli documentation for further details
+- poliRef (string)  - This is the state of the transaction. Please consult Poli documentation for further details concerning these parameters.
 - poliToken (string) - This is an encrypted POLi ID.
 - state (string) - This is the state of the transaction.
 
 ## sofortBanking
-- sofortBankingTxId (string) - This is the Sofort Banking transaction ID. Please consult Sofort Banking documentation for further details.
+- sofortBankingTxId (string) - This is the Sofort Banking transaction ID. Please consult Sofort Banking documentation for further details concerning these parameters.
 - internationalTransaction (boolean) - This is the flag for international transactions.
 
 ## masterpass
-- id (string) - This is the MasterPass transaction ID. Please consult Masterpass documentation for further details
+- id (string) - This is the MasterPass transaction ID. Please consult Masterpass documentation for further details concerning these parameters.
 - reward (reward) - Reward program associated with the transaction
 
 ## reward
@@ -3680,9 +3688,15 @@ Once a customer profile has been created (see [profile Object](#profile-object))
 - name (string) - This is the name of the reward program. 
 - expiry (expiry) - reward expiry date
 
+## navigation
+- prev:https://api.netbanx.com/hosted/v1/orders?num=2&start=0 (string) - previous set of records
+- next:https://api.netbanx.com/hosted/v1/orders?num=2&start=4 (string) - next set of records
+
+## record
+
 ## expiry
- - year (number) - This is the month the reward program expires.
- - month (number) - This is the year the reward program expires.
+ - year:2014 (number) - This is the month the reward program expires.
+ - month:11 (number) - This is the year the reward program expires.
 
 ## unionpay
 - status (string) - This is the status of the transaction.
