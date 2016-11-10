@@ -7,7 +7,7 @@ HOST: https://api.test.netbanx.com/hosted/v1/
 
 | Version | Date | Details |
 |---      |---  |---      |
-|1.3.6  |May 2016   |<ul><li>Masterpass functionality removed</li</ul> |
+|1.3.6  |May 2016   |<ul><li>Masterpass functionality removed</li></ul> |
 | 1.3.5 | October 2015 | <ul><li>Added functionality for China UnionPay</li><li>Ukash functionality removed</li></ul> |
 | 1.3.4 | January 2015 | <ul><li>Added functionality for Pingit</li></ul>|
 | 1.3.3 | October 2014 | <ul><li>Added *accordD* functionality for select merchants</li><li>Added *oct* as an *authType* for Original Credit requests</li></ul>|
@@ -30,7 +30,7 @@ and comply with PCI guidelines regarding the handling of card data.
 
 **Note:** Paysafe may add additional elements in future releases of this API, so ensure that your integration is flexible enough to ignore any unrecognized response fields.
 
-![Hosted Checkout Flow](https://github.com/paysafegroup/paysafe_api_hostedpayments_v1/raw/master/images/HostedAPIOverview_Hosted_Paysafe.png)
+![Hosted Checkout Flow](http://admin:1234neu!@p368327.webspaceconfig.de/fileadmin/flarecontent/devcentre/Content/Resources/Images/HostedAPIOverview_Hosted__Paysafe.png)
 
 # Authentication
 
@@ -125,7 +125,7 @@ You can use this ID to find out information about your order at any time.
 The order response also provides you with a link section. The first link refers to the hosted_payment URL – this is the URL of the payment page. Your system should take this URL from the order and use it to redirect your customer to the hosted payment page (shown below), where they can enter payment details.
 A second link, self, is the URL to call to find out the status of the transaction.
 
-![](https://github.com/paysafegroup/paysafe_api_hostedpayments_v1/raw/master/images/checkout_page_Paysafe.gif)
+![](http://admin:1234neu!@p368327.webspaceconfig.de/fileadmin/flarecontent/devcentre/Content/Resources/Images/checkout_page_Paysafe.gif)
 
 <a name="process-an-order-using-a-silent-post"></a>
 ## Process an Order Using a Silent Post
@@ -150,8 +150,9 @@ The SUBMIT action of your payment form should be to the *hosted_payment* URL. He
 **Example Payment Form**
 
 ```apib
-form action="https://pay.test.paysafe.com/hosted/v1/payment/53616c7465645f5fc96311a769ed171ce70fac1483fa7f6d9ecfb6d427c1e12c6fc573a35f13e0ea"
-method="POST" >
+
+<form action="https://pay.test.paysafe.com/hosted/v1/payment/53616c7465645f5fc96311a769ed171ce70fac1483fa7f6d9ecfb6d427c1e12c6fc573a35f13e0ea"
+method="POST">
  
 <h3>Please enter your credit card details below</h3>
  
@@ -165,7 +166,7 @@ method="POST" >
     <td><input type="text" name="cardExpiryMonth" /></td>
   </tr>
   <tr>
-    <td>Card EXP YEAR:</td>
+    <td>Card Exp Year:</td>
     <td><input type="text" name="cardExpiryYear" /></td>
   </tr>
   <tr>
@@ -184,10 +185,14 @@ method="POST" >
   <tr>
     <td colspan="2">
       <input type="submit" name="Submit" value="Pay Now" />
-    </td
+    </td>
+  </tr>
+</table>
+</form>
+
 ```
 
-![](https://github.com/paysafegroup/paysafe_api_hostedpayments_v1/raw/master/images/HostedAPISilentPost_Paysafe.png)
+![](http://admin:1234neu!@p368327.webspaceconfig.de/fileadmin/flarecontent/devcentre/Content/Resources/Images/HostedAPISilentPost_Paysafe.png)
 
 <a name="process-an-order-with-settlement"></a>
 ## Process an Order with Settlement
@@ -703,9 +708,10 @@ On most standard Apache configurations this is the default, in which case no act
 
 **Rewrite Module**
 
+
 Ensure that mod_rewrite is enabled in the Apache configuration. To do so, make sure the following line is included in the main Apache configuration file (/etc/httpd/conf/httpd.conf on RHEL5):
 
-``` LoadModule rewrite_module modules/mod_rewrite.so```
+```LoadModule rewrite_module modules/mod_rewrite.so```
 
 On most standard Apache configurations this is the default, in which case no action is required on your part. Add the following to the relevant VirtualHost:
 
@@ -868,6 +874,7 @@ In order to simulate a specific card security code response, provide a CVD value
 |111 |Matched | The CVD value provided matches the CVD value associated with the card.|
 |222 |Not Checked | The CVD value was not processed.|
 |666 |Not Matched | The CVD value provided does not match the CVD value associated with the card.|
+
 
 **Example Request**
 
