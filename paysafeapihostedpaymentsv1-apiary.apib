@@ -7,7 +7,7 @@ HOST: https://api.test.netbanx.com/hosted/v1/
 
 | Version | Date | Details |
 |---      |---  |---      |
-|1.3.6  |May 2016   |<ul><li>Masterpass functionality removed</li></ul> |
+|1.3.6  |May 2016   |<ul><li>MasterPass functionality removed</li></ul> |
 | 1.3.5 | October 2015 | <ul><li>Added functionality for China UnionPay</li><li>Ukash functionality removed</li></ul> |
 | 1.3.4 | January 2015 | <ul><li>Added functionality for Pingit</li></ul>|
 | 1.3.3 | October 2014 | <ul><li>Added *accordD* functionality for select merchants</li><li>Added *oct* as an *authType* for Original Credit requests</li></ul>|
@@ -55,6 +55,26 @@ TWVyY2hhbnRYWVo6Qi10c3QxLTAtNTFlZDM5ZTQtMzEyZDAyMzQ1ZDNmMTIzMTIwODgxZGZmOWJiNDAy
 For additional details, please refer to [http://en.wikipedia.org/wiki/Basic_access_authentication](http://en.wikipedia.org/wiki/Basic_access_authentication).
 
 **Note:** Your Production API key will be different from your Test API key. Contact your account manager for details. You must keep your API keys safe and ensure that it is used appropriately for your needs.
+
+# URLs 
+
+##  Test URL
+In order to test your integration with Paysafe, use the following Test URL:
+
+`https://api.test.paysafe.com`
+
+For example:
+
+`https://api.test.paysafe.com/hosted/v1/orders/{ORDER_ID}`
+
+## Production URL
+In order to process live requests with Paysafe, use the following Production URL:
+
+`https://api.paysafe.com`
+
+For example:
+
+`https://api.paysafe.com/hosted/v1/orders/{ORDER_ID}`
 
 <a name="getting-started"></a>
 # Getting Started
@@ -955,62 +975,6 @@ In order to simulate a specific card security code response, provide a CVD value
    "id" : "258WQSKLPXFE2MQSW9"
 }
 ```
-<a name="error-summary"></a>
-# Error Summary
-
-This is a summary of all errors that could be returned when using the Hosted Payments API, including HTTP Status Codes.
-
-1xx: Informational – Communicates transfer protocol–level information.
-
-2xx: Success – Indicates that the client’s request was accepted.
-
-3xx: Redirection – Indicates that the client must take some additional action in order to complete the request.
-
-4xx: Client Error – Indicates that the client has made an error with the request.
-
-5xx: Server Error – Indicates that an error occurred on the server side.
-
-<a name="common-http-response-status-codes"></a>
-## Common HTTP Response Status Codes
-
-| Status Code               | Description |
-|---                        |---          |
-|200 OK                     | Everything worked as expected.|
-|201 CREATED                | The request was successful. Paysafe created a new resource and the response body contains the representation.|
-|202 ACCEPTED               | This indicates that the client’s request will be handled asynchronously. It tells the client that the request appears valid, but it still may have problems once it is processed.|
-|204 NO CONTENT             | This is usually returned in response to a PUT, POST, or DELETE request, when the REST API declines to send back any status message or representation in the body of the response message.|
-|304 NOT MODIFIED           | The client's cached version of the representation is still up to date.|
-|400 BAD REQUEST            | This often indicates that a required parameter is missing or that a parameter is invalid. This is a generic client-side error status, used when no other 4xx error code is appropriate.|
-|401 UNAUTHORIZED           | This indicates that the client tried to operate on a protected resource without providing the proper authorization. They may have provided the wrong credentials or none at all.|
-|402 PAYMENT REQUIRED       | The parameters were valid but the request failed.|
-|404 NOT FOUND              | The requested resource does not exist.|
-|405 METHOD NOT ALLOWED     | The client tried to POST or PUT to a resource that would not accept it.|
-|415 UNSUPPORTED MEDIA TYPE | The request is in a format not supported by the requested resource for the requested method.|
-|429 TOO MANY REQUESTS      | The application is sending too many simultaneous requests.|
-|500 INTERNAL SERVER ERROR  | An error occurred with an internal server.|
-|502 EXTERNAL SERVER ERROR  | We received an invalid response from the upstream gateway in attempting to fulfil the request.|
-
-<a name="hosted-payment-specific-errors"></a>
-## Hosted Payment Specific Errors
-
-| HTTP Status |Code                           |Description |
-|---          |---                            |---          |
-| 400         |"Cannot update transaction"    | You are attempting to update a transaction that cannot be updated. E.g., you are attempting to update a rebill for which the *dueDate* has passed. |
-| 400         |"Duplicate merchant reference"   | You are attempting a transaction using a *merchantRefNum* that has already been used.|
-| ---         |"Duplicate merchantCustomerId - Existing profile id XXXX" | You are attempting to create a profile using a *merchantCustomerId* that has already been used. |
-| ---         |"You submitted an expired credit card number with your request. Please verify this parameter and retry the request."|The *cardExpiryYear* and *cardExpiryMonth* parameters indicate that the card has expired.|
-| ---         |"Invalid Id"|You have provided an invalid ID with your request.|
-| ---         |"Invalid profileId"|A profile could not be loaded for the *profileId* provided.|
-| 401         |"Not authorized"|You have provided an invalid API key with your request.|
-| 400         |"Authorization denied" |The authorization was denied because both a payment token and a credit card number were submitted with the request.|
-| 400         |"Amount exceeds refundable amount"|You are attempting to refund an amount that is greater than the original transaction amount (minus the sum of any existing refunds against the transaction).|
-| 400         |"Request validation failed: currency_code invalid: ' ' is not a valid ISO 4217 currency code"|You have provided an invalid *currencyCode* parameter with your request.|
-| 400         |"Request validation failed: merchant\_ref_num invalid: required field"|You have provided an invalid *merchantRefNum* parameter with your request.|
-| 400         |"Request validation failed: total\_amount invalid: required field" or "Request validation failed: total\_amount invalid : '10.00' not an integer"|You have provided an invalid *totalAmount* parameter with your request.|
-| 400         |"Resend callback failed"|Your attempt to resend a callback failed.|
-| ---         |"Time for completing payment has expired"|You are attempting to complete a payment for which the *orderTimeout* period has expired.|
-| 531         |"Transaction already processed"|You are attempting to make a second payment against a completed order.|
-| 400         |"Transaction not yet processed"|You are attempting to refund is a transaction that has not been processed.|
 
 # Complex JSON Objects
 
@@ -1957,6 +1921,63 @@ The recipient is deemed to be the person or party who has the contractual relati
 | Yemen | YE |
 | Zambia | ZM |
 | Zimbabwe | ZW |
+
+<a name="error-summary"></a>
+# Error Summary
+
+This is a summary of all errors that could be returned when using the Hosted Payments API, including HTTP Status Codes.
+
+1xx: Informational – Communicates transfer protocol–level information.
+
+2xx: Success – Indicates that the client’s request was accepted.
+
+3xx: Redirection – Indicates that the client must take some additional action in order to complete the request.
+
+4xx: Client Error – Indicates that the client has made an error with the request.
+
+5xx: Server Error – Indicates that an error occurred on the server side.
+
+<a name="common-http-response-status-codes"></a>
+## Common HTTP Response Status Codes
+
+| Status Code               | Description |
+|---                        |---          |
+|200 OK                     | Everything worked as expected.|
+|201 CREATED                | The request was successful. Paysafe created a new resource and the response body contains the representation.|
+|202 ACCEPTED               | This indicates that the client’s request will be handled asynchronously. It tells the client that the request appears valid, but it still may have problems once it is processed.|
+|204 NO CONTENT             | This is usually returned in response to a PUT, POST, or DELETE request, when the REST API declines to send back any status message or representation in the body of the response message.|
+|304 NOT MODIFIED           | The client's cached version of the representation is still up to date.|
+|400 BAD REQUEST            | This often indicates that a required parameter is missing or that a parameter is invalid. This is a generic client-side error status, used when no other 4xx error code is appropriate.|
+|401 UNAUTHORIZED           | This indicates that the client tried to operate on a protected resource without providing the proper authorization. They may have provided the wrong credentials or none at all.|
+|402 PAYMENT REQUIRED       | The parameters were valid but the request failed.|
+|404 NOT FOUND              | The requested resource does not exist.|
+|405 METHOD NOT ALLOWED     | The client tried to POST or PUT to a resource that would not accept it.|
+|415 UNSUPPORTED MEDIA TYPE | The request is in a format not supported by the requested resource for the requested method.|
+|429 TOO MANY REQUESTS      | The application is sending too many simultaneous requests.|
+|500 INTERNAL SERVER ERROR  | An error occurred with an internal server.|
+|502 EXTERNAL SERVER ERROR  | We received an invalid response from the upstream gateway in attempting to fulfil the request.|
+
+<a name="hosted-payment-specific-errors"></a>
+## Hosted Payment Specific Errors
+
+| HTTP Status |Code                           |Description |
+|---          |---                            |---          |
+| 400         |"Cannot update transaction"    | You are attempting to update a transaction that cannot be updated. E.g., you are attempting to update a rebill for which the *dueDate* has passed. |
+| 400         |"Duplicate merchant reference"   | You are attempting a transaction using a *merchantRefNum* that has already been used.|
+| ---         |"Duplicate merchantCustomerId - Existing profile id XXXX" | You are attempting to create a profile using a *merchantCustomerId* that has already been used. |
+| ---         |"You submitted an expired credit card number with your request. Please verify this parameter and retry the request."|The *cardExpiryYear* and *cardExpiryMonth* parameters indicate that the card has expired.|
+| ---         |"Invalid Id"|You have provided an invalid ID with your request.|
+| ---         |"Invalid profileId"|A profile could not be loaded for the *profileId* provided.|
+| 401         |"Not authorized"|You have provided an invalid API key with your request.|
+| 400         |"Authorization denied" |The authorization was denied because both a payment token and a credit card number were submitted with the request.|
+| 400         |"Amount exceeds refundable amount"|You are attempting to refund an amount that is greater than the original transaction amount (minus the sum of any existing refunds against the transaction).|
+| 400         |"Request validation failed: currency_code invalid: ' ' is not a valid ISO 4217 currency code"|You have provided an invalid *currencyCode* parameter with your request.|
+| 400         |"Request validation failed: merchant\_ref_num invalid: required field"|You have provided an invalid *merchantRefNum* parameter with your request.|
+| 400         |"Request validation failed: total\_amount invalid: required field" or "Request validation failed: total\_amount invalid : '10.00' not an integer"|You have provided an invalid *totalAmount* parameter with your request.|
+| 400         |"Resend callback failed"|Your attempt to resend a callback failed.|
+| ---         |"Time for completing payment has expired"|You are attempting to complete a payment for which the *orderTimeout* period has expired.|
+| 531         |"Transaction already processed"|You are attempting to make a second payment against a completed order.|
+| 400         |"Transaction not yet processed"|You are attempting to refund is a transaction that has not been processed.|
 
 # Using the Console Window
 To configure and test the example in the Console window, select the "Switch to Console" button.
