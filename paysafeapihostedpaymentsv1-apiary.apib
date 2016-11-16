@@ -1628,7 +1628,7 @@ The callback return keys may contain the following parameters.
 | profile.id  | This is the customer ID of the profile created during the order request. |
 | profile.firstName | This is the customer’s first name. |
 | profile.lastName | This is the customer’s last name. |
-| customerNotificationEmail | This is the consumer’s email address, to which notifications regarding the order request are sent. |
+| customerNotificationEmail | This is the customer’s email address, to which notifications regarding the order request are sent. |
 
 <a name="extendedoptions-object"></a>
 ## extendedOptions Object
@@ -1726,7 +1726,7 @@ The *link* section works in the same way as redirects. All addendum data fields 
 |totalAmount |integer|Yes |This is the total amount of the transaction (note that this value must be equal to the amounts passed in the *ancillaryFees* and *shoppingCart* parameters, discussed below). Merchants can provide zero (0) as an amount, if they need to process a verification with no value on the card. In this case, the *authType* must be set to *auth* using the *extendedOptions* feature.|
 |customerIp |string<br/>`length<=15`||The value should be the incoming IP address of your customer, which will restrict the payment page to being viewable only from this IP address. <br></br><br></br>**Note:** Though the *customerIp* parameter is not mandatory, Paysafe recommends including it for additional security.|
 |id|string<br/>`length<=128`||This ID represents the original order request. This ID will be used for subsequent transactions associated with the original request, such as making a payment or requesting an order status.|
-|customerNotificationEmail|string<br/>`length<=256`||This is the consumer’s email address, to which notifications regarding the purchase request are sent.|
+|customerNotificationEmail|string<br/>`length<=256`||This is the customer’s email address, to which notifications regarding the purchase request are sent.|
 |merchantNotificationEmail|string<br/>`length<=256`||This is the merchant’s email address, to which notifications regarding the purchase request are sent.|
 |dueDate |date YYYY-MM-DD (UTC)||This is the date the order request will be processed. <br></br><br></br>**Note:** Include this parameter only when processing a rebill (see [Process a Rebill using an Order ID](#process-a-rebill-using-an-order-id))|
 |[profile](#profile-object) |complex|| This allows you to create a customer profile with the order. |
@@ -1816,7 +1816,7 @@ The redirect return keys may contain the following parameters.
 | id | This is the transaction ID returned in response to the initial order request. |
 | profile.firstName | This is the customer’s first name. |
 | profile.lastName | This is the customer’s last name. |
-| customerNotificationEmail | This is the consumer’s email address, to which notifications regarding the order request are sent. |
+| customerNotificationEmail | This is the customer’s email address, to which notifications regarding the order request are sent. |
 | transaction.confirmationNumber | This is the confirmation number returned by Paysafe in response to the transaction request. |
 | transaction.amount | This is the amount of the transaction that was processed. |
 | transaction.authCode | This is the authorization code assigned by the issuing bank and returned by Paysafe for the transaction. |
@@ -2123,7 +2123,7 @@ Once a customer profile has been created (see [profile Object](#profile-object))
         + totalAmount:1125 (number, required) - This is the total amount of the transaction. Merchants can provide zero (0) as an amount, if they need to process a verification with no value on the card. In this case, the *authType* must be set to *auth* using the *extendedOptions* feature.
         + customerIp:123.123.123.123 (string,optional) - The value should be the incoming IP address of your customer, which will restrict the payment page to being viewable only from this IP address.
         + id: 25TWPTLHRR81AIG1LF (string,optional)  - This ID represents the original order request. This ID will be used for subsequent transactions associated with the original request, such as making a payment or requesting an order status.
-        + customerNotificationEmail :john.smith@email (string,optional) - This is the consumer’s email address, to which notifications regarding the purchase request are sent. 
+        + customerNotificationEmail :john.smith@email (string,optional) - This is the customer’s email address, to which notifications regarding the purchase request are sent. 
         + merchantNotificationEmail :sample.merchant@email.com (string,optional) - This is the merchant’s email address, to which notifications regarding the purchase request are sent.
         + profile (profile, optional) - The [profile object](#profile-object) allows you to create a customer profile with the order.
         + shoppingCart (array[shoppingCart], optional) - The [shoppingCart object](#shoppingCart-object) allows you to add shopping cart information to the order.
@@ -2787,7 +2787,7 @@ In addition to the parameters that were part of the original transaction request
 | transaction.paymentType | string<br>`length<=20` | This is the type of payment used for the transaction. Value will be set to:<ul><li>card</li><li>giropay</li><li>ideal</li><li>interac</li><li>neteller</li><li>paypal</li><li>pingit</li><li>poli</li><li>prepaidcard</li><li>sofortbanking</li><li>unionpay</li></ul>
 | transaction.refunded | boolean | This indicates that the transaction has been either fully or partially refunded.<br></br><br></br>**Note:** If this value is set to _true_, then check the value for _availableToRefund_ before attempting to issue a refund request. |
 | transaction.reversed | boolean | This indicates whether a reversal has been attempted (e.g., a successful transaction that fails an AVS check, or a successful authorization that has been subsequently cancelled).|
-| transaction.status | enumeration | This indicates the status of the transaction. Possible values are:<ul><li>success – Transaction has been authorized by bank/Paysafe.</li><li>cancelled – Transaction has been cancelled.</li><li>declined – Transaction has been declined by bank/Paysafe.</li><li>pending – Transaction has been created and is awaiting consumer interaction.</li><li>abandoned – Transaction was abandoned part way through by the consumer.</li><li>held – Transaction has been placed on hold due to risk rules results. See *transaction.riskReasonCode* for the reason code.</li><li>errored – An error occurred and the transaction could not be completed <br></br><br></br>**Note:** The merchant's account must be configured by Paysafe to be able to place transactions on hold. </li></ul>
+| transaction.status | enumeration | This indicates the status of the transaction. Possible values are:<ul><li>success – Transaction has been authorized by bank/Paysafe.</li><li>cancelled – Transaction has been cancelled.</li><li>declined – Transaction has been declined by bank/Paysafe.</li><li>pending – Transaction has been created and is awaiting customer interaction.</li><li>abandoned – Transaction was abandoned part way through by the customer.</li><li>held – Transaction has been placed on hold due to risk rules results. See *transaction.riskReasonCode* for the reason code.</li><li>errored – An error occurred and the transaction could not be completed <br></br><br></br>**Note:** The merchant's account must be configured by Paysafe to be able to place transactions on hold. </li></ul>
 | transaction.errorCode | integer | If an error occurs, this is the error number. |
 | transaction.errorMessage | string | If an error occurs, this is the error message. |
 | transaction.riskReasonCode | integer | If the transaction has a status of held, this value holds the reason code. |
@@ -3547,8 +3547,8 @@ Once a customer profile has been created (see [profile Object](#profile-object))
    + success - Transaction has been authorized by bank/Paysafe.
    + cancelled - Transaction has been cancelled.
    + declined - Transaction has been declined by bank/Paysafe.
-   + pending - Transaction has been created and is awaiting consumer interaction.
-   + abandoned - Transaction was abandoned part way through by the consumer.
+   + pending - Transaction has been created and is awaiting customer interaction.
+   + abandoned - Transaction was abandoned part way through by the customer.
    + held - Transaction has been placed on hold due to risk rules results. See *riskReasonCode* for the reason code.
    + errored - An error occurred and the transaction could not be completed.
 - errorCode (number) - If an error occurs, this is the error number.
@@ -3766,7 +3766,7 @@ Once a customer profile has been created (see [profile Object](#profile-object))
 
 ## reward
 - id (string) - This is the ID associated with the reward program.
-- number (string) - This is the consumer’s reward number associated with the reward program.
+- number (string) - This is the customer’s reward number associated with the reward program.
 - name (string) - This is the name of the reward program. 
 - expiry (expiry) - This is the reward expiry date.
 
