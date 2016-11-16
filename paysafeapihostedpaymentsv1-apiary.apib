@@ -2973,10 +2973,11 @@ See [Order Status Response Parameters](#order-status-response-parameters) to see
                 "totalAmount" : 1250,
                 "type" : "order"
             }
-  
+
+
 # Group Reports
 
-# Get an Order Report [GET /orders?num={num}&start={start}]
+## Get an Order Report [GET /orders?num={num}&start={start}]
 
 A list of recently created/processed orders can be retrieved via the Hosted Payments API using a GET request.
 * You can include an offset.
@@ -3070,7 +3071,7 @@ In the event that all orders are returned, no next/prev links will be supplied.
 
 
 
-# Group Refund
+# Group Refunds
 <a name="refunds"></a>
 
 ## Refund an Order [POST /orders/{order_id}/refund]
@@ -3279,8 +3280,6 @@ See [Cancel an Order](#cancel-an-order) for full details on how to cancel a requ
 
 # Group Original Credits
 <a name="originalcredits"></a>
-
-<a name="original-credits"></a>
 
 Original Credits allow certain merchants to issue winnings as credits to cardholders, without requiring a previous Authorization/Settlement. 
 
