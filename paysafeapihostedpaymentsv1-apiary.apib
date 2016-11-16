@@ -76,6 +76,35 @@ For example:
 
 `https://api.paysafe.com/hosted/v1/orders/{ORDER_ID}`
 
+# API 
+
+The Hosted Payments API allows merchants to process credit card orders using the REST protocol. The protocol uses JSON for all requests and responses.
+
+The following request types are supported:
+
+  * [Orders](#orders)
+  * [Settlements](#settlements)
+  * [Refunds](#refunds)
+  * [Original Credits](#originalcredits)
+  
+**API Endpoint**
+
+`https://api.paysafe.com/hosted/v1/orders`  
+
+**Resource Patterns**
+
+|Endpoint URL                                   |Description                            |Action |
+|---                                            |---                                    |---    |
+|/orders                                        |Create an Order                        |POST   |
+|/orders/{ORDER_ID}                             |Cancel an Order                        |DELETE |
+|/orders/{ORDER_ID}                             |Update an Order                        |PUT    |
+|/orders/{ORDER_ID}                             |Get an Order                           |GET    |
+|/orders/{ORDER_ID}/refund                      |Refund an Order                        |POST   |
+|/orders/{ORDER_ID}/settlement                  |Settle an Order                        |POST   |
+|/orders                                        |Get an Order Report                    |GET    |
+|/orders/{ORDER_ID}/resend_callback             |Resend a Callback                      |GET    |
+|/orders/{ORDER_ID}                             |Process a Rebill                       |POST   |
+
 <a name="getting-started"></a>
 # Getting Started
 
@@ -1987,6 +2016,9 @@ When you are ready to test your example, you can switch  between the Production 
 * Mock server – local test environment which returns an example response. No account details are required, as you can use those provided in the request example.
 To call the API resource, click the "Call Resource" button. The response is displayed in the Console window.
 
+# Orders
+<a name="orders"></a>
+
 ## Process an Order [POST /orders]
 
 **Process an Order with a Hosted Payment Page**
@@ -3039,6 +3071,7 @@ In the event that all orders are returned, no next/prev links will be supplied.
 
 
 # Group Refund
+<a name="refunds"></a>
 
 ## Refund an Order [POST /orders/{order_id}/refund]
 <a name="refund-an-order"></a>
@@ -3120,7 +3153,10 @@ The response parameters are described below:
                 "authType" : "refund",
                 "id" : "25TWPTLHRR81AIG1LF"
             }
+            
+
 # Group Settlements
+<a name="settlements"></a>
 
 ## Settle an Order [POST /orders/{order_id}/settlement]
 <a name="settle-an-order"></a>
@@ -3240,8 +3276,9 @@ See [Cancel an Order](#cancel-an-order) for full details on how to cancel a requ
                 "merchantRefNum" : "MERCHANT_REF_123"
             }
   
-            
+
 # Group Original Credits
+<a name="originalcredits"></a>
 
 <a name="original-credits"></a>
 
