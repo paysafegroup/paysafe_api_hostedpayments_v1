@@ -30,7 +30,7 @@ and comply with PCI guidelines regarding the handling of card data.
 
 **Note:** Paysafe may add additional elements in future releases of this API, so ensure that your integration is flexible enough to ignore any unrecognized response fields.
 
-![Hosted Checkout Flow](http://admin:1234neu!@p368327.webspaceconfig.de/fileadmin/flarecontent/devcentre/Content/Resources/Images/HostedAPIOverview_Hosted__Paysafe.png)
+![Hosted Checkout Flow](https://developer.paysafe.com/fileadmin/flarecontent/devcentre/Content/Resources/Images/HostedAPIOverview_Hosted__Paysafe.png)
 
 # Authentication
 
@@ -119,7 +119,7 @@ The following request verifies that the service is up and accessible from your n
 }
 ```
 
-<a name="process-an-order-using-a-hosted-page"></a>
+<a name="process-an-order-with-a-hosted-page"></a>
 ## Process an Order Using a Hosted Page
 
 To process an order using a payment page that is hosted by Paysafe, you first need to create (or register) an order in the system. The request may be performed when the total amount, currency and merchant reference have been determined.
@@ -170,9 +170,9 @@ You can use this ID to find out information about your order at any time.
 The order response also provides you with a link section. The first link refers to the hosted_payment URL – this is the URL of the payment page. Your system should take this URL from the order and use it to redirect your customer to the hosted payment page (shown below), where they can enter payment details.
 A second link, self, is the URL to call to find out the status of the transaction.
 
-![](http://admin:1234neu!@p368327.webspaceconfig.de/fileadmin/flarecontent/devcentre/Content/Resources/Images/checkout_page_Paysafe.gif)
+![](https://developer.paysafe.com/fileadmin/flarecontent/devcentre/Content/Resources/Images/checkout_page_Paysafe.gif)
 
-<a name="process-an-order-using-a-silent-post"></a>
+<a name="process-an-order-with-a-silent-post"></a>
 ## Process an Order Using a Silent Post
 
 When you use a payment page hosted by Paysafe, you can customize it to a great extent. However, you may want to have full control over the customer experience, which means not redirecting them to a hosted page. To achieve this, you can implement a Silent Post (also known as Direct Post) order, which allows your customer to make a payment on your own, branded payment page, while at the same time allowing Paysafe to handle all the sensitive card information. This helps you to avoid full PCI compliance overhead, since you don't touch card data.
@@ -237,7 +237,7 @@ method="POST">
 
 ```
 
-![](http://admin:1234neu!@p368327.webspaceconfig.de/fileadmin/flarecontent/devcentre/Content/Resources/Images/HostedAPISilentPost_Paysafe.png)
+![](https://developer.paysafe.com/fileadmin/flarecontent/devcentre/Content/Resources/Images/HostedAPISilentPost_Paysafe.png)
 
 <a name="process-an-order-with-settlement"></a>
 ## Process an Order with Settlement
@@ -469,6 +469,7 @@ Customer email notifications offer full localization and customization. Please c
 In order to avoid sending a customer notification email, send the *extendedOption* field *suppressCustomerEmail* with the value *true*.
 See [Order Object](#order-object) for details on using the *customerNotificationEmail* parameter.
 
+<a name="localization"></a>
 ### Localization
 The Hosted Payments API supports localization of display pages and/or emails that contain payment and receipt information. The system will attempt a best-match to the localization information passed in the locale parameter.
 
@@ -679,7 +680,7 @@ This table provides the following additional information on each payment method:
 
 
 
-<a name="implementing=-threatmetrix-for-a-silent-post-order"></a>
+<a name="implementing-threatmetrix-for-a-silent-post-order"></a>
 ## Implementing ThreatMetrix for a Silent Post Order
 
 ThreatMetrix is a service that anonymously profiles your website visitor’s computer in real time to determine its unique fingerprint – derived from over 150 attributes obtained from such data as TCP/IP packets, operating system, fonts, language, time zone, operating system, browser, and more, matching it against a global collection of data from previously profiled computers and their transactions. Implementing the ThreatMetrix service provides merchants with an additional layer of protection that reduces lost sales from false negatives, reduces fraud chargebacks and associated fees, and minimizes fraud management expense by reducing the number of transactions sent for manual review.
@@ -1115,7 +1116,7 @@ In order to simulate a specific card security code response, provide a CVD value
 | Saskatchewan | SK |
 | Yukon | YT |
 
-<a name="stade-codes"></a>
+<a name="state-codes"></a>
 ## State Codes
 | **State** | **Code** |
 |---        |---       |--- |
@@ -1495,7 +1496,7 @@ The accordD object allows the merchant to specify a financing plan along with th
 }
 ```
 
-<a name="ancillaryfees-object"></a>
+<a name="ancillaryFees-object"></a>
 ## ancillaryFees Object
 |Element                 |Type                      |Required       |Description|
 |---                     |---                       |---            |---|
@@ -1519,7 +1520,7 @@ The accordD object allows the merchant to specify a financing plan along with th
 }
 ```
 
-<a name="billingdetails-object"></a>
+<a name="billingDetails-object"></a>
 ## billingDetails Object
 
 The merchant can return billing details in the order – these details will be used to pre-populate the payment form when the payment page is requested for payment. The street and zip parameters are used for address verification checks. No further validation on other address information is performed (other than data-type integrity checks).
@@ -1626,7 +1627,7 @@ The callback return keys may contain the following parameters.
 | profile.lastName | This is the customer’s last name. |
 | customerNotificationEmail | This is the customer’s email address, to which notifications regarding the order request are sent. |
 
-<a name="extendedoptions-object"></a>
+<a name="extendedOptions-object"></a>
 ## extendedOptions Object
 The merchant can use extended options to activate/deactivate certain features in the payment system.
 For example, if billing information is being passed from the merchant's system, it can be rendered non-editable on the payment page by setting an extended option.
@@ -1824,7 +1825,7 @@ The redirect return keys may contain the following parameters.
 | transaction.unionpay.message | This is the message returned, if required. |
 | transaction.unionpay.transId | This is the Union Pay transaction ID. |
 
-<a name="shippingdetails-object"></a>
+<a name="shippingDetails-object"></a>
 ## shippingDetails Object
 **Note:** The merchant should include shipping details for any purchase that requires delivery of physical goods.
 
@@ -1857,10 +1858,10 @@ The redirect return keys may contain the following parameters.
 }
 ```
 
-<a name="shoppingcart-object"></a>
+<a name="shoppingCart-object"></a>
 ## shoppingCart Object
 
-**Note:** The *totalAmount* provided in the initial order must add up to the amounts (and [Ancillary Fees](ancillaryfees)) passed in the *shoppingCart* section.
+**Note:** The *totalAmount* provided in the initial order must add up to the amounts (and [Ancillary Fees](#ancillaryFees-object)) passed in the *shoppingCart* section.
 
 |Element                 |Type                      |Required       |Description|
 |---                     |---                       |---            |---|
@@ -1890,7 +1891,7 @@ The redirect return keys may contain the following parameters.
 }
 ```
 
-<a name="associatedtransactions-object"></a>
+<a name="associatedTransactions-object"></a>
 ## associatedTransactions Object
 
 |Element                 |Type                      |Required       |Description|
@@ -1915,7 +1916,7 @@ The redirect return keys may contain the following parameters.
 }
 ```
 
-<a name="visaadditionalauthdata-object"></a>
+<a name="visaAdditionalAuthData-object"></a>
 ## visaAdditionalAuthData Object
 
 The recipient is deemed to be the person or party who has the contractual relationship with the merchant/financial institution. This may be different from the cardholder, e.g., in the case of a parent topping up a child's savings account. Therefore, the fields should not be collected on the same page as cardholder information, but instead be passed in the background from the merchant’s records.
@@ -2086,7 +2087,7 @@ The Hosted Payments API customer profile feature allows your customers to secure
 <br></br>
 **Note:** *paymentToken* is only returned once a payment has been successfully processed against the order, e.g., in the GET request on a successful order, or in the callback parameters (if requested).
 
-![](http://admin:1234neu!@p368327.webspaceconfig.de/fileadmin/flarecontent/devcentre/Content/Resources/Images/storedetailshosted.gif)
+![](https://developer.paysafe.com/fileadmin/flarecontent/devcentre/Content/Resources/Images/storedetailshosted.gif)
 
 The Hosted Payments API customer profile feature offers customers the following options on the Hosted Payments page:
 * Store multiple cards
@@ -2098,7 +2099,7 @@ The Hosted Payments API customer profile feature offers customers the following 
 <a name=process-an-order-with-a-payment-token></a>
 **Process an Order with a Payment Token**
 
-After a customer profile (see [profile Object](#profile-order)) has been created and a payment processed (assuming the customer has selected the option to store card details), a profile *paymentToken* is created, and stored against the order. This can be retrieved via a GET request, or retrieved as a callback option, depending on how your order has been configured.
+After a customer profile (see [profile Object](#profile-object)) has been created and a payment processed (assuming the customer has selected the option to store card details), a profile *paymentToken* is created, and stored against the order. This can be retrieved via a GET request, or retrieved as a callback option, depending on how your order has been configured.
 
 Providing the *paymentToken* (along with the associated profile *id*) in the profile section of a new order will select the card used in the initial transaction on the hosted page.
 
@@ -2406,6 +2407,7 @@ In order to cancel an order, call DELETE on an order URL.
                     "status" : "cancelled"
                }
             }
+    
     
 ## Cancel a Held Order [PUT /orders/{order_id}]
 <a name="cancel-a-held-order"></a>
@@ -3231,12 +3233,15 @@ The response parameters are described below:
 
 ## Cancel a Settlement [DELETE /orders/{order_id}/settlement]
 <a name="cancel-a-settlement"></a>
+
 If a settlement request has been sent but the amount has not yet been settled, it is possible to cancel the settlement using the ID returned by Paysafe in the settlement response (see [Settle an Order](#settle-an-order)). 
 The same response as for [Get an Order Status](#get-an-order-status) will be returned with the status set to *cancelled* upon success.
 See [Cancel an Order](#cancel-an-order) for full details on how to cancel a request.
 
 + Parameters
    + order_id:25TWPTLHRR81AIG1LF (required, string) - Order ID
+
++ Request Cancel a Settlement (application/json)
 
   + Headers
             
