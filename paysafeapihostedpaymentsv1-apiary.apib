@@ -1666,8 +1666,8 @@ The *extendedOptions* array may contain the following key/value pairs.
 | disableAddingPaymentMethods | boolean | This prevents the customer from adding a new payment method on the hosted payment page.|
 | disableAllProfileActions | boolean | This removes all "edit" and "add new card" functions from the hosted payment page. |
 | disableCardWithToken | boolean | This prevents processing a transaction in the case where the original order request was created with a payment token, but where an additional credit card is also supplied in the Silent Post to the *hosted_payment* URL. By default this is set to *false*.|
-| disableDuplicateMerchantRefCheck | boolean | This allows merchants to submit an order using a duplicate *merchantRefNum* parameter. By default this is set to *false*.
 | disableDupCardCheckWithinProfile | boolean | This allows the same card to be added against a profile multiple times without inducing an error message. |
+| disableDuplicateMerchantRefCheck | boolean | This allows merchants to submit an order using a duplicate *merchantRefNum* parameter. By default this is set to *false*.
 | disablePaymentMethodStorage | boolean | If passed as *true* this removes the "Store my details for future use" check box from the hosted payment page and sets the flag value to *false*. |
 | disableProfileEditing | boolean | This prevents the customer from editing profile details on the hosted payment page. |
 | disableRemovingPaymentMethods | boolean | This prevents the customer from removing a previously stored payment method from a profile on the hosted payment page. |
@@ -2022,7 +2022,7 @@ To call the API resource, click the "Call Resource" button. The response is disp
 
 **Process an Order with a Hosted Payment Page**
 
-The following lists describe the mandatory and optional parameters for processing an Order request. For a detailed description of the attributes listed in these tables, please refer to the [Order object](#order-object)
+The mandatory and optional parameters for processing an Order request are listed below. For a detailed description of the attributes listed here, please refer to the [Order object](#order-object)
 
 **Required Parameters**
 * merchantRefNum
@@ -2031,6 +2031,25 @@ The following lists describe the mandatory and optional parameters for processin
 
 **Optional Parameters**
 * customerIp
+* id      
+* customerNotificationEmail      
+* merchantNotificationEmail    
+* profile        
+* shoppingCart      
+* ancillaryFees 
+* billingDetails 
+* shippingDetails 
+* callback 
+* redirect 
+* link 
+* paymentMethod          
+* addendumData 
+* locale            
+* extendedOptions      
+* associatedTransactions
+* accordD        
+* visaAdditionalAuthData  
+* dueDate
 
 **Note:** Though the *customerIp* parameter is not mandatory, Paysafe recommends including it for additional security. 
 
