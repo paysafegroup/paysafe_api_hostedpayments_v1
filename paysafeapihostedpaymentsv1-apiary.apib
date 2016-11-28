@@ -2112,7 +2112,7 @@ Once a customer profile has been created (see [profile Object](#profile-object))
 
  + Headers
  
-             Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+             Authorization: Basic YOUR-BASE64-ENCODED-API-KEY
 
   + Attributes
         + merchantRefNum (string, required) - This is your own transaction ID, for your reference purposes. This should be unique for each transaction.
@@ -2205,7 +2205,7 @@ Once a customer profile has been created (see [profile Object](#profile-object))
 
  + Headers
  
-             Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+             Authorization: Basic YOUR-BASE64-ENCODED-API-KEY
             
  + Body
     
@@ -2263,7 +2263,7 @@ Once a customer profile has been created (see [profile Object](#profile-object))
 
  + Headers
             
-            Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+            Authorization: Basic YOUR-BASE64-ENCODED-API-KEY
 
  + Body
 
@@ -2310,7 +2310,7 @@ Once a customer profile has been created (see [profile Object](#profile-object))
     
    + Headers
             
-            Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+            Authorization: Basic YOUR-BASE64-ENCODED-API-KEY
             
    + Body
     
@@ -2376,7 +2376,7 @@ In order to cancel an order, call DELETE on an order URL.
 
   + Headers
             
-            Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+            Authorization: Basic YOUR-BASE64-ENCODED-API-KEY
             
 + Response 200 (application/json)
        
@@ -2428,7 +2428,7 @@ An update response will have the same structure as GET status except  that when 
      
  + Headers
             
-            Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+            Authorization: Basic YOUR-BASE64-ENCODED-API-KEY
     
  + Body
     
@@ -2478,7 +2478,7 @@ See [callback Object](#callback-object) for more details about callbacks.
 
     + Headers
             
-            Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+            Authorization: Basic YOUR-BASE64-ENCODED-API-KEY
 
 + Response 200 
 
@@ -2510,7 +2510,7 @@ A rebill request has the same parameter requirements as an order creation reques
 
  + Headers
             
-            Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+            Authorization: Basic YOUR-BASE64-ENCODED-API-KEY
 
  + Body
    
@@ -2567,7 +2567,7 @@ A rebill request has the same parameter requirements as an order creation reques
 
   + Headers
             
-            Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+            Authorization: Basic YOUR-BASE64-ENCODED-API-KEY
 
    + Body
 
@@ -2630,7 +2630,7 @@ The *recurringIndicator* option allows a payment to be processed without prompti
 
   + Headers
             
-            Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+            Authorization: Basic YOUR-BASE64-ENCODED-API-KEY
 
   + Body
   
@@ -2709,7 +2709,7 @@ In this example the status is *pending*, which means that the transaction has no
 
     + Headers
             
-            Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+            Authorization: Basic YOUR-BASE64-ENCODED-API-KEY
 
 + Response 200 (application/json)
 
@@ -2878,7 +2878,7 @@ See [Order Status Response Parameters](#order-status-response-parameters) to see
     
   + Headers
             
-            Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+            Authorization: Basic YOUR-BASE64-ENCODED-API-KEY
 
  + Body
     
@@ -2935,7 +2935,7 @@ See [Order Status Response Parameters](#order-status-response-parameters) to see
     
   + Headers
             
-            Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+            Authorization: Basic YOUR-BASE64-ENCODED-API-KEY
 
  + Body
  
@@ -3004,7 +3004,7 @@ In the event that all orders are returned, no next/prev links will be supplied.
 
  + Headers
             
-            Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+            Authorization: Basic YOUR-BASE64-ENCODED-API-KEY
 
 + Response 200 (application/json)
 
@@ -3114,7 +3114,7 @@ The response parameters are described below:
     
   + Headers
             
-            Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+            Authorization: Basic YOUR-BASE64-ENCODED-API-KEY
             
 
  + Attributes
@@ -3192,7 +3192,7 @@ The response parameters are described below:
     
   + Headers
             
-            Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+            Authorization: Basic YOUR-BASE64-ENCODED-API-KEY
 
   + Attributes
         + amount: 999 (number,optional) - This is the amount of the payment in minor units. E.g., 999 = $9.99. It is not possible to settle an amount greater than the original amount authorized. If an amount is not specified, the full transaction is settled.
@@ -3245,7 +3245,7 @@ See [Cancel an Order](#cancel-an-order) for full details on how to cancel a requ
 
   + Headers
             
-            Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+            Authorization: Basic YOUR-BASE64-ENCODED-API-KEY
 
 + Response 200 (application/json)  
 
@@ -3326,7 +3326,7 @@ See [Process a Rebill Using an Order ID](#process-a-rebill-using-an-order-id) fo
     
   + Headers
             
-            Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+            Authorization: Basic YOUR-BASE64-ENCODED-API-KEY
             
    + Body
 
@@ -3379,7 +3379,7 @@ Once a customer profile has been created (see [profile Object](#profile-object))
     
   + Headers
             
-            Authorization: Basic YOUR-ENCODED-ACCESS-CREDENTIALS
+            Authorization: Basic YOUR-BASE64-ENCODED-API-KEY
             
    + Body
 
