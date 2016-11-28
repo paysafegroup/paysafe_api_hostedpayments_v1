@@ -175,9 +175,9 @@ A second link, self, is the URL to call to find out the status of the transactio
 <a name="process-an-order-with-a-silent-post"></a>
 ## Process an Order Using a Silent Post
 
-When you use a payment page hosted by Paysafe, you can customize it to a great extent. However, you may want to have full control over the customer experience, which means not redirecting them to a hosted page. To achieve this, you can implement a Silent Post (also known as Direct Post) order, which allows your customer to make a payment on your own, branded payment page, while at the same time allowing Paysafe to handle all the sensitive card information. This helps you to avoid full PCI compliance overhead, since you don't touch card data.
+When you use a payment page hosted by Paysafe, you can customize it to a great extent. However, you may want to have full control over the customer experience, which means not redirecting them to a hosted page. To achieve this, you can implement a Silent Post (also known as Direct Post) order, which allows your customer to make a payment on your own, branded payment page, while at the same time allowing Paysafe to handle all the sensitive card information. This helps you to avoid full PCI compliance overhead, since you don't touch card data. PCI DSS v3.0 introduces a new self-assessment requirement, A-EP, for merchants processing card transactions using the Silent Post (or Direct Post) model. 
 
-**Note:**  PCI DSS v3.0 introduces a new self-assessment requirement, A-EP, for merchants processing card transactions using the Silent Post (or Direct Post) model. Please refer to [PCI DSS guidelines](https://www.pcisecuritystandards.org/documents/PCI_DSS_v3.pdf) for more details. 
+**Note:** Please refer to [PCI DSS guidelines](https://www.pcisecuritystandards.org/documents/PCI_DSS_v3.pdf) for more details. 
 
 To begin, you would submit the same type of order request as for a hosted payment, except that you must include the *extendedOptions* parameter, with *silentPost* set to true. 
 
@@ -2055,22 +2055,22 @@ The mandatory and optional parameters for processing an Order request are listed
 
 See [Order object](#order-object) for more optional parameters
 
+Note the following:
+
 * As a result of a successful call to the API, Paysafe will provide you with a *hosted_payment* URL, which is the URL of the payment page. To load the payment page, visit the link, or redirect your customer to the link from your shopping cart/back-end system. By default, the payment page is locked to the IP address that was passed in via the original request.
 * The link section is an array. It is necessary to iterate through this array to identify the *hosted_payment* rel, and redirect your customer to the URI specified.
 * The status of the transaction can be tracked using the *self* URL, or you can specify a callback address in the initial call (see [callback Object](#callback-object)).
 
-**WARNING:** The secure version of the order ID returned in the response (53616c7465645f5ffeb47c2287dbf903bbb4627b16929a27b8d09b37db190a0f6ce44f8ea1461be2 in the example) must be used to load payment pages because there is no API key present in the payment URL. The normal ID (i.e., 25TWPTLHRR81AIG1LF) can be used for the other API calls because the merchant must use their API key for those calls.
+**WARNING:** The secure version of the order ID returned in the hosted_payment URI (53616c7465645f5ffeb47c2287dbf903bbb4627b16929a27b8d09b37db190a0f6ce44f8ea1461be2 in the example) must be used to load payment pages because there is no API key present in the payment URL. The normal ID (i.e., 25TWPTLHRR81AIG1LF) can be used for the other API calls because the merchant must use their API key for those calls.
 
 <br></br>
 **Process an Order with a Silent Post**
 
-A Silent Post (or Direct Post) order enables customer data to be posted directly from a merchant-hosted payment page to Paysafe systems without using a Hosted Page. This can avoid full PCI compliance overhead, since card data does not touch merchant systems on the server side. However, since the introduction of PCI DSS v3.0 there are some important caveats to consider with this approach.
+A Silent Post (or Direct Post) order enables customer data to be posted directly from a merchant-hosted payment page to Paysafe systems without using a Hosted Page. This can avoid full PCI compliance overhead, since card data does not touch merchant systems on the server side. 
 
-<br></br>
-**Note:** PCI DSS v3.0 introduces a new self-assessment requirement, A-EP, for merchants processing card transactions using the Silent Post (or Direct Post) model. Please refer to [PCI DSS guidelines](https://www.pcisecuritystandards.org/documents/PCI_DSS_v3.pdf) for more details.
-<br></br>
+However, since the introduction of PCI DSS v3.0 there are some important caveats to consider with this approach. PCI DSS v3.0 introduces a new self-assessment requirement, A-EP, for merchants processing card transactions using the Silent Post (or Direct Post) model. Please refer to [PCI DSS guidelines](https://www.pcisecuritystandards.org/documents/PCI_DSS_v3.pdf) for more details.
 
-The following lists describe the mandatory and optional parameters for processing an Order request. For a detailed description of the attributes listed in these tables, please refer to the [Order object](#order-object)
+The mandatory and optional parameters for processing an Order request are listed below. For a detailed description of the parameters listed, refer to the [Order object](#order-object)
 
 **Required Parameters**
 * merchantRefNum
@@ -3653,7 +3653,7 @@ Once a customer profile has been created (see [profile Object](#profile-object))
 - rel (enum,required) - This is the link type, allowing different endpoints to be targeted depending on the end state of the transaction. 
   + cancel_url - Request-only parameter. This is the URI to return the customer to if payment fails or is cancelled.
   + return_url - Request-only parameter. This is URI to return the customer to after payment is complete.
-  + hosted_payment - Response-only parameter. This is the URI for the payment page. Customers should be redirected to this URI to see their invoice and complete payment; or this should be used as the form action on the merchant payment page if using a Silent Post (Direct Post).
+  + hosted_payment - Response-only parameter. This is the URI for the payment page, which contains the secure version of the order ID. Customers should be redirected to this URI to see their invoice and complete payment; or this should be used as the form action on the merchant payment page if using a Silent Post (Direct Post).
   + self - Response-only parameter. This URI can be called to return a JSON object about the current status of the order, e.g., to see if the payment has been settled.
   + resend_callback -  Response-only parameter. If a callback URI is specified in the initial request, calling this URI will re-queue the callback and resend it (which is useful if your callback retries have run out).
 - returnKeys (array[string],optional) - This is an array of names of parameters to return to the URI specified.
