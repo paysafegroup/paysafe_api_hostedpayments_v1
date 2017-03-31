@@ -1,5 +1,5 @@
 FORMAT: 1A
-HOST: https://api.test.netbanx.com/hosted/v1/
+HOST: https://api.test.netbanx.com/hosted/
 
 # Paysafe Hosted Payments API
 
@@ -104,6 +104,195 @@ The following request types are supported:
 # Getting Started
 
 The Hosted Payments API handles the collection and storage of sensitive customer payment information, significantly reducing your PCI DSS compliance requirements. Click [here](https://developer.paysafe.com/en/rest-api/hosted/using-the-api/scenarios/) for descriptions of the main scenarios.
+
+<a name="silent-post-considerations"></a>
+# Silent Post Considerations
+
+Depending on the *paymentMethod* that is specified in the order (see [Order Object](#order-object)), different parameters may be required to send to Paysafe when a [Silent Post order](#process-an-order-with-a-silent-post) (also known as Direct Post) is processed. This means that capturing the necessary payment details from the customer is required on the merchant payment page depending on the chosen payment type.  
+
+Consult the appropriate payment method, as required.
+
+*   [Silent Post for Customer Profile](#silent-post-for-customer-profile)
+*   [Silent Post for Giropay](#silent-post-for-giropay)
+*   [Silent Post for iDEAL](#silent-post-for-ideal)
+*   [Silent Post for NETELLER](#silent-post-for-neteller)
+*   [Silent Post for Prepaid Cards](#silent-post-for-prepaid-cards)
+*   [Silent Post for Sofort Banking](#silent-post-for-sofort-banking)
+
+For the following payment methods, no additional parameters need to be passed with the Silent Post order, as the redirect occurs immediately and no intermediary page is displayed:
+
+*   interac
+*   paynearme
+*   paypal
+*   pingit
+*   poli
+*   unionpay
+
+<a name="silent-post-for-customer-profile"></a>
+##Silent Post for Customer Profile
+
+If a customer profile has been created, you may be able to submit fewer parameters with a [Silent Post order](#process-an-order-with-a-silent-post) (also known as Direct Post). 
+
+*   If a valid *profile.id* and *profile.paymentToken* have been captured from the order request, then only a value for *cvdNumber* in the Silent Post is required. 
+*   If a valid *profile.id* (but no *profile.paymentToken*) has been captured from the order request, then all values for a standard credit card Silent Post (see [Process an Order with a Silent Post](#process-an-order-with-a-silent-post)) must be included. In this case, an additional *profile.paymentToken* will be assigned to the *profile.id* and returned in the order response (see [Order Status Response Parameters](#order-status-response-parameters)). This new token can then be used in future requests (i.e., a single *profile.id* can have multiple *profile.paymentToken* instances assigned to it).
+
+<a name="silent-post-for-giropay"></a>
+##Silent Post for Giropay
+
+To process a [Silent Post order](../process-an-order-with-a-silent-post) using *giropay* as the *paymentMethod*, the fields in the following table must be provided in the POST to the *hosted\_payment* URL that was received in the order response. 
+
+| Field | Type | Required | Description |
+|---    |---   |--- |--- |
+| nbx_customerBIC  |string |Yes| This is the customer’s Bank Identifier Code (BIC).|
+| nbx_customerIBAN | string|Yes|This is the customer’s International Bank Account Number (IBAN).|
+
+**Note:** Please consult Giropay documentation for field length constraints
+
+<a name="silent-post-for-ideal"></a>
+##Silent Post for Ideal
+
+To process a [Silent Post order](../process-an-order-with-a-silent-post) using *ideal* as the *paymentMethod*, the fields in the following table must be provided in the POST to the *hosted\_payment* URL that was received in the order response. 
+
+| Field | Type | Required | Description |
+|--- |--- |--- | --- |
+| senderHolder | string</br>`length<=27` | Yes | This is the owner of the sending account.|
+| senderIBAN | string</br>`length<=34` | Yes | This is the IBAN of the sending account.|
+
+<a name="silent-post-for-neteller"></a>
+##Silent Post for Neteller
+
+To process a [Silent Post order](../process-an-order-with-a-silent-post) using *neteller* as the *paymentMethod*, the fields in the following table must be provided in the POST to the *hosted\_payment* URL that was received in the order response. 
+
+| Field | Type | Required | Description |
+|---    |---   |--- |--- |
+|netAccount |integer|Yes|This is the NETELLER account ID.|
+|secureId |integer|Yes|This is the password for the NETELLER account.|
+
+**Note:** Please consult NETELLER documentation for field length constraints.
+
+<a name="silent-post-for-prepaid-cards"></a>
+##Silent Post for Prepaid Cards
+
+To process a [Silent Post order](../process-an-order-with-a-silent-post) using *prepaidcard* as the *paymentMethod*, the fields in the following table must be provided in the POST to the *hosted\_payment* URL that was received in the order response. 
+
+| Field | Type | Required | Description |
+|---    |---   |--- |--- |
+| cardNum | string</br>`length=8-20` | Conditional | This is the full prepaid card number. <br></br><br></br>**Note:**  Use <u>either</u> *cardNum* <u>or</u> *referenceId*, but not both. |
+| referenceId | string</br>`length<=36` | Conditional | This is the reference ID for the prepaid card, returned in the response to the enrollments request that created the card. <br></br><br></br>**Note:** Use <u>either</u> *cardNum* <u>or</u> *referenceId*, but not both. |
+| lastFourSsn | string</br>`length=4` | Yes | This is the last four digits of the customer’s Social Security Number. |
+| storeCardIndicator | boolean || This indicates whether the customer has granted permission to store card details for future use within their associated profile (if applicable). |
+
+
+<a name="silent-post-for-sofort-banking"></a>
+##Silent Post for Sofort Banking
+To process a [Silent Post order](../process-an-order-with-a-silent-post) using *sofort* as the *paymentMethod*, the fields in the following table must be provided in the POST to the *hosted\_payment* URL that was received in the order response. 
+
+| Field | Type | Required | Description |
+|---    |---   |--- |--- |
+| senderHolder | string | Yes | This is the name of the account owner.  |
+| senderBankBIC | string | Yes | This is the Bank Identifier Code of the account. |
+| senderIBAN | string | Yes | This is the International Bank Account Number for the account.  |
+| senderCountryID | string | Yes | The is the account owner’s country. See [Country Codes](#country-codes). |
+
+**Note:** Please consult Sofort Banking documentation for field length constraints
+
+<a name="payment-method-notes"></a>
+# Payment Method Notes
+This table provides the following additional information on each payment method:
+
+*   Whether the merchant account needs to be configured by Paysafe in order to accept the payment type
+*   Whether the Hosted Payments API can be used to issue refunds via the payment method
+*   Additional notes, where applicable
+
+| Payment Method | Supported Currencies | Configure Merchant Account | Process Refunds | Notes |
+|--- |--- |--- |--- |--- |
+| card | All currencies supported by Paysafe | No | Yes |
+| giropay | EUR | Yes | No  |
+| ideal | EUR | Yes | No |
+| interac | CAD | Yes | Yes |
+| neteller | All currencies supported by NETELLER &ndash; refer to NETELLER documentation for details. | Yes | Yes |
+| paynearme | USD | Yes | No | The expiry date for a PayNearMe voucher can be controlled by adding the *orderTimeout* variable as an [extended option](#extendedoptions-object) of the order. For example, setting the value to 172800 (seconds) would extend the expiry date by 48 hours. |
+| paypal | All currencies supported by Paypal &ndash; refer to Paypal documentation for details | Yes | Yes |
+| pingit | GBP | Yes | No | Pingit should be implemented as a Silent Post (or Direct Post) when possible to avoid an extra click. The Pingit application will open directly on the mobile device. |
+| poli | AUD | Yes | No |
+| prepaidcard | All currencies supported by Paysafe | No | Yes |
+| sofortbanking | EUR | Yes | No |
+| unionpay | CNY | Yes | Yes | <ul><li>The following parameters are **mandatory** when processing an order using *unionpay* as the payment method:</li><ul><li>profile.firstName</li><li>profile.lastName</li><li>profile.dateOfBirth.year</li><li>profile.dateOfBirth.month</li><li>profile.dateOfBirth.day</li><li>billingDetails.street</li><li>billingDetails.city</li><li>billingDetails.state</li><li>billingDetails.zip</li><li>billingDetails.country</li><li>customerNotificationEmail</li></ul><li>You cannot process a rebill using unionpay.</li><li>You cannot process an order with a profile ID using unionpay.</li><li>Because unionpay requests can take an extended period of time to complete, the on_success and on_failure callbacks and redirects will not work. Instead, use the on_pending callbacks and redirects.</li></ul>   |
+
+
+
+<a name="implementing-threatmetrix-for-a-silent-post-order"></a>
+# Implementing ThreatMetrix for a Silent Post Order
+
+ThreatMetrix is a service that anonymously profiles your website visitor’s computer in real time to determine its unique fingerprint – derived from over 150 attributes obtained from such data as TCP/IP packets, operating system, fonts, language, time zone, operating system, browser, and more, matching it against a global collection of data from previously profiled computers and their transactions. Implementing the ThreatMetrix service provides merchants with an additional layer of protection that reduces lost sales from false negatives, reduces fraud chargebacks and associated fees, and minimizes fraud management expense by reducing the number of transactions sent for manual review.
+
+**To implement ThreatMetrix for a Silent Post (also known as Direct Post) order: **
+
+1. Set up an order and retrieve the id from the order response from Paysafe (see [Order Response](#order-response) to see the id). 
+
+1. Insert that id along with the org_id – which Paysafe will provide you – in the profiling HTML (see [HTML](#html)).
+
+1. Insert this profiling HTML on one or more pages of your e-commerce site. **Note:** In order for this profiling HTML to be effective, you must place it on a page on which your customer will stay for at least 3–5 seconds.
+
+1. Configure a Web server URL redirect so that the objects in the profiling code that reside on h.online-metrix.net can be referenced on your local domain. This will enable maximum attribute collection (some browsers will attempt to block third-party domains). See [Redirecting the profile server URL](#redirecting-the-profile-server-url) for details.
+
+1. When your customer visits the page containing the profiling HTML on your site to make a purchase, the ThreatMetrix process is launched and the resulting profile and score are integrated into the Paysafe risk assessment of that transaction. **Note:** Should you wish to use your own value for the session_id then please see _threatMetrixSessionId_ in the table of _extendedOptions_ key/value pairs in the [extendedOptions Object](#extendedoptions-object). 
+
+<a name="html"></a>
+## Profiling HTML
+
+Paysafe provides the profiling HTML, below, to insert on your e-commerce site. The code should be placed inside the <body> section of your HTML pages.
+
+*   If placed at the beginning of the <body> section, the profiling can begin sooner, but may have a slight impact on your page render time. 
+*   If placed at the end of the <body> section, the profiling tags will not affect the render time of your page, but it may take slightly more time to complete the profiling.
+
+The profiling HTML contains two dynamic variables: *org_id* and *session_id*. The rest of the code is static.
+
+| Variable | Description |
+|--- |--- |
+| org_id | The *org_id* parameter uniquely identifies the Paysafe account with ThreatMetrix. Paysafe will provide you with the value for this parameter.  |
+| session_id | For the *session_id*, use the *id* you receive in the response to the initial order for which you want to implement ThreatMetrix profiling. See [Order Response](#order-response) for details. |
+
+
+**HTML**
+
+This is an example of the HTML you could insert in your e-commerce site, amended as required (e.g., inserting proper values for the *org_id* and *session_id* variables).
+
+```html
+<!-Begin ThreatMetrix profiling tags below -->
+<!- note: replace 'my_org_id' with your organization id note: replace my_session_id' with a uniquely generated handle -->
+<!- note: 'PAGEID' is only needed for TDCloud, replace 'PAGEID' with an unique ID for that page, if omitted, default is 1 -->
+<!- note: for production, replace 'h.online-metrix.net' with a local URL and configure your web server to redirect to 'h.online-metrix.net' -->
+<img src="https://h.online-metrix.net/fp/clear.png?org_id=my_org_id&amp;session_id=my_session_id&amp;m=2" />
+<script src="https://h.online-metrix.net/fp/check.js?org_id=my_org_id&amp;session_id=my_session_id&amp;pageid=##PAGEID##">
+</script>
+<object type="application/x-shockwave-flash" data="https://h.online-metrix.net/fp/fp.swf?org_id=my_org_id&amp;session_id=my_session_id" width="1" height="1">
+ <param name="movie" value="https://h.online-metrix.net/fp/fp.swf?org_id=my_org_id&amp;session_id=my_session_id" />
+ <param name="wmode" value="transparent" />
+<div></div>
+</object>
+<!- End profiling tags -->
+```
+
+<a name="redirecting-the-profile-server-url"></a>
+# Redirecting the profile server URL
+
+In the sample HTML above, all objects refer to the server h.online-metrix.net. This is the DNS name of the ThreatMeterix profiling server. In your Production environment you should use a local URL and configure your Web server to redirect to h.online-metrix.net. Otherwise, visitors can configure their Web browser to block the third-party h.online-metrix.net domain and disable profiling. In addition, many customers prefer that all objects in their Web pages refer only to their own domain.
+
+Configuring redirection is Web server–specific. Here are two ways to do that using Apache (tested with Apache 2.2). Both methods will cause the Apache Web server to send an HTTPS REDIRECT reply for any URL path beginning with /fp/ on the host name it is configured for. The calling page remains the same in the customer’s browser; only the URL appearing in the profiling HTML is changed. This reply tells the HTTP client to re-fetch the new URL instead of the one embedded in the HTML page. Users who view the source of the HTML page itself will not notice that the links are actually redirected to another server. However, tracing tools will still show that a call was being made to an external server.
+
+**RedirectMatch**
+
+Ensure that mod_alias is enabled in the Apache configuration. To do so, make sure the following line is included in the main Apache configuration file (/etc/httpd/conf/httpd.conf on RHEL5):
+
+```LoadModule alias_module modules/mod_alias.so```
+On most standard Apache configurations this is the default, in which case no action is required on your part. Add the following line to the relevant VirtualHost:
+```RedirectMatch ^/(fp/.*) https://h.online-metrix.net/$1```
+**Rewrite Module**
+Ensure that mod_rewrite is enabled in the Apache configuration. To do so, make sure the following line is included in the main Apache configuration file (/etc/httpd/conf/httpd.conf on RHEL5):
+```LoadModule rewrite_module modules/mod_rewrite.so```
+On most standard Apache configurations this is the default, in which case no action is required on your part. Add the following to the relevant VirtualHost:
+```RewriteEngine On RewriteRule ^/(fp/.*) https://h.online-metrix.net/$1 [L,R]```
 
 # Testing Instructions
 
@@ -1146,10 +1335,23 @@ When you are ready to test your example, you can choose between the Production a
 
 To call the API resource, click **Call Resource**. The response is displayed in the Console window.
 
+## Verify the Service is Accessible [GET /monitor]
+
+This call returns a status of READY if the API is available.
+
++ Response 200 (application/json)
+
+  + Body
+    
+            {
+                "status" : "READY"
+            }
+
+
 # Group Orders
 <a name="orders"></a>
 
-## Process an Order [POST /orders]
+## Process an Order [POST /v1/orders]
 
 **Process an Order with a Hosted Payment Page**
 
@@ -1511,7 +1713,7 @@ Once a customer profile has been created (see [profile Object](#profile-object))
 
 
 
-## Cancel an Order [DELETE /orders/{order_id}]
+## Cancel an Order [DELETE /v1/orders/{order_id}]
 <a name="cancel-an-order"></a>
 
 In order to cancel an order, call DELETE on an order URL. 
@@ -1559,7 +1761,7 @@ In order to cancel an order, call DELETE on an order URL.
             }
     
     
-## Cancel a Held Order [PUT /orders/{order_id}]
+## Cancel a Held Order [PUT /v1/orders/{order_id}]
 <a name="cancel-a-held-order"></a>
 
 In order to cancel an order with a *transaction.status* of *held*, call PUT on an order URL with a status of cancelled. 
@@ -1614,7 +1816,7 @@ An update response will have the same structure as GET status except  that when 
             }
             
 
-## Resend an Order Callback [GET /orders/{order_id}/resend_callback]
+## Resend an Order Callback [GET /v1/orders/{order_id}/resend_callback]
 <a name="resend-an-order-callback"></a>
 
 Providing a suitable callback has been configured against the order, callbacks can be resent as shown in the example.
@@ -1644,7 +1846,7 @@ There are two ways of processing a rebill:
 **Note:** Cancelling a rebill request works in the same way as order cancellation. See [Cancel an Order](#cancel-an-order) for details. 
 
 
-## Process a Rebill Using an Order ID [POST /orders/{order_id}]
+## Process a Rebill Using an Order ID [POST /v1/orders/{order_id}]
 <a name="process-a-rebill-using-an-orderid"></a>    
 
 Rebills can be processed against your customer’s card by using a previously successful order ID. The rebill can be immediate or can be set up to run at a future date. 
@@ -1757,7 +1959,7 @@ A rebill request has the same parameter requirements as an order creation reques
             }
 
   
-## Process a Rebill Using a Profile [POST /orders/{order_id}]
+## Process a Rebill Using a Profile [POST /v1/orders/{order_id}]
 <a name="process-a-rebill-using-a-profile"></a>  
 
 Rebills can be processed against your customer’s card by using a customer profile.   
@@ -1839,7 +2041,7 @@ The *recurringIndicator* option allows a payment to be processed without prompti
 
 # Group Order Status
 
-## Get an Order Status [GET /orders/{order_id}]
+## Get an Order Status [GET /v1/orders/{order_id}]
 <a name="get-an-order-status"></a>
 
 To determine the status of an order request, use the *self* link (which is returned in the order creation response from Paysafe) from your application or from the command line. 
@@ -2007,7 +2209,7 @@ It is possible to update a subset of items relating to an order after it has bee
 * [Update a Rebill Order](#update-a-rebill-order)
 
 
-## Update a Held Order [PUT /orders/{order_id}]
+## Update a Held Order [PUT /v1/orders/{order_id}]
 <a name="update-a-held-order"></a>
 
 If an order has been held, the *transaction.status* of an order can be updated from *held* to either *success* or *cancelled*. 
@@ -2067,7 +2269,7 @@ See [Order Status Response Parameters](#order-status-response-parameters) to see
                 "type" : "order"
             }
 
-## Update a Rebill Order [PUT /orders/{order_id}]
+## Update a Rebill Order [PUT /v1/orders/{order_id}]
 <a name="update-a-rebill-order"></a>
 
 If a rebill has not been processed, any details associated with that rebill can be updated (see [Process a Rebil](#process-a-rebill))
@@ -2127,7 +2329,7 @@ See [Order Status Response Parameters](#order-status-response-parameters) to see
 
 # Group Reports
 
-## Get an Order Report [GET /orders?num={num}&start={start}]
+## Get an Order Report [GET /v1/orders?num={num}&start={start}]
 
 A list of recently created/processed orders can be retrieved via the Hosted Payments API using a GET request.
 * You can include an offset.
@@ -2224,7 +2426,7 @@ In the event that all orders are returned, no next/prev links will be supplied.
 # Group Refunds
 <a name="refunds"></a>
 
-## Refund an Order [POST /orders/{order_id}/refund]
+## Refund an Order [POST /v1/orders/{order_id}/refund]
 <a name="refund-an-order"></a>
 
 The Hosted Payments API allows orders that have been processed against the merchant integration to be refunded. A refund can be processed against an order ID where the funds have been settled. 
@@ -2309,7 +2511,7 @@ The response parameters are described below:
 # Group Settlements
 <a name="settlements"></a>
 
-## Settle an Order [POST /orders/{order_id}/settlement]
+## Settle an Order [POST /v1/orders/{order_id}/settlement]
 <a name="settle-an-order"></a>
 
 Depending on the merchant integration type, transactions may need to be settled at some point after the original authorization (e.g., if goods will ship after a few days). The settlement API works in the same way as for refunds.
@@ -2381,7 +2583,7 @@ The response parameters are described below:
             }
 
 
-## Cancel a Settlement [DELETE /orders/{order_id}/settlement]
+## Cancel a Settlement [DELETE /v1/orders/{order_id}/settlement]
 <a name="cancel-a-settlement"></a>
 
 If a settlement request has been sent but the amount has not yet been settled, it is possible to cancel the settlement using the ID returned by Paysafe in the settlement response (see [Settle an Order](#settle-an-order)). 
@@ -2462,7 +2664,7 @@ With either method, your request must include the [*extendedOption*](#extendedo
 
             
 
-## Issue an Original Credit Using an Order ID [POST /orders/{order_id}]
+## Issue an Original Credit Using an Order ID [POST /v1/orders/{order_id}]
 <a name="issue-an-original-credit-using-an-order-ID"></a>
 
 Rebills can be processed against a customer’s card by using a previously successful order ID. You can use a rebill request to issue an original credit.
@@ -2520,7 +2722,7 @@ See [Process a Rebill Using an Order ID](#process-a-rebill-using-an-order-id) fo
             }
             
 
-## Issue an Original Credit Using a Profile [POST /orders]
+## Issue an Original Credit Using a Profile [POST /v1/orders]
 <a name="issue-an-original-credit-using-a-profile"></a>
 
 Once a customer profile has been created (see [profile Object](#profile-object)), the *id* can be used to securely store the customer's card details with Paysafe for future use. You can use this profile information to issue an original credit.
