@@ -1488,11 +1488,9 @@ Once you receive a successful response, create a post to the *hosted_payment* UR
 The Hosted Payments API allows merchants to create customer profiles for their customers inline with the order request. Once a customer profile is created, it can be used to accept payments from the customer. 
 The profile information is also used to populate the customer name field of the billing address displayed on the payment page. See [profile Object](#profile-object) for details on adding a profile object to the Order JSON structure.
 The Hosted Payments API customer profile feature allows your customers to securely store their card details with Paysafe for future use during order processing. When the customer is redirected to the Hosted Payments page, they will see an option to store their card details. If this option is selected by the customer, the next time the payment page is displayed their stored card data will be displayed providing the profile id (see [profile Object](#profile-object)) is passed in with the order creation request.
-
+ 
 <br></br>
 **Note:** *paymentToken* is only returned once a payment has been successfully processed against the order, e.g., in the GET request on a successful order, or in the callback parameters (if requested).
-
-![](https://developer.paysafe.com/fileadmin/flarecontent/devcentre/Content/Resources/Images/storedetailshosted.gif)
 
 The Hosted Payments API customer profile feature offers customers the following options on the Hosted Payments page:
 * Store multiple cards
