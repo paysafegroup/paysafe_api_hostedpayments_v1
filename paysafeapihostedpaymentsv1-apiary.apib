@@ -205,8 +205,6 @@ This table provides the following additional information on each payment method:
 | sofortbanking | EUR | Yes | No |
 | unionpay | CNY | Yes | Yes | <ul><li>The following parameters are **mandatory** when processing an order using *unionpay* as the payment method:</li><ul><li>profile.firstName</li><li>profile.lastName</li><li>profile.dateOfBirth.year</li><li>profile.dateOfBirth.month</li><li>profile.dateOfBirth.day</li><li>billingDetails.street</li><li>billingDetails.city</li><li>billingDetails.state</li><li>billingDetails.zip</li><li>billingDetails.country</li><li>customerNotificationEmail</li></ul><li>You cannot process a rebill using unionpay.</li><li>You cannot process an order with a profile ID using unionpay.</li><li>Because unionpay requests can take an extended period of time to complete, the on_success and on_failure callbacks and redirects will not work. Instead, use the on_pending callbacks and redirects.</li></ul>   |
 
-
-
 <a name="implementing-threatmetrix-for-a-silent-post-order"></a>
 # Implementing ThreatMetrix for a Silent Post Order
 
@@ -280,9 +278,78 @@ Ensure that mod_rewrite is enabled in the Apache configuration. To do so, make s
 On most standard Apache configurations this is the default, in which case no action is required on your part. Add the following to the relevant VirtualHost:
 ```RewriteEngine On RewriteRule ^/(fp/.*) https://h.online-metrix.net/$1 [L,R]```
 
+## Optional Order Features
+
+### Send Customer Email Notifications
+
+In order to send a notification email to the customer, pass a *customerNotificationEmail* parameter during the order creation step as follows:  
+
+```apib
+{
+  "customerNotificationEmail" : "jane.smythe@emailhost.com"
+}
+```
+
+Customer email notifications offer full localization and customization. Please contact Merchant Services for more details.
+In order to avoid sending a customer notification email, send the *extendedOption* field *suppressCustomerEmail* with the value *true*.
+See [Order Object](#order-object) for details on using the *customerNotificationEmail* parameter.
+
+<a name="localization"></a>
+### Localization
+The Hosted Payments API supports localization of display pages and/or emails that contain payment and receipt information. The system will attempt a best-match to the localization information passed in the locale parameter.
+
+**Note:** If the *locale* parameter is not passed or an unsupported ISO 639-1 code is sent to the API then the default value provided in the merchant’s integration configuration will be used.
+
+To add localization information to the order, pass the locale parameter as follows:
+
+```apib
+{
+  "locale" : "en_GB"
+}
+```
+
+Currently supported locale parameters are:
+
+* en_US
+* en_GB
+* fr_FR
+* fr_CA
+
+See [Order Object](#order-object) for details on using the *locale* parameter.
+
+
+### Send Customer Email Notifications
+
+In order to send a notification email to the customer, pass a *customerNotificationEmail* parameter during the order creation step as follows:  
+
+```apib
+{
+  "customerNotificationEmail" : "jane.smythe@emailhost.com"
+}
+```
+
+Customer email notifications offer full localization and customization. Please contact Merchant Services for more details.
+In order to avoid sending a customer notification email, send the *extendedOption* field *suppressCustomerEmail* with the value *true*.
+
+See [Order Object](#order-object) for details on using *customerNotificationEmail* parameter.
+
+
+### Send Merchant Email Notifications
+
+In order to send a notification email to the merchant, pass a *merchantNotificationEmail* parameter during the order creation step as follows:
+
+```apib
+{
+  "merchantNotificationEmail" : "merchant@emailhost.com"
+}
+```
+
+See [Order Object](#order-object) for details on using *merchantNotificationEmail* parameter.
+
 # Testing Instructions
 
 The Paysafe Test environment can be used to test websites or applications without actually running transactions through a live Hosted Payments service. It is important to make sure that your systems are working correctly before going into a live environment. Click [here](https://developer.paysafe.com/en/rest-api/hosted/test-and-go-live/testing-instructions/) for details of how to use the test environment.
+See [our test card section](https://developer.paysafe.com/en/rest-api/cards/test-and-go-live/test-cards/) for cards you can use in our test environment.
 
 # ISO Standards
 
