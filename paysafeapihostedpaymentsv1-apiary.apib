@@ -1054,7 +1054,7 @@ The *link* section works in the same way as redirects. All addendum data fields 
 |---                     |---                        |---            |---|
 |rel                     |enumeration                |Yes            |This is the link type, allowing different endpoints to be targeted depending on the end state of the transaction. Possible values are:<ul><li>cancel_url</li><li>return_url</li></ul>|
 |returnKeys              |array                      |               |This is an array of parameter names to be passed back to the URL using a get request (the parameters are encoded in the query string using the & delimiter), including those passed in [addendumData](#addendumdata-object).|
-|uri                     |string<br/>`length<=40`    |Yes            |This is the URL to which to send the link. If this is an HTTPS address, please ensure that the certificate is valid. Otherwise, the link will cause the browser to display a certificate warning. |
+|uri                     |string<br/>`length<=1024`    |Yes            |This is the URL to which to send the link. If this is an HTTPS address, please ensure that the certificate is valid. Otherwise, the link will cause the browser to display a certificate warning. |
 
 **Example**
 
