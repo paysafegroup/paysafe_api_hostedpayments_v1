@@ -909,7 +909,7 @@ The callback system can detect problems with the merchant system and retry any f
 |rel                     |enumeration               |Yes            |This is the callback type, allowing different endpoints to be targeted depending on the end state of the transaction. Possible values are: <ul><li>on_success</li><li>on_decline</li><li>on_hold</li></ul> <br>Multiple callbacks of the same type are possible, and can be appended to the array.|
 |retries                 |number<br/>`0-10`         |               |This specifies the number of callback attempts to make on the system (from 0 to 10) after receiving an error from the merchant endpoint.|
 |returnKeys              |array                     |               |This is an array of additional parameter names to be passed back to the URL in the format specified. All *addendumData* parameters are returned by default. See [callback return keys](#callback-return-keys).|
-|synchronous             |boolean                   |               |This parameter specifies that the callback should be made in-line with the authorization. The system will time out any synchronous callback that takes longer than 20 seconds to complete. <br></br><br></br>**Note:** This value defaults to *false*. Paysafe recommends that this flag is set to false. Callbacks will be made back to the merchant within 10 minutes of a transaction attempt. |
+|synchronous             |boolean                   |               |This parameter specifies that the callback should be made in-line with the authorization. The system will time out any synchronous callback that takes longer than 20 seconds to complete. <br></br><br></br>**Note:** This value defaults to *false*. Paysafe recommends that this flag is set to *true*. Callbacks will be made back to the merchant within 10 minutes of a transaction attempt.
 |uri                     |string<br/>`length<=1024` |Yes            |This is the URL to which to send the callback. If this is an HTTPS address, please ensure that the certificate is valid – otherwise, the callback will fail.|
 |delimiter               |string<br/>`length<=10`   |               |This specifies the delimiter to use when parameters are sent to the callback URI (e.g, “;” “&” “$”). By default an ampersand (&) is used. <br></br><br></br>**Note:** The delimiter parameter is supported only when the format parameter is set to get or form-urlencoded.|
 
@@ -2748,7 +2748,7 @@ Once a customer profile has been created (see [profile Object](#profile-object))
 <h1>Legal and Community</h1>
 <ul class="footer-menu">
 <li><a href="https://www.paysafe.com/privacy-policy/" target="_blank">Privacy Policy</a></li>
-<li><a href="en/resources-and-support/terms-of-use/" target="_blank">Terms of Use</a></li>
+<li><a href="https://developer.paysafe.com/en/resources-and-support/terms-of-use/" target="_blank">Terms of Use</a></li>
 <li><a href="http://www.paysafe.com/regulatory-disclosure/" target="_blank">Regulatory Disclosures</a></li>
 <li><a href="http://community.paysafe.com/spaces/11/index.html" target="_blank">FAQs</a></li>
 <li><a href="http://community.paysafe.com/index.html" target="_blank">Community</a></li>
