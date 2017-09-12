@@ -19,6 +19,7 @@ HOST: https://api.test.netbanx.com/hosted/
 | 1.1 | March 2013 | <ul><li>Added customer profiles</li><li>Added mobile functionality</li><li>Added return keys table</li><li>Added key/value pairs</li></ul>|
 | 1.0 | January 2013 | <ul><li>Document release</li></ul>|
 
+<a name="overview" title="Overview"></a>
 # Overview
 
 The API is a RESTful interface for making secure payments by way of your e-commerce site. The REST API works with JSON messages and responses.
@@ -33,6 +34,7 @@ and comply with PCI guidelines regarding the handling of card data.
 
 ![Hosted Checkout Flow](https://developer.paysafe.com/fileadmin/flarecontent/devcentre/Content/Resources/Images/HostedAPIOverview_Hosted__Paysafe.png)
 
+<a name="authentication" title="Authentication"></a>
 # Authentication
 
 In order for you to use the Paysafe REST API, Paysafe must first set you up on their system and provide you with an API key. Your API key looks something like this:
@@ -57,8 +59,10 @@ For additional details, please refer to [http://en.wikipedia.org/wiki/Basic_acce
 
 **Note:** Your Production API key will be different from your Test API key. Contact your account manager for details. You must keep your API keys safe and ensure that it is used appropriately for your needs.
 
+<a name="urls" title="URLs"></a>
 # URLs 
 
+<a name="testurl" title="Test URL"></a>
 ##  Test URL
 In order to test your integration with Paysafe, use the following Test URL:
 
@@ -68,6 +72,7 @@ For example:
 
 `https://api.test.netbanx.com/hosted/v1/orders/{ORDER_ID}`
 
+<a name="productionurl" title="Production URL"></a>
 ## Production URL
 In order to process live requests with Paysafe, use the following Production URL:
 
@@ -77,6 +82,7 @@ For example:
 
 `https://api.netbanx.com/hosted/v1/orders/{ORDER_ID}`
 
+<a name="api" title="API"></a>
 # API 
 
 The Hosted Payments API allows merchants to process orders using the REST protocol. The protocol uses JSON for all requests and responses.
@@ -88,11 +94,12 @@ The following request types are supported:
   * [Refunds](#refunds)
   * [Original Credits](#originalcredits)
 
+<a name="getting_started" title="Getting Started"></a>
 # Getting Started
 
 The Hosted Payments API handles the collection and storage of sensitive customer payment information, significantly reducing your PCI DSS compliance requirements. Click [here](https://developer.paysafe.com/en/rest-api/hosted/using-the-api/scenarios/) for descriptions of the main scenarios.
 
-<a name="silent-post-considerations"></a>
+<a name="silent-post-considerations" title="Silent Post Considerations"></a>
 # Silent Post Considerations
 
 Depending on the *paymentMethod* that is specified in the order (see [Order Object](#order-object)), different parameters may be required to send to Paysafe when a [Silent Post order](#process-an-order-with-a-silent-post) (also known as Direct Post) is processed. This means that capturing the necessary payment details from the customer is required on the merchant payment page depending on the chosen payment type.  
@@ -110,7 +117,7 @@ For the following payment methods, no additional parameters need to be passed wi
 *   paypal
 *   poli
 
-<a name="silent-post-for-customer-profile"></a>
+<a name="silent-post-for-customer-profile" title="Silent Post for Customer Profile"></a>
 ##Silent Post for Customer Profile
 
 If a customer profile has been created, you may be able to submit fewer parameters with a [Silent Post order](#process-an-order-with-a-silent-post) (also known as Direct Post). 
@@ -118,7 +125,7 @@ If a customer profile has been created, you may be able to submit fewer paramete
 *   If a valid *profile.id* and *profile.paymentToken* have been captured from the order request, then only a value for *cvdNumber* in the Silent Post is required. 
 *   If a valid *profile.id* (but no *profile.paymentToken*) has been captured from the order request, then all values for a standard credit card Silent Post (see [Process an Order with a Silent Post](#process-an-order-with-a-silent-post)) must be included. In this case, an additional *profile.paymentToken* will be assigned to the *profile.id* and returned in the order response (see [Order Status Response Parameters](#order-status-response-parameters)). This new token can then be used in future requests (i.e., a single *profile.id* can have multiple *profile.paymentToken* instances assigned to it).
 
-<a name="silent-post-for-giropay"></a>
+<a name="silent-post-for-giropay" title="Silent Post for Giropay"></a>
 ##Silent Post for Giropay
 
 To process a [Silent Post order](../process-an-order-with-a-silent-post) using *giropay* as the *paymentMethod*, the fields in the following table must be provided in the POST to the *hosted\_payment* URL that was received in the order response. 
@@ -130,7 +137,7 @@ To process a [Silent Post order](../process-an-order-with-a-silent-post) using *
 
 **Note:** Please consult Giropay documentation for field length constraints
 
-<a name="silent-post-for-neteller"></a>
+<a name="silent-post-for-neteller" title="Silent Post for Neteller"></a>
 ##Silent Post for Neteller
 
 To process a [Silent Post order](../process-an-order-with-a-silent-post) using *neteller* as the *paymentMethod*, the fields in the following table must be provided in the POST to the *hosted\_payment* URL that was received in the order response. 
@@ -142,7 +149,7 @@ To process a [Silent Post order](../process-an-order-with-a-silent-post) using *
 
 **Note:** Please consult NETELLER documentation for field length constraints.
 
-<a name="silent-post-for-sofort-banking"></a>
+<a name="silent-post-for-sofort-banking" title="Silent Post for Sofort Banking"></a>
 ##Silent Post for Sofort Banking
 To process a [Silent Post order](../process-an-order-with-a-silent-post) using *sofort* as the *paymentMethod*, the fields in the following table must be provided in the POST to the *hosted\_payment* URL that was received in the order response. 
 
@@ -155,7 +162,7 @@ To process a [Silent Post order](../process-an-order-with-a-silent-post) using *
 
 **Note:** Please consult Sofort Banking documentation for field length constraints
 
-<a name="payment-method-notes"></a>
+<a name="payment-method-notes" title="Payment Method Notes"></a>
 # Payment Method Notes
 This table provides the following additional information on each payment method:
 
@@ -173,7 +180,7 @@ This table provides the following additional information on each payment method:
 | poli | AUD | Yes | No |
 | sofortbanking | EUR | Yes | No |
 
-<a name="implementing-threatmetrix-for-a-silent-post-order"></a>
+<a name="implementing-threatmetrix-for-a-silent-post-order" title="Implementing ThreatMetrix for a Silent Post Order"></a>
 # Implementing ThreatMetrix for a Silent Post Order
 
 ThreatMetrix is a service that anonymously profiles your website visitor’s computer in real time to determine its unique fingerprint – derived from over 150 attributes obtained from such data as TCP/IP packets, operating system, fonts, language, time zone, operating system, browser, and more, matching it against a global collection of data from previously profiled computers and their transactions. Implementing the ThreatMetrix service provides merchants with an additional layer of protection that reduces lost sales from false negatives, reduces fraud chargebacks and associated fees, and minimizes fraud management expense by reducing the number of transactions sent for manual review.
@@ -190,7 +197,7 @@ ThreatMetrix is a service that anonymously profiles your website visitor’s com
 
 1. When your customer visits the page containing the profiling HTML on your site to make a purchase, the ThreatMetrix process is launched and the resulting profile and score are integrated into the Paysafe risk assessment of that transaction. **Note:** Should you wish to use your own value for the session_id then please see _threatMetrixSessionId_ in the table of _extendedOptions_ key/value pairs in the [extendedOptions Object](#extendedoptions-object). 
 
-<a name="html"></a>
+<a name="html" title="Profiling HTML"></a>
 ## Profiling HTML
 
 Paysafe provides the profiling HTML, below, to insert on your e-commerce site. The code should be placed inside the <body> section of your HTML pages.
@@ -226,7 +233,7 @@ This is an example of the HTML you could insert in your e-commerce site, amended
 <!- End profiling tags -->
 ```
 
-<a name="redirecting-the-profile-server-url"></a>
+<a name="redirecting-the-profile-server-url" title="Redirecting the profile server URL"></a>
 # Redirecting the profile server URL
 
 In the sample HTML above, all objects refer to the server h.online-metrix.net. This is the DNS name of the ThreatMeterix profiling server. In your Production environment you should use a local URL and configure your Web server to redirect to h.online-metrix.net. Otherwise, visitors can configure their Web browser to block the third-party h.online-metrix.net domain and disable profiling. In addition, many customers prefer that all objects in their Web pages refer only to their own domain.
@@ -246,8 +253,10 @@ Ensure that mod_rewrite is enabled in the Apache configuration. To do so, make s
 On most standard Apache configurations this is the default, in which case no action is required on your part. Add the following to the relevant VirtualHost:
 ```RewriteEngine On RewriteRule ^/(fp/.*) https://h.online-metrix.net/$1 [L,R]```
 
+<a name="optional_order_features" title="Optional Order Features"></a>
 ## Optional Order Features
 
+<a name="send_customer_email_notifications" title="Send Customer Email Notifications"></a>
 ### Send Customer Email Notifications
 
 In order to send a notification email to the customer, pass a *customerNotificationEmail* parameter during the order creation step as follows:  
@@ -262,7 +271,7 @@ Customer email notifications offer full localization and customization. Please c
 In order to avoid sending a customer notification email, send the *extendedOption* field *suppressCustomerEmail* with the value *true*.
 See [Order Object](#order-object) for details on using the *customerNotificationEmail* parameter.
 
-<a name="localization"></a>
+<a name="localization" title="Localization"></a>
 ### Localization
 The Hosted Payments API supports localization of display pages and/or emails that contain payment and receipt information. The system will attempt a best-match to the localization information passed in the locale parameter.
 
@@ -285,7 +294,7 @@ Currently supported locale parameters are:
 
 See [Order Object](#order-object) for details on using the *locale* parameter.
 
-
+<a name="send_customer_email_notifications" title="Send Customer Email Notifications"></a>
 ### Send Customer Email Notifications
 
 In order to send a notification email to the customer, pass a *customerNotificationEmail* parameter during the order creation step as follows:  
@@ -301,7 +310,7 @@ In order to avoid sending a customer notification email, send the *extendedOptio
 
 See [Order Object](#order-object) for details on using *customerNotificationEmail* parameter.
 
-
+<a name="send_merchant_email_notifications" title="Send Merchant Email Notifications"></a>
 ### Send Merchant Email Notifications
 
 In order to send a notification email to the merchant, pass a *merchantNotificationEmail* parameter during the order creation step as follows:
@@ -314,14 +323,16 @@ In order to send a notification email to the merchant, pass a *merchantNotificat
 
 See [Order Object](#order-object) for details on using *merchantNotificationEmail* parameter.
 
+<a name="testing_instructions" title="Testing Instructions"></a>
 # Testing Instructions
 
 The Paysafe Test environment can be used to test websites or applications without actually running transactions through a live Hosted Payments service. It is important to make sure that your systems are working correctly before going into a live environment. Click [here](https://developer.paysafe.com/en/rest-api/hosted/test-and-go-live/testing-instructions/) for details of how to use the test environment.
 See [our test card section](https://developer.paysafe.com/en/rest-api/cards/test-and-go-live/test-cards/) for cards you can use in our test environment.
 
+<a name="iso_standards" title="ISO Standards"></a>
 # ISO Standards
 
-<a name="currency-codes"></a>
+<a name="currency-codes" title="Currency Codes"></a>
 ## Currency Codes
 
 **Note:**
@@ -415,7 +426,7 @@ See [our test card section](https://developer.paysafe.com/en/rest-api/cards/test
 |Venezuelan Bolivar |VEF  |
 |Viet Nam Dong  |VND  |
 
-<a name="province-codes"></a>
+<a name="province-codes" title="Province Codes"></a>
 ## Province Codes
 | **Province** | **Code** |
 |---           |---       |---|
@@ -433,7 +444,7 @@ See [our test card section](https://developer.paysafe.com/en/rest-api/cards/test
 | Saskatchewan | SK |
 | Yukon | YT |
 
-<a name="state-codes"></a>
+<a name="state-codes" title="State Codes"></a>
 ## State Codes
 | **State** | **Code** |
 |---        |---       |--- |
@@ -500,7 +511,7 @@ See [our test card section](https://developer.paysafe.com/en/rest-api/cards/test
 | Wisconsin | WI |
 | Wyoming | WY |
 
-<a name="country-codes"></a>
+<a name="country-codes" title="Country Codes"></a>
 ## Country Codes
 | **Country** | **Code** |
 |---          |---       |--- |
@@ -755,9 +766,10 @@ See [our test card section](https://developer.paysafe.com/en/rest-api/cards/test
 | Zimbabwe | ZW |
 
 
+<a name="complex_json_objects" title="Complex JSON Objects"></a>
 # Complex JSON Objects
 
-<a name="accordd-object"></a>
+<a name="accordd-object" title="accordD Object"></a>
 ## accordD Object
 
 The accordD object allows the merchant to specify a financing plan along with the regular order. 
@@ -785,7 +797,7 @@ The accordD object allows the merchant to specify a financing plan along with th
 }
 ```
 
-<a name="addendumdata-object"></a>
+<a name="addendumdata-object" title="addendumData Object"></a>
 ## addendumData Object
 
 * Addendum data allows the merchant to specify additional data (e.g., affiliate codes, session IDs, etc.) to be stored against the transaction and returned to in status calls, reports, etc. Addendum data parameters are sent back in callbacks and redirection URLs.
@@ -813,7 +825,7 @@ The accordD object allows the merchant to specify a financing plan along with th
 }
 ```
 
-<a name="ancillaryFees-object"></a>
+<a name="ancillaryFees-object" title="ancillaryFees Object"></a>
 ## ancillaryFees Object
 |Element                 |Type                      |Required       |Description|
 |---                     |---                       |---            |---|
@@ -837,7 +849,7 @@ The accordD object allows the merchant to specify a financing plan along with th
 }
 ```
 
-<a name="associatedTransactions-object"></a>
+<a name="associatedTransactions-object" title="associatedTransactions Object"></a>
 ## associatedTransactions Object
 
 |Element                 |Type                      |Required       |Description|
@@ -862,7 +874,7 @@ The accordD object allows the merchant to specify a financing plan along with th
 }
 ```
 
-<a name="billingDetails-object"></a>
+<a name="billingDetails-object" title="billingDetails Object"></a>
 ## billingDetails Object
 
 The merchant can return billing details in the order – these details will be used to pre-populate the payment form when the payment page is requested for payment. The street and zip parameters are used for address verification checks. No further validation on other address information is performed (other than data-type integrity checks).
@@ -896,7 +908,7 @@ The merchant can return billing details in the order – these details will be u
 }
 ```
 
-<a name="callback-object"></a>
+<a name="callback-object" title="callback Object"></a>
 ## callback Object
 Callbacks can be made back to a merchant system either in-line with a transaction authorization or asynchronously shortly after. 
 The callback system can detect problems with the merchant system and retry any failed attempts until a successful response is received.
@@ -909,7 +921,7 @@ The callback system can detect problems with the merchant system and retry any f
 |rel                     |enumeration               |Yes            |This is the callback type, allowing different endpoints to be targeted depending on the end state of the transaction. Possible values are: <ul><li>on_success</li><li>on_decline</li><li>on_hold</li></ul> <br>Multiple callbacks of the same type are possible, and can be appended to the array.|
 |retries                 |number<br/>`0-10`         |               |This specifies the number of callback attempts to make on the system (from 0 to 10) after receiving an error from the merchant endpoint.|
 |returnKeys              |array                     |               |This is an array of additional parameter names to be passed back to the URL in the format specified. All *addendumData* parameters are returned by default. See [callback return keys](#callback-return-keys).|
-|synchronous             |boolean                   |               |This parameter specifies that the callback should be made in-line with the authorization. The system will time out any synchronous callback that takes longer than 20 seconds to complete. <br></br><br></br>**Note:** This value defaults to *false*. Paysafe recommends that this flag is set to false. Callbacks will be made back to the merchant within 10 minutes of a transaction attempt. |
+|synchronous             |boolean                   |               |This parameter specifies that the callback should be made in-line with the authorization. The system will time out any synchronous callback that takes longer than 20 seconds to complete. <br></br><br></br>**Note:** This value defaults to *false*. Paysafe recommends that this flag is set to *true*. Callbacks will be made back to the merchant within 10 minutes of a transaction attempt.
 |uri                     |string<br/>`length<=1024` |Yes            |This is the URL to which to send the callback. If this is an HTTPS address, please ensure that the certificate is valid – otherwise, the callback will fail.|
 |delimiter               |string<br/>`length<=10`   |               |This specifies the delimiter to use when parameters are sent to the callback URI (e.g, “;” “&” “$”). By default an ampersand (&) is used. <br></br><br></br>**Note:** The delimiter parameter is supported only when the format parameter is set to get or form-urlencoded.|
 
@@ -934,7 +946,7 @@ The callback system can detect problems with the merchant system and retry any f
 }
 ```
 
-<a name="callback-return-keys"></a>
+<a name="callback-return-keys" title="Callback return keys"></a>
 The callback return keys may contain the following parameters.
 
 | Parameter | Description |
@@ -969,6 +981,7 @@ The callback return keys may contain the following parameters.
 | profile.lastName | This is the customer’s last name. |
 | customerNotificationEmail | This is the customer’s email address, to which notifications regarding the order request are sent. |
 
+<a name="error_object" title="error Object"></a>
 ## error Object
 JSON error responses from the Hosted API include an error object in the body of the response.
 
@@ -986,7 +999,7 @@ JSON error responses from the Hosted API include an error object in the body of 
 }
 ```
 
-<a name="extendedOptions-object"></a>
+<a name="extendedOptions-object" title="extendedOptions Object"></a>
 ## extendedOptions Object
 The merchant can use extended options to activate/deactivate certain features in the payment system.
 For example, if billing information is being passed from the merchant's system, it can be rendered non-editable on the payment page by setting an extended option.
@@ -1013,7 +1026,7 @@ For example, if billing information is being passed from the merchant's system, 
 }
 ```
 
-<a name="extendedoptions-keyvalue-pairs"></a>
+<a name="extendedoptions-keyvalue-pairs" title="extendedOptions Key/Value Pairs"></a>
 ### extendedOptions Key/Value Pairs
 
 The *extendedOptions* array may contain the following key/value pairs. 
@@ -1044,7 +1057,7 @@ The *extendedOptions* array may contain the following key/value pairs.
 | useProfileDefaults | boolean | When performing a transaction with *recurringIndicator* set to *true,* passing this key with a value of *true* will allow the previously stored billing details to be retrieved from the profile and passed with the new transaction. |
 
 
-<a name="link-object"></a>
+<a name="link-object" title="link Object"></a>
 ## link Object
 
 The merchant can send different links (e.g., to cancel a payment and return to the shopping basket).
@@ -1072,7 +1085,7 @@ The *link* section works in the same way as redirects. All addendum data fields 
 }
 ```
 
-<a name="order-object"></a>
+<a name="order-object" title="order Object"></a>
 ## order Object
 
 |Element                 |Type                      |Required       |Description|
@@ -1102,7 +1115,7 @@ The *link* section works in the same way as redirects. All addendum data fields 
 |[visaAdditionalAuthData](#visaAdditionalAuthData)|complex||This allows additional data to be included with a request using Visa as a payment method.|
 
 
-<a name="profile-object"></a>
+<a name="profile-object" title="profile Object"></a>
 ## profile Object
 
 For more information on profiles, see [Create a Profile with an Order](#create-a-profile-with-an-order).
@@ -1132,7 +1145,7 @@ For more information on profiles, see [Create a Profile with an Order](#create-a
 }
 ```
 
-<a name="redirect-object"></a>
+<a name="redirect-object" title="redirect Object"></a>
 ## redirect Object
 
 * Redirects are similar to callbacks in that they cause a connection back to the merchant system, but in this case from the customer's browser.
@@ -1162,7 +1175,7 @@ For more information on profiles, see [Create a Profile with an Order](#create-a
     ]
 }
 ```
-<a name="redirect-return-keys"></a>
+<a name="redirect-return-keys" title="redirect return keys"></a>
 ### redirect return keys
 
 The redirect return keys may contain the following parameters.
@@ -1184,7 +1197,7 @@ The redirect return keys may contain the following parameters.
 | transaction.unionpay.message | This is the message returned, if required. |
 | transaction.unionpay.transId | This is the Union Pay transaction ID. |
 
-<a name="shippingDetails-object"></a>
+<a name="shippingDetails-object" title="shippingDetails Object"></a>
 ## shippingDetails Object
 **Note:** The merchant should include shipping details for any purchase that requires delivery of physical goods.
 
@@ -1217,7 +1230,7 @@ The redirect return keys may contain the following parameters.
 }
 ```
 
-<a name="shoppingCart-object"></a>
+<a name="shoppingCart-object" title="shoppingCart Object"></a>
 ## shoppingCart Object
 
 **Note:** The *totalAmount* provided in the initial order must add up to the amounts (and [Ancillary Fees](#ancillaryFees-object)) passed in the *shoppingCart* section.
@@ -1251,7 +1264,7 @@ The redirect return keys may contain the following parameters.
 ```
 
 
-<a name="visaAdditionalAuthData-object"></a>
+<a name="visaAdditionalAuthData-object" title="visaAdditionalAuthData ObjectS"></a>
 ## visaAdditionalAuthData Object
 
 The recipient is deemed to be the person or party who has the contractual relationship with the merchant/financial institution. This may be different from the cardholder, e.g., in the case of a parent topping up a child's savings account. Therefore, the fields should not be collected on the same page as cardholder information, but instead be passed in the background from the merchant’s records.
@@ -1285,7 +1298,7 @@ The recipient is deemed to be the person or party who has the contractual relati
 ```
 
 
-<a name="error-summary"></a>
+<a name="error-summary" title="Error Summary"></a>
 # Error Summary
 
 This is a summary of all errors that could be returned when using the Hosted Payments API, including HTTP Status Codes.
@@ -1300,7 +1313,7 @@ This is a summary of all errors that could be returned when using the Hosted Pay
 
 5xx: Server Error – Indicates that an error occurred on the server side.
 
-<a name="common-http-response-status-codes"></a>
+<a name="common-http-response-status-codes" title="Common HTTP Response Status Codes"></a>
 ## Common HTTP Response Status Codes
 
 | Status Code               | Description |
@@ -1320,7 +1333,7 @@ This is a summary of all errors that could be returned when using the Hosted Pay
 |500 INTERNAL SERVER ERROR  | An error occurred with an internal server.|
 |502 EXTERNAL SERVER ERROR  | We received an invalid response from the upstream gateway in attempting to fulfil the request.|
 
-<a name="hosted-payment-specific-errors"></a>
+<a name="hosted-payment-specific-errors" title="Hosted Payment Specific Errors"></a>
 ## Hosted Payment Specific Errors
 
 | HTTP Status |Code                           |Description |
@@ -1342,6 +1355,7 @@ This is a summary of all errors that could be returned when using the Hosted Pay
 | 531         |"Transaction already processed"|You are attempting to make a second payment against a completed order.|
 | 400         |"Transaction not yet processed"|You are attempting to refund is a transaction that has not been processed.|
 
+<a name="using_example_API_Calls_console" title="Using the example API calls (Console Window)"></a>
 # Using the example API calls (Console Window)
 To configure and test the API examples, first click on one of the API calls in the API Reference section and then click **Switch to Console** in the right hand pane. 
 Using the Console window you can update the headers, the request body, and parts of the API endpoint. 
@@ -1357,6 +1371,7 @@ When you are ready to test your example, you can choose between the Production a
 To call the API resource, click **Call Resource**. The response is displayed in the Console window.
 
 ## Verify the Service is Accessible [GET /monitor]
+<a name="verify_service_is_accessible" title="Verify the Service is Accessible"></a>
 
 This call returns a status of READY if the API is available.
 
@@ -1370,11 +1385,13 @@ This call returns a status of READY if the API is available.
 
 
 # Group Orders
-<a name="orders"></a>
+<a name="orders" title="Orders"></a>
 
 ## Process an Order [POST /v1/orders]
+<a name="process_order" title="Process an Order"></a>
 
 **Process an Order with a Hosted Payment Page**
+<a name="process_order_hosted" title="Process an Order with a Hosted Payment Page"></a>
 
 The mandatory and optional parameters for processing an Order request are listed below. For a detailed description of the attributes listed here, please refer to the [Order object](#order-object)
 
@@ -1419,6 +1436,7 @@ Note the following:
 
 <br></br>
 **Process an Order with a Silent Post**
+<a name="process-an-order-silent-post" title="Process an Order with a Silent Post"></a>
 
 A Silent Post (or Direct Post) order enables customer data to be posted directly from a merchant-hosted payment page to Paysafe systems without using a Hosted Page. This can avoid full PCI compliance overhead, since card data does not touch merchant systems on the server side. 
 
@@ -1450,8 +1468,8 @@ Once you receive a successful response, create a post to the *hosted_payment* UR
 **Note:** Depending on your payment method, you may have to post different parameters to the *hosted_payment* URL. See [Silent Post Considerations](#silent-post-considerations) for details.
 
 <br></br>
-<a name=create-a-profile-with-an-order></a>
 **Create a Profile with an Order**
+<a name="create-a-profile-with-an-order" title="Create a Profile with an Order"></a>
 
 The Hosted Payments API allows merchants to create customer profiles for their customers inline with the order request. Once a customer profile is created, it can be used to accept payments from the customer. 
 The profile information is also used to populate the customer name field of the billing address displayed on the payment page. See [profile Object](#profile-object) for details on adding a profile object to the Order JSON structure.
@@ -1467,14 +1485,12 @@ The Hosted Payments API customer profile feature offers customers the following 
 * Edit card expiry dates
 * Add/edit billing addresses
 
-<a name=process-an-order-with-a-payment-token></a>
 **Process an Order with a Payment Token**
+<a name="process_order_with_token" title="Process an Order with a Payment Token"></a>
 
 After a customer profile (see [profile Object](#profile-object)) has been created and a payment processed (assuming the customer has selected the option to store card details), a profile *paymentToken* is created, and stored against the order. This can be retrieved via a GET request, or retrieved as a callback option, depending on how your order has been configured.
 
 Providing the *paymentToken* (along with the associated profile *id*) in the profile section of a new order will select the card used in the initial transaction on the hosted page.
-
-<a name=process-an-order-with-a-profile-id></a>
 
 Once a customer profile has been created (see [profile Object](#profile-object)), the *id* can be used to securely store the customer's card details with Paysafe for future use. When the customer is redirected to the Hosted Payments page, they will see an option to store their card details. When the profile *id* is passed in with subsequent order requests, all card information associated with profile will be displayed to the customer. The customer can then select the payment card they want to use for the order. If no cards are yet associated with the profile *id*, then any other profile information, like the customer's address, will be displayed on the payment page.
 
@@ -1728,7 +1744,7 @@ Once a customer profile has been created (see [profile Object](#profile-object))
 
 
 ## Cancel an Order [DELETE /v1/orders/{order_id}]
-<a name="cancel-an-order"></a>
+<a name="cancel-an-order" title="Cancel an Order"></a>
 
 In order to cancel an order, call DELETE on an order URL. 
 
@@ -1776,7 +1792,7 @@ In order to cancel an order, call DELETE on an order URL.
     
     
 ## Cancel a Held Order [PUT /v1/orders/{order_id}]
-<a name="cancel-a-held-order"></a>
+<a name="cancel-a-held-order" title="Cancel a Held Order"></a>
 
 In order to cancel an order with a *transaction.status* of *held*, call PUT on an order URL with a status of cancelled. 
 
@@ -1831,7 +1847,7 @@ An update response will have the same structure as GET status except  that when 
             
 
 ## Resend an Order Callback [GET /v1/orders/{order_id}/resend_callback]
-<a name="resend-an-order-callback"></a>
+<a name="resend-an-order-callback" title="Resend an Order Callback"></a>
 
 Providing a suitable callback has been configured against the order, callbacks can be resent as shown in the example.
 
@@ -1849,8 +1865,7 @@ See [callback Object](#callback-object) for more details about callbacks.
 + Response 200 
 
 # Group Rebill
-
-<a name="process-a-rebill"></a>   
+<a name="process-a-rebill" title="Rebill"></a>   
 
 There are two ways of processing a rebill:
 
@@ -1861,7 +1876,7 @@ There are two ways of processing a rebill:
 
 
 ## Process a Rebill Using an Order ID [POST /v1/orders/{order_id}]
-<a name="process-a-rebill-using-an-orderid"></a>    
+<a name="process-a-rebill-using-an-orderid" title="Process a Rebill Using an Order ID"></a>    
 
 Rebills can be processed against your customer’s card by using a previously successful order ID. The rebill can be immediate or can be set up to run at a future date. 
 A rebill request has the same parameter requirements as an order creation request, with the following exceptions:
@@ -1974,7 +1989,7 @@ A rebill request has the same parameter requirements as an order creation reques
 
   
 ## Process a Rebill Using a Profile [POST /v1/orders/{order_id}]
-<a name="process-a-rebill-using-a-profile"></a>  
+<a name="process-a-rebill-using-a-profile" title="Process a Rebill Using a Profile"></a>  
 
 Rebills can be processed against your customer’s card by using a customer profile.   
 A rebill request has the same parameter requirements as an order creation request, with the following exceptions:
@@ -2054,9 +2069,10 @@ The *recurringIndicator* option allows a payment to be processed without prompti
 
 
 # Group Order Status
+<a name="order-status" title="Order Status"></a>
 
 ## Get an Order Status [GET /v1/orders/{order_id}]
-<a name="get-an-order-status"></a>
+<a name="get-an-order-status" title="Get an Order Status"></a>
 
 To determine the status of an order request, use the *self* link (which is returned in the order creation response from Paysafe) from your application or from the command line. 
 The parameters included in the order status response may include the parameters that were part of the original transaction request (see [Process an Order with a Hosted Page](https://developer.paysafe.com/en/rest-api/hosted/typical-api-calls/process-an-order-using-a-hosted-page/)).
@@ -2119,7 +2135,7 @@ In this example the status is *pending*, which means that the transaction has no
             }
 
 # Group Order Status Response
-<a name="order-status-response-parameters"></a>
+<a name="order-status-response-parameters" title="Order Status Response"></a>
 
 In addition to the parameters that were part of the original transaction request, the order status response may contain the following parameters.
 
@@ -2215,8 +2231,8 @@ In addition to the parameters that were part of the original transaction request
 
 
 # Group Update Orders
+<a name="update-an-order" title="Update Orders"></a>
 
-<a name="update-an-order"></a>
 It is possible to update a subset of items relating to an order after it has been set up. Paysafe supports the following updates:
 
 * [Update a Held Order](#update-a-held-order)
@@ -2224,7 +2240,7 @@ It is possible to update a subset of items relating to an order after it has bee
 
 
 ## Update a Held Order [PUT /v1/orders/{order_id}]
-<a name="update-a-held-order"></a>
+<a name="update-a-held-order" title="Update a Held Order"></a>
 
 If an order has been held, the *transaction.status* of an order can be updated from *held* to either *success* or *cancelled*. 
 
@@ -2284,7 +2300,7 @@ See [Order Status Response Parameters](#order-status-response-parameters) to see
             }
 
 ## Update a Rebill Order [PUT /v1/orders/{order_id}]
-<a name="update-a-rebill-order"></a>
+<a name="update-a-rebill-order" title="Update a Rebill Order"></a>
 
 If a rebill has not been processed, any details associated with that rebill can be updated (see [Process a Rebil](#process-a-rebill))
 
@@ -2342,8 +2358,10 @@ See [Order Status Response Parameters](#order-status-response-parameters) to see
 
 
 # Group Reports
+<a name="reports" title="Reports"></a>
 
 ## Get an Order Report [GET /v1/orders?num={num}&start={start}]
+<a name="get_order_report" title="Get an Order Report"></a>
 
 A list of recently created/processed orders can be retrieved via the Hosted Payments API using a GET request.
 * You can include an offset.
@@ -2438,10 +2456,10 @@ In the event that all orders are returned, no next/prev links will be supplied.
 
 
 # Group Refunds
-<a name="refunds"></a>
+<a name="refunds" title="Refunds"></a>
 
 ## Refund an Order [POST /v1/orders/{order_id}/refund]
-<a name="refund-an-order"></a>
+<a name="refund-an-order" title="Refund an Order"></a>
 
 The Hosted Payments API allows orders that have been processed against the merchant integration to be refunded. A refund can be processed against an order ID where the funds have been settled. 
 
@@ -2459,7 +2477,6 @@ An optional *merchantRefNum* parameter can also be included.
 * Sofort Banking
 
 You will need to issue refunds via your merchant account with the relevant payment method.
-
 
 The response parameters are described below:
 
@@ -2523,10 +2540,10 @@ The response parameters are described below:
             
 
 # Group Settlements
-<a name="settlements"></a>
+<a name="settlements" title="Settlements"></a>
 
 ## Settle an Order [POST /v1/orders/{order_id}/settlement]
-<a name="settle-an-order"></a>
+<a name="settle-an-order" title="Settle an Order"></a>
 
 Depending on the merchant integration type, transactions may need to be settled at some point after the original authorization (e.g., if goods will ship after a few days). The settlement API works in the same way as for refunds.
 
@@ -2598,7 +2615,7 @@ The response parameters are described below:
 
 
 ## Cancel a Settlement [DELETE /v1/orders/{order_id}/settlement]
-<a name="cancel-a-settlement"></a>
+<a name="cancel-a-settlement" title="Cancel a Settlement"></a>
 
 If a settlement request has been sent but the amount has not yet been settled, it is possible to cancel the settlement using the ID returned by Paysafe in the settlement response (see [Settle an Order](#settle-an-order)). 
 The same response as for [Get an Order Status](#get-an-order-status) will be returned with the status set to *cancelled* upon success.
@@ -2648,7 +2665,7 @@ See [Cancel an Order](#cancel-an-order) for full details on how to cancel a requ
   
 
 # Group Original Credits
-<a name="originalcredits"></a>
+<a name="originalcredits" title="Original Credits"></a>
 
 Original Credits allow certain merchants to issue winnings as credits to cardholders, without requiring a previous Authorization/Settlement. 
 
@@ -2679,7 +2696,7 @@ With either method, your request must include the [*extendedOption*](#extendedo
             
 
 ## Issue an Original Credit Using an Order ID [POST /v1/orders/{order_id}]
-<a name="issue-an-original-credit-using-an-order-ID"></a>
+<a name="issue-an-original-credit-using-an-order-ID" title="Issue an Original Credit Using an Order ID"></a>
 
 Rebills can be processed against a customer’s card by using a previously successful order ID. You can use a rebill request to issue an original credit.
 See [Process a Rebill Using an Order ID](#process-a-rebill-using-an-order-id) for full requirements for this request type.
@@ -2737,7 +2754,7 @@ See [Process a Rebill Using an Order ID](#process-a-rebill-using-an-order-id) fo
             
 
 ## Issue an Original Credit Using a Profile [POST /v1/orders]
-<a name="issue-an-original-credit-using-a-profile"></a>
+<a name="issue-an-original-credit-using-a-profile" title="Issue an Original Credit Using a Profile"></a>
 
 Once a customer profile has been created (see [profile Object](#profile-object)), the *id* can be used to securely store the customer's card details with Paysafe for future use. You can use this profile information to issue an original credit.
 
@@ -2748,7 +2765,7 @@ Once a customer profile has been created (see [profile Object](#profile-object))
 <h1>Legal and Community</h1>
 <ul class="footer-menu">
 <li><a href="https://www.paysafe.com/privacy-policy/" target="_blank">Privacy Policy</a></li>
-<li><a href="en/resources-and-support/terms-of-use/" target="_blank">Terms of Use</a></li>
+<li><a href="https://developer.paysafe.com/en/resources-and-support/terms-of-use/" target="_blank">Terms of Use</a></li>
 <li><a href="http://www.paysafe.com/regulatory-disclosure/" target="_blank">Regulatory Disclosures</a></li>
 <li><a href="http://community.paysafe.com/spaces/11/index.html" target="_blank">FAQs</a></li>
 <li><a href="http://community.paysafe.com/index.html" target="_blank">Community</a></li>
