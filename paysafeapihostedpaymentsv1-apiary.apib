@@ -7,17 +7,18 @@ HOST: https://api.test.netbanx.com/hosted/
 
 | Version | Date | Details |
 |---      |---  |---      |
-|1.3.7  |April 2017| <ul><li>Unionpay, Prepaid card, Paynearme, Ideal and Pingit functionality removed</li></ul>
-|1.3.6  |May 2016   |<ul><li>MasterPass functionality removed</li></ul> |
-| 1.3.5 | October 2015 | <ul><li>Added functionality for China UnionPay</li><li>Ukash functionality removed</li></ul> |
-| 1.3.4 | January 2015 | <ul><li>Added functionality for Pingit</li></ul>|
+|1.3.8  |December 2017| <ul><li>Removed Unionpay, Prepaid card, PayNearMe, Ideal and Pingit functionality that hadn't been removed</li><li>Removed Threatmetrix appendix and inserted it into the Dev Center</li></ul>
+|1.3.7  |April 2017| <p>Unionpay, Prepaid card, PayNearMe, Ideal and Pingit functionality removed</p>
+|1.3.6  |May 2016   |<p>MasterPass functionality removed</p> |
+| 1.3.5 | October 2015 | <p>Added functionality for China UnionPay</li><li>Ukash functionality removed</p> |
+| 1.3.4 | January 2015 | <p>Added functionality for Pingit</p>|
 | 1.3.3 | October 2014 | <ul><li>Added *accordD* functionality for select merchants</li><li>Added *oct* as an *authType* for Original Credit requests</li></ul>|
 | 1.3.2 | May 2014 | <ul><li>Added authCode parameter to order status response table and to Return Keys appendix</li><li>Updated HTML example in ThreatMetrix appendix</li><li>Added functionality for Giropay, NETELLER, PayPal, Sofort Banking and Ukash</li><li>Updated extended options key/value pairs table</li><li>Updated values for transaction.status parameter</li></ul>|
 | 1.3.1 | February 2014 | <ul><li>Added MasterPass functionality</li><li>Updated extended options key/value pairs table</li></ul>|
 | 1.3 | October 2013 | <ul><li>Updated extended options key/value pairs table</li><li>Added section for rebilling with a profile</li><li>Added silent post for prepaid cards</li><li>Added ThreatMetrix appendix</li><li>Add optional delimiter for redirects and callbacks</li><li>Corrected rebill examples to include currencyCode</li><li>Added error message for updating a transaction</li><li>Added orderTimeout extended option and error message</li></ul>|
 | 1.2 | May 2013 | <ul><li>Updated Return Keys appendix</li><li>Added Test and Production URLs section</li><li>Added section for updating an order</li><li>Removed Order/Response Examples appendix</li><li>Added section for rebilling</li><li>Added parameters to shipping details table</li><li>Added parameters to order status response table</li><li>Updated error response table</li><li>Added four appendices</li><li>Updated extended options key/value pairs table</li></ul>|
 | 1.1 | March 2013 | <ul><li>Added customer profiles</li><li>Added mobile functionality</li><li>Added return keys table</li><li>Added key/value pairs</li></ul>|
-| 1.0 | January 2013 | <ul><li>Document release</li></ul>|
+| 1.0 | January 2013 | <p>Document release</p>|
 
 <a name="overview" title="Overview"></a>
 # Overview
@@ -102,33 +103,33 @@ The Hosted Payments API handles the collection and storage of sensitive customer
 <a name="silent-post-considerations" title="Silent Post Considerations"></a>
 # Silent Post Considerations
 
-Depending on the *paymentMethod* that is specified in the order (see [Order Object](#order-object)), different parameters may be required to send to Paysafe when a [Silent Post order](#process-an-order-with-a-silent-post) (also known as Direct Post) is processed. This means that capturing the necessary payment details from the customer is required on the merchant payment page depending on the chosen payment type.  
+When a [Silent Post order](#process-an-order-silent-post) (also known as Direct Post) is processed, additional, customer payment parameters specific to the *paymentMethod* selected in the order (see [Order Object](#order-object)) may need to be sent to Paysafe. 
 
-Consult the appropriate payment method, as required.
+The following payment methods require no additional parameters, because the redirect occurs immediately without an intermediate page being displayed:
+
+*   interac
+*   paypal
+*   poli
+
+The following payment methods, however, do require additional parameters:
 
 *   [Silent Post for Customer Profile](#silent-post-for-customer-profile)
 *   [Silent Post for Giropay](#silent-post-for-giropay)
 *   [Silent Post for NETELLER](#silent-post-for-neteller)
 *   [Silent Post for Sofort Banking](#silent-post-for-sofort-banking)
 
-For the following payment methods, no additional parameters need to be passed with the Silent Post order, as the redirect occurs immediately and no intermediary page is displayed:
-
-*   interac
-*   paypal
-*   poli
-
 <a name="silent-post-for-customer-profile" title="Silent Post for Customer Profile"></a>
 ##Silent Post for Customer Profile
 
-If a customer profile has been created, you may be able to submit fewer parameters with a [Silent Post order](#process-an-order-with-a-silent-post) (also known as Direct Post). 
+If a customer profile has been created, you may be able to submit fewer parameters with a [Silent Post order](#process-an-order-silent-post) (also known as Direct Post). 
 
 *   If a valid *profile.id* and *profile.paymentToken* have been captured from the order request, then only a value for *cvdNumber* in the Silent Post is required. 
-*   If a valid *profile.id* (but no *profile.paymentToken*) has been captured from the order request, then all values for a standard credit card Silent Post (see [Process an Order with a Silent Post](#process-an-order-with-a-silent-post)) must be included. In this case, an additional *profile.paymentToken* will be assigned to the *profile.id* and returned in the order response (see [Order Status Response Parameters](#order-status-response-parameters)). This new token can then be used in future requests (i.e., a single *profile.id* can have multiple *profile.paymentToken* instances assigned to it).
+*   If a valid *profile.id* (but no *profile.paymentToken*) has been captured from the order request, then all values for a standard credit card Silent Post (see [Process an Order with a Silent Post](#process-an-order-silent-post)) must be included. In this case, an additional *profile.paymentToken* will be assigned to the *profile.id* and returned in the order response (see [Order Status Response Parameters](#order-status-response-parameters)). This new token can then be used in future requests (i.e., a single *profile.id* can have multiple *profile.paymentToken* instances assigned to it).
 
 <a name="silent-post-for-giropay" title="Silent Post for Giropay"></a>
 ##Silent Post for Giropay
 
-To process a [Silent Post order](../process-an-order-with-a-silent-post) using *giropay* as the *paymentMethod*, the fields in the following table must be provided in the POST to the *hosted\_payment* URL that was received in the order response. 
+To process a [Silent Post order](#process-an-order-silent-post) using *giropay* as the *paymentMethod*, the fields in the following table must be provided in the POST to the *hosted\_payment* URL that was received in the order response. 
 
 | Field | Type | Required | Description |
 |---    |---   |--- |--- |
@@ -140,7 +141,7 @@ To process a [Silent Post order](../process-an-order-with-a-silent-post) using *
 <a name="silent-post-for-neteller" title="Silent Post for Neteller"></a>
 ##Silent Post for Neteller
 
-To process a [Silent Post order](../process-an-order-with-a-silent-post) using *neteller* as the *paymentMethod*, the fields in the following table must be provided in the POST to the *hosted\_payment* URL that was received in the order response. 
+To process a [Silent Post order](#process-an-order-silent-post) using *neteller* as the *paymentMethod*, the fields in the following table must be provided in the POST to the *hosted\_payment* URL that was received in the order response. 
 
 | Field | Type | Required | Description |
 |---    |---   |--- |--- |
@@ -151,7 +152,7 @@ To process a [Silent Post order](../process-an-order-with-a-silent-post) using *
 
 <a name="silent-post-for-sofort-banking" title="Silent Post for Sofort Banking"></a>
 ##Silent Post for Sofort Banking
-To process a [Silent Post order](../process-an-order-with-a-silent-post) using *sofort* as the *paymentMethod*, the fields in the following table must be provided in the POST to the *hosted\_payment* URL that was received in the order response. 
+To process a [Silent Post order](#process-an-order-silent-post) using *sofort* as the *paymentMethod*, the fields in the following table must be provided in the POST to the *hosted\_payment* URL that was received in the order response. 
 
 | Field | Type | Required | Description |
 |---    |---   |--- |--- |
@@ -179,149 +180,6 @@ This table provides the following additional information on each payment method:
 | paypal | All currencies supported by Paypal &ndash; refer to Paypal documentation for details | Yes | Yes |
 | poli | AUD | Yes | No |
 | sofortbanking | EUR | Yes | No |
-
-<a name="implementing-threatmetrix-for-a-silent-post-order" title="Implementing ThreatMetrix for a Silent Post Order"></a>
-# Implementing ThreatMetrix for a Silent Post Order
-
-ThreatMetrix is a service that anonymously profiles your website visitor’s computer in real time to determine its unique fingerprint – derived from over 150 attributes obtained from such data as TCP/IP packets, operating system, fonts, language, time zone, operating system, browser, and more, matching it against a global collection of data from previously profiled computers and their transactions. Implementing the ThreatMetrix service provides merchants with an additional layer of protection that reduces lost sales from false negatives, reduces fraud chargebacks and associated fees, and minimizes fraud management expense by reducing the number of transactions sent for manual review.
-
-**To implement ThreatMetrix for a Silent Post (also known as Direct Post) order: **
-
-1. Set up an order and retrieve the id from the order response from Paysafe (see [Order Response](#order-response) to see the id). 
-
-1. Insert that id along with the org_id – which Paysafe will provide you – in the profiling HTML (see [HTML](#html)).
-
-1. Insert this profiling HTML on one or more pages of your e-commerce site. **Note:** In order for this profiling HTML to be effective, you must place it on a page on which your customer will stay for at least 3–5 seconds.
-
-1. Configure a Web server URL redirect so that the objects in the profiling code that reside on h.online-metrix.net can be referenced on your local domain. This will enable maximum attribute collection (some browsers will attempt to block third-party domains). See [Redirecting the profile server URL](#redirecting-the-profile-server-url) for details.
-
-1. When your customer visits the page containing the profiling HTML on your site to make a purchase, the ThreatMetrix process is launched and the resulting profile and score are integrated into the Paysafe risk assessment of that transaction. **Note:** Should you wish to use your own value for the session_id then please see _threatMetrixSessionId_ in the table of _extendedOptions_ key/value pairs in the [extendedOptions Object](#extendedoptions-object). 
-
-<a name="html" title="Profiling HTML"></a>
-## Profiling HTML
-
-Paysafe provides the profiling HTML, below, to insert on your e-commerce site. The code should be placed inside the <body> section of your HTML pages.
-
-*   If placed at the beginning of the <body> section, the profiling can begin sooner, but may have a slight impact on your page render time. 
-*   If placed at the end of the <body> section, the profiling tags will not affect the render time of your page, but it may take slightly more time to complete the profiling.
-
-The profiling HTML contains two dynamic variables: *org_id* and *session_id*. The rest of the code is static.
-
-| Variable | Description |
-|--- |--- |
-| org_id | The *org_id* parameter uniquely identifies the Paysafe account with ThreatMetrix. Paysafe will provide you with the value for this parameter.  |
-| session_id | For the *session_id*, use the *id* you receive in the response to the initial order for which you want to implement ThreatMetrix profiling. See [Order Response](#order-response) for details. |
-
-
-**HTML**
-
-This is an example of the HTML you could insert in your e-commerce site, amended as required (e.g., inserting proper values for the *org_id* and *session_id* variables).
-
-```html
-<!-Begin ThreatMetrix profiling tags below -->
-<!- note: replace 'my_org_id' with your organization id note: replace my_session_id' with a uniquely generated handle -->
-<!- note: 'PAGEID' is only needed for TDCloud, replace 'PAGEID' with an unique ID for that page, if omitted, default is 1 -->
-<!- note: for production, replace 'h.online-metrix.net' with a local URL and configure your web server to redirect to 'h.online-metrix.net' -->
-<img src="https://h.online-metrix.net/fp/clear.png?org_id=my_org_id&amp;session_id=my_session_id&amp;m=2" />
-<script src="https://h.online-metrix.net/fp/check.js?org_id=my_org_id&amp;session_id=my_session_id&amp;pageid=##PAGEID##">
-</script>
-<object type="application/x-shockwave-flash" data="https://h.online-metrix.net/fp/fp.swf?org_id=my_org_id&amp;session_id=my_session_id" width="1" height="1">
- <param name="movie" value="https://h.online-metrix.net/fp/fp.swf?org_id=my_org_id&amp;session_id=my_session_id" />
- <param name="wmode" value="transparent" />
-<div></div>
-</object>
-<!- End profiling tags -->
-```
-
-<a name="redirecting-the-profile-server-url" title="Redirecting the profile server URL"></a>
-# Redirecting the profile server URL
-
-In the sample HTML above, all objects refer to the server h.online-metrix.net. This is the DNS name of the ThreatMeterix profiling server. In your Production environment you should use a local URL and configure your Web server to redirect to h.online-metrix.net. Otherwise, visitors can configure their Web browser to block the third-party h.online-metrix.net domain and disable profiling. In addition, many customers prefer that all objects in their Web pages refer only to their own domain.
-
-Configuring redirection is Web server–specific. Here are two ways to do that using Apache (tested with Apache 2.2). Both methods will cause the Apache Web server to send an HTTPS REDIRECT reply for any URL path beginning with /fp/ on the host name it is configured for. The calling page remains the same in the customer’s browser; only the URL appearing in the profiling HTML is changed. This reply tells the HTTP client to re-fetch the new URL instead of the one embedded in the HTML page. Users who view the source of the HTML page itself will not notice that the links are actually redirected to another server. However, tracing tools will still show that a call was being made to an external server.
-
-**RedirectMatch**
-
-Ensure that mod_alias is enabled in the Apache configuration. To do so, make sure the following line is included in the main Apache configuration file (/etc/httpd/conf/httpd.conf on RHEL5):
-
-```LoadModule alias_module modules/mod_alias.so```
-On most standard Apache configurations this is the default, in which case no action is required on your part. Add the following line to the relevant VirtualHost:
-```RedirectMatch ^/(fp/.*) https://h.online-metrix.net/$1```
-**Rewrite Module**
-Ensure that mod_rewrite is enabled in the Apache configuration. To do so, make sure the following line is included in the main Apache configuration file (/etc/httpd/conf/httpd.conf on RHEL5):
-```LoadModule rewrite_module modules/mod_rewrite.so```
-On most standard Apache configurations this is the default, in which case no action is required on your part. Add the following to the relevant VirtualHost:
-```RewriteEngine On RewriteRule ^/(fp/.*) https://h.online-metrix.net/$1 [L,R]```
-
-<a name="optional_order_features" title="Optional Order Features"></a>
-## Optional Order Features
-
-<a name="send_customer_email_notifications" title="Send Customer Email Notifications"></a>
-### Send Customer Email Notifications
-
-In order to send a notification email to the customer, pass a *customerNotificationEmail* parameter during the order creation step as follows:  
-
-```apib
-{
-  "customerNotificationEmail" : "jane.smythe@emailhost.com"
-}
-```
-
-Customer email notifications offer full localization and customization. Please contact Merchant Services for more details.
-In order to avoid sending a customer notification email, send the *extendedOption* field *suppressCustomerEmail* with the value *true*.
-See [Order Object](#order-object) for details on using the *customerNotificationEmail* parameter.
-
-<a name="localization" title="Localization"></a>
-### Localization
-The Hosted Payments API supports localization of display pages and/or emails that contain payment and receipt information. The system will attempt a best-match to the localization information passed in the locale parameter.
-
-**Note:** If the *locale* parameter is not passed or an unsupported ISO 639-1 code is sent to the API then the default value provided in the merchant’s integration configuration will be used.
-
-To add localization information to the order, pass the locale parameter as follows:
-
-```apib
-{
-  "locale" : "en_GB"
-}
-```
-
-Currently supported locale parameters are:
-
-* en_US
-* en_GB
-* fr_FR
-* fr_CA
-
-See [Order Object](#order-object) for details on using the *locale* parameter.
-
-<a name="send_customer_email_notifications" title="Send Customer Email Notifications"></a>
-### Send Customer Email Notifications
-
-In order to send a notification email to the customer, pass a *customerNotificationEmail* parameter during the order creation step as follows:  
-
-```apib
-{
-  "customerNotificationEmail" : "jane.smythe@emailhost.com"
-}
-```
-
-Customer email notifications offer full localization and customization. Please contact Merchant Services for more details.
-In order to avoid sending a customer notification email, send the *extendedOption* field *suppressCustomerEmail* with the value *true*.
-
-See [Order Object](#order-object) for details on using *customerNotificationEmail* parameter.
-
-<a name="send_merchant_email_notifications" title="Send Merchant Email Notifications"></a>
-### Send Merchant Email Notifications
-
-In order to send a notification email to the merchant, pass a *merchantNotificationEmail* parameter during the order creation step as follows:
-
-```apib
-{
-  "merchantNotificationEmail" : "merchant@emailhost.com"
-}
-```
-
-See [Order Object](#order-object) for details on using *merchantNotificationEmail* parameter.
 
 <a name="testing_instructions" title="Testing Instructions"></a>
 # Testing Instructions
@@ -963,16 +821,12 @@ The callback return keys may contain the following parameters.
 | transaction.card.threeDEnrolment | This indicates the enrollment status of the card in the 3D Secure program. |
 | transaction.card.threeDResult | This indicates the outcome of the authentication request. |
 | transaction.card.type | This is the type of card used. |
-| transaction.prepaidcard.lastDigits | This is the last four digits of the prepaid card that was used for the transaction. |
 | transaction.confirmationNumber | This is the confirmation number returned by Paysafe in response to the transaction request. |
 | transaction.currencyCode | This is the currency in which the transaction was processed. See [Currency Codes](#currency-codes). |
 | transaction.merchantRefNum | This is the merchant's transaction ID, included in the initial transaction. |
 | transaction.paymentType | This is the type of payment used for the transaction. |
 | transaction.sofortBanking.sofortBankingTxId | This is the Sofort Banking transaction ID. Please consult Sofort Banking documentation for all Sofort Banking maximum/minimum field values. |
 | transaction.sofortBanking.internationalTransaction | This is the flag for international transactions. |
-| transaction.unionpay.status | This is the status of the transaction. |
-| transaction.unionpay.message | This is the message returned, if required. |
-| transaction.unionpay.transId | This is the Union Pay transaction ID. |
 | transaction.status | This indicates the status of the transaction. |
 | transaction.errorCode | If an error occurs, this is the error number. |
 | profile.paymentToken | This is the payment token returned by Paysafe in response to the transaction request. It can be used to process a repeat payment. |
@@ -1053,7 +907,7 @@ The *extendedOptions* array may contain the following key/value pairs.
 | silentPost | boolean | This allows merchants to submit a Silent Post (or Direct Post) order. See [Process an Order with a Silent Post](https://developer.paysafe.com/en/rest-api/hosted/typical-api-calls/process-an-order-using-a-silent-post/).|
 | skip3D | boolean | This allows merchants to skip 3D Secure for an order. |
 | suppressCustomerEmail | boolean | This allows merchants to include the *customerNotificationEmail* parameter in an order but without having Paysafe send an email to the customer notifying them of the purchase. It gives merchants the ability to show/capture the customer’s email address on the payments page but not send an email.|
-| threatMetrixSessionId | string</br>`length<=128` | This allows Silent Post (or Direct Post) merchants to specify their own *session_id* for use with ThreatMetrix (see [Implementing ThreatMetrix for a Silent Post Order](#implementing-threatmetrix-for-a-silent-post-order)). The value should be unique per request. This must consist of the following characters only:<ul><li>Upper and lowercase English letters (a-z, A-Z)</li><li>Digits (0-9)</li><li>Underscore or hyphen ( *, -)</li> |
+| threatMetrixSessionId | string</br>`length<=128` | This allows Silent Post (or Direct Post) merchants to specify their own *session_id* for use with ThreatMetrix. The value should be unique per request. This must consist of the following characters only:<ul><li>Upper and lowercase English letters (a-z, A-Z)</li><li>Digits (0-9)</li><li>Underscore or hyphen ( *, -)</li> |
 | useProfileDefaults | boolean | When performing a transaction with *recurringIndicator* set to *true,* passing this key with a value of *true* will allow the previously stored billing details to be retrieved from the profile and passed with the new transaction. |
 
 
@@ -1103,7 +957,7 @@ The *link* section works in the same way as redirects. All addendum data fields 
 |[ancillaryFees](#ancillaryFees-object) |complex|| This allows you to add ancillary fees to the order.|
 |[billingDetails](#billingDetails-object) |complex|| This allows you to add billing details to the order. |
 |[shippingDetails](#shippingDetails-object) |complex|| This allows you to add shipping details to the order. |
-|[callback](#callback-Object) |complex|| This allows you to add callbacks to the order. <br></br><br></br>**Note:** You can avoid callbacks if you poll the self endpoint for the Transaction ID. See the link.rel parameter in [Order Response](#order-response) |
+|[callback](#callback-Object) |complex|| This allows you to add callbacks to the order. <br></br><br></br>**Note:** You can avoid callbacks if you poll the self endpoint for the Transaction ID. See the link.rel parameter in the order response. |
 |[redirect](#redirect-Object) |complex|| This allows you to add redirects to the order. Redirects cause a connection back to the merchant system via the customer's browser. |]
 |[link](#link-Object) |complex|| This allows you to add links to the order. You can add different links – e.g., to cancel a payment and return to the shopping cart.|
 |paymentMethod | enumeration ||Array of payment methods. This allows you to add payment methods to the order. Possible values are: <ul><li>card</li><li>giropay</li><li>interac</li><li>neteller</li><li>paypal</li><li>poli</li><li>sofortbanking</li></ul> <br></br><br></br>**Note:** This value defaults to *card*. See [Payment Method Notes](#payment-method-notes) for additional information on each payment method.|
@@ -1125,7 +979,7 @@ For more information on profiles, see [Create a Profile with an Order](#create-a
 |merchantCustomerId      |string<br/>`length<=100`   |Yes            |This is the customer ID that the merchant has assigned to the customer. When this parameter is included in the request, a customer profile will be created.<ul><li>Once a *profile.id* is created for the customer, the is created for the customer, the *merchantCustomerId* parameter no longer needs to be included in an order request.</li><li>If a profile is being created for a new customer, then the *merchantCustomerId* parameter should be included in the request.</li></ul>|
 | firstName              |string<br/>`length<=80` ||This is the customer’s first name.|
 | lastName |string<br/>`length<=80`||This is the customer’s last name.|
-| id|string<br/>`length<=80`|| This is the customer ID returned by Paysafe when the profile is created (see [Order Response](#order-response)). If the *id* is included in an order request, then the customer profile associated with that ID will be used for the transaction. See [Process an Order with a Profile ID](#process-an-order-with-a-profile-id) for more information.|
+| id|string<br/>`length<=80`|| This is the customer ID returned by Paysafe when the profile is created. If the *id* is included in an order request, then the customer profile associated with that ID will be used for the transaction. See [Process an Order with a Profile ID](#process-an-order-with-a-profile-id) for more information.|
 | paymentToken |string<br/>`length<=80`|| This is the payment token returned by Paysafe when the profile is created (see [Order Status Response Parameters](#order-status-response-parameters)). If the *paymentToken* is included in an order request, then the card number associated with that token will be used for the transaction. See [Process an Order with a Payment Token](#process-an-order-with-a-payment-token) for more information.|
 
 **Example**
@@ -1193,9 +1047,6 @@ The redirect return keys may contain the following parameters.
 | transaction.errorCode | If an error occurs, this is the error number. |
 | transaction.errorMessage | If an error occurs, this is the description of the error. |
 | transaction.riskReasonCode | If the transaction has a status of held, this value holds the reason code.  |
-| transaction.unionpay.status | This is the status of the transaction. |
-| transaction.unionpay.message | This is the message returned, if required. |
-| transaction.unionpay.transId | This is the Union Pay transaction ID. |
 
 <a name="shippingDetails-object" title="shippingDetails Object"></a>
 ## shippingDetails Object
@@ -1278,7 +1129,7 @@ The recipient is deemed to be the person or party who has the contractual relati
 | recipientDateOfBirth.year | integer<br>`length=4` ||The is the recipient's year of birth. |
 | recipientZip |string<br>`length<=10`||This is the recipient‘s postcode.<br></br><br></br>**Note:** The last 3 characters are not sent to the banking network. |
 | recipientLastName |string<br>`length<=40`||This is the recipient‘s last name or surname.<br></br><br></br>**Note:** Only the first 6 characters are sent to the banking network. |
-| recipientAccountNumber |string<br>`length<=25`|| This is the recipient‘s account number, e.g., a loan agreement number or customer ID. In the case where the recipient account is a prepaid card, the card number may be sent in full. <br></br><br></br>**Note:** Only the first 6 and last 4 characters are sent to the banking network and will be masked accordingly within the back office and any other reports, to comply with PCI regulations.|
+| recipientAccountNumber |string<br>`length<=25`|| This is the recipient‘s account number, e.g., a loan agreement number or customer ID. <br></br><br></br>**Note:** Only the first 6 and last 4 characters are sent to the banking network and will be masked accordingly within the back office and any other reports, to comply with PCI regulations.|
 
 **Example**
 
@@ -2159,12 +2010,11 @@ In addition to the parameters that were part of the original transaction request
 | transaction.card.threeDEnrolment | enumeration | This indicates the enrollment status of the card in the 3D Secure program. Possible values are:<ul><li>Y – Authentication available </li><li>N – Cardholder not enrolled</li><li>U – Authentication unavailable</li><li>E – Error </li></ul>
 | transaction.card.threeDResult | enumeration | This indicates the outcome of the authentication request. Possible values are:<ul><li>Y – Cardholder successfully authenticated with their Card Issuer.</li><li>A – Cardholder authentication was attempted.</li><li>N – Cardholder failed to successfully authenticate with their Card Issuer.</li><li>U – Authentication with the Card Issuer was unavailable.</li><li>E – Error </li></ul>
 | transaction.card.type | enumeration | This is the type of card used. Possible values are:<ul><li>debit</li><li>credit </li></ul>
-| transaction.prepaidcard.lastDigits | string<br>`length=4` | This is the last four digits of the prepaid card that was used for the transaction. |
 | transaction.cleared | boolean | The transaction has been sent to the bank for clearing. |
 | transaction.settled | boolean | The authorization-only transaction has been settled. |
 | transaction.confirmationNumber | string<br>`length=20` | This is the confirmation number returned by Paysafe in response to the transaction request. |
 | transaction.lastUpdate | dateTime UTC | This is the date and time of the last change made to the transaction, e.g., a refund. |
-| transaction.paymentType | string<br>`length<=20` | This is the type of payment used for the transaction. Value will be set to:<ul><li>card</li><li>giropay</li><li>ideal</li><li>interac</li><li>neteller</li><li>paypal</li><li>pingit</li><li>poli</li><li>prepaidcard</li><li>sofortbanking</li><li>unionpay</li></ul>
+| transaction.paymentType | string<br>`length<=20` | This is the type of payment used for the transaction. Value will be set to:<ul><li>card</li><li>giropay</li><li>interac</li><li>neteller</li><li>paypal</li><li>poli</li><li>sofortbanking</li></ul>
 | transaction.refunded | boolean | This indicates that the transaction has been either fully or partially refunded.<br></br><br></br>**Note:** If this value is set to _true_, then check the value for _availableToRefund_ before attempting to issue a refund request. |
 | transaction.reversed | boolean | This indicates whether a reversal has been attempted (e.g., a successful transaction that fails an AVS check, or a successful authorization that has been subsequently cancelled).|
 | transaction.status | enumeration | This indicates the status of the transaction. Possible values are:<ul><li>success – Transaction has been authorized by bank/Paysafe.</li><li>cancelled – Transaction has been cancelled.</li><li>declined – Transaction has been declined by bank/Paysafe.</li><li>pending – Transaction has been created and is awaiting customer interaction.</li><li>abandoned – Transaction was abandoned part way through by the customer.</li><li>held – Transaction has been placed on hold due to risk rules results. See *transaction.riskReasonCode* for the reason code.</li><li>errored – An error occurred and the transaction could not be completed <br></br><br></br>**Note:** The merchant's account must be configured by Paysafe to be able to place transactions on hold. </li></ul>
@@ -2209,7 +2059,6 @@ In addition to the parameters that were part of the original transaction request
 | transaction.giropay.merchantReference | string | This is the merchant reference ID. |
 | transaction.giropay.amount | integer | This is the amount of the payment. |
 | transaction.giropay.merchantNumber | integer | This is the merchant number. |
-| transaction.ideal.IdealTxId  | string</br>`length<=27` | This is the iDEAL transaction ID. |
 | transaction.paypalToken | string | This is the PayPal token. Please consult PayPal documentation for information about field lengths and constraints on field values. |
 | transaction.paypalTransactionId | string | This is the PayPal transaction reference ID. |
 | transaction.neteller.net_account | string | This is the NETELLER account ID. Please consult NETELLER documentation for information about field lengths and constraints on field values. |
@@ -2471,8 +2320,6 @@ An optional *merchantRefNum* parameter can also be included.
 **Note:** It is not currently possible to process refunds with the Hosted Payments API for the following payment types:
 
 * Giropay
-* iDEAL
-* Pingit
 * POLi
 * Sofort Banking
 
@@ -2930,15 +2777,11 @@ Once a customer profile has been created (see [profile Object](#profile-object))
 - paymentType (enum) - This is the type of payment used for the transaction.
    + card
    + giropay
-   + ideal
    + interac
    + neteller
    + paypal
-   + pingit
    + poli
-   + prepaidcard
    + sofortbanking
-   + unionpay
 - refunded: false (boolean) - This indicates that the transaction has been either fully or partially refunded. Note tht if this value is set to *true* then check the value for *availableToRefund* before attempting to issue a refund request.
 - reversed: false (boolean) - This indicates whether a reversal has been attempted (e.g., a successful transaction that fails an AVS check, or a successful authorization that has been subsequently cancelled).
 - status (enum) - This indicates the status of the transaction.
@@ -3043,7 +2886,7 @@ Once a customer profile has been created (see [profile Object](#profile-object))
 - lastName:Smythe (string) - This is the customer’s last name.
 
 ## profileResponse
-- id:`0275e76c-2141-11e4-8ac3-74cde64e5c68` (string) - This is the customer ID returned by Paysafe when the profile is created (see [Order Response](#order-response)). If the ID is included in an order request, then the customer profile associated with that ID will be used for the transaction. See [Process an Order with a Profile ID](#process-an-order-with-a-profile-id) for more information.
+- id:`0275e76c-2141-11e4-8ac3-74cde64e5c68` (string) - This is the customer ID returned by Paysafe when the profile is created. If the ID is included in an order request, then the customer profile associated with that ID will be used for the transaction. See [Process an Order with a Profile ID](#process-an-order-with-a-profile-id) for more information.
 - paymentToken:`SJsww3Eq33ezNvhM+jQRNoH/U4o7j0XJ4yrXtDMenLM` (string) - This is the payment token returned by Paysafe when the profile is created (see [Order Status Response Parameters](#order-status-response-parameters)). If the paymentToken is included in an order request, then the card number associated with that token will be used for the transaction. See [Process an Order with a Payment Token](#process-an-order-with-a-payment-token) for more information.
 
 
