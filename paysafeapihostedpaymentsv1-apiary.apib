@@ -7,8 +7,9 @@ HOST: https://api.test.netbanx.com/hosted/
 
 | Version | Date | Details |
 |---      |---  |---      |
-|1.3.8  |December 2017| <ul><li>Removed Unionpay, Prepaid card, PayNearMe, Ideal and Pingit functionality that hadn't been removed</li><li>Removed Threatmetrix appendix and inserted it into the Dev Center</li></ul>
-|1.3.7  |April 2017| <p>Unionpay, Prepaid card, PayNearMe, Ideal and Pingit functionality removed</p>
+|1.3.9  |January 2018| <p>Added supplierDetails object.</p> |
+|1.3.8  |December 2017| <ul><li>Removed Unionpay, Prepaid card, PayNearMe, Ideal and Pingit functionality that hadn't been removed</li><li>Removed Threatmetrix appendix and inserted it into the Dev Center</li></ul>|
+|1.3.7  |April 2017| <p>Unionpay, Prepaid card, PayNearMe, Ideal and Pingit functionality removed</p> |
 |1.3.6  |May 2016   |<p>MasterPass functionality removed</p> |
 | 1.3.5 | October 2015 | <p>Added functionality for China UnionPay</li><li>Ukash functionality removed</p> |
 | 1.3.4 | January 2015 | <p>Added functionality for Pingit</p>|
@@ -954,6 +955,7 @@ The *link* section works in the same way as redirects. All addendum data fields 
 |dueDate |date YYYY-MM-DD (UTC)||This is the date the order request will be processed. <br></br><br></br>**Note:** Include this parameter only when processing a rebill (see [Process a Rebill using an Order ID](#process-a-rebill-using-an-order-id))|
 |[profile](#profile-object) |complex|| This allows you to create a customer profile with the order. |
 |[shoppingCart](#shoppingCart-object) |complex|| This allows you to add shopping cart information to the order.|
+|[supplierDetails](#supplierDetails-object) |complex|| This allows you to add supplier details to the order.|
 |[ancillaryFees](#ancillaryFees-object) |complex|| This allows you to add ancillary fees to the order.|
 |[billingDetails](#billingDetails-object) |complex|| This allows you to add billing details to the order. |
 |[shippingDetails](#shippingDetails-object) |complex|| This allows you to add shipping details to the order. |
@@ -1097,7 +1099,7 @@ The redirect return keys may contain the following parameters.
 
 ```apib
 {
-"shoppingCart" : [
+  "shoppingCart" : [
     {
         "amount" : 500,
         "quantity" : 2,
@@ -1114,6 +1116,33 @@ The redirect return keys may contain the following parameters.
 }
 ```
 
+<a name="supplierDetails-object" title="supplierDetails Object"></a>
+## supplierDetails Object
+
+|Element                 |Type                      |Required       |Description|
+|---                     |---                       |---            |---|
+|city |string<br>`length<=40` ||The city in the shipping address. | 
+|email |string<br>`length<=100` ||The supplier’s email address. | 
+|registeredName |string<br>`length<=90` ||The supplier's registered name. | 
+|street |string<br>`length<=40` ||The street of the supplier's address. |
+|url |string<br>`length<=90` ||The URL of the supplier's web site. |
+|zip |string<br>`length<=10` ||The ZIP or postal code of the supplier's address. |
+
+**Example**
+
+```apib
+{ 
+  "supplierDetails":
+    {
+        "street":"Street",
+        "city":"City",
+        "email":"test@test.com",
+        "registeredName":"Registered Name",
+        "url":"https://www.test.com/",
+        "zip":"ZIP123"
+    }
+}
+```
 
 <a name="visaAdditionalAuthData-object" title="visaAdditionalAuthData ObjectS"></a>
 ## visaAdditionalAuthData Object
@@ -1261,6 +1290,7 @@ The mandatory and optional parameters for processing an Order request are listed
 * ancillaryFees 
 * billingDetails 
 * shippingDetails 
+* supplierDetails
 * callback 
 * redirect 
 * link 
@@ -1365,6 +1395,7 @@ Once a customer profile has been created (see [profile Object](#profile-object))
         + ancillaryFees (array[ancillaryFees], optional) - The [ancillaryFees object](#ancillaryFees-object) allows you to add ancillary fees to the order.
         + billingDetails (billingDetails, optional) - The [billingDetails object](#billingDetails-object) allows you to add billing details to the order.
         + shippingDetails (shippingDetails,optional) - The [shippingDetails object](#shippingDetails-object) allows you to add shipping details to the order.
+        + supplierDetails (supplierDetails,optional) - The [supplierDetails object](#supplierDetails-object) allows you to add supplier details to the order.
         + callback (array[callback],optional) - The [callback object](#callback-object) allows you to add callbacks to the order.
         + redirect (array[redirect],optional) - The [redirect object](#callback-object) allows you to add redirects to the order. Redirects cause a connection back to the merchant system via the customer's browser.
         + link (array[link],optional) - The [link object](#link-object) allows you to add links to the order. You can add different links – e.g., to allow a customer to cancel a payment and return to the shopping cart.
@@ -2889,6 +2920,10 @@ Once a customer profile has been created (see [profile Object](#profile-object))
 - id:`0275e76c-2141-11e4-8ac3-74cde64e5c68` (string) - This is the customer ID returned by Paysafe when the profile is created. If the ID is included in an order request, then the customer profile associated with that ID will be used for the transaction. See [Process an Order with a Profile ID](#process-an-order-with-a-profile-id) for more information.
 - paymentToken:`SJsww3Eq33ezNvhM+jQRNoH/U4o7j0XJ4yrXtDMenLM` (string) - This is the payment token returned by Paysafe when the profile is created (see [Order Status Response Parameters](#order-status-response-parameters)). If the paymentToken is included in an order request, then the card number associated with that token will be used for the transaction. See [Process an Order with a Payment Token](#process-an-order-with-a-payment-token) for more information.
 
+## recipientDateOfBirth
+- day:29 (number,required) - This is the recipient's day of birth (1-31).
+- month:1 (number,required) -  This is the recipient's month of birth (1-12).
+- year:1973 (number,required) -  This is the recipient's year of birth.
 
 ## redirect
 - rel (enum,required) - This is the redirect type, allowing different endpoints to be targeted depending on the end state of the transaction. 
@@ -2901,6 +2936,14 @@ Once a customer profile has been created (see [profile Object](#profile-object))
 - returnKeys (array[string],optional) - This is an array of names of parameters to return to the URI specified.
 - uri (string,required) - This is the URL to which to send the redirect. If this is an HTTPS address, please ensure that the certificate is valid – otherwise, the redirect will cause the browser to display a certificate warning. 
 - delimiter - This specifies the delimiter to use in the query string when parameters are sent to the redirect URI (e.g, “;” “&” “$”). By default an ampersand (&) is used.
+
+## refund
+- amount:999 (number) - This is the amount of the payment minor units. E.g., 999 would be $9.99. It is not possible to settle an amount greater than the original amount authorized. If an amount is not specified, the full transaction is settled.
+- merchantRefNum:MERCHANTREF123 (string) - This is an optional merchant transaction ID, for reference purposes. This should be unique for each transaction.
+
+## settlement
+- amount:999 (number) - This is the amount of the payment minor units. E.g., 999 would be $9.99. It is not possible to settle an amount greater than the original amount authorized. If an amount is not specified, the full transaction is settled.
+- merchantRefNum:MERCHANTREF123 (string) - This is an optional merchant transaction ID, for reference purposes. This should be unique for each transaction.
 
 ## shippingDetails
 - city:Cambridge (string,optional) - This is the city in the shipping address.
@@ -2933,18 +2976,13 @@ Once a customer profile has been created (see [profile Object](#profile-object))
 - sku:`id/sku-1` (string,optional) - This is your ID for the shopping cart item (e.g., the merchant's internal SKU or ID). It is not displayed on the payment page, but is reflected back upon querying an order status.
 - quantity:1 (number,optional) - This is the quantity of the shopping cart item. It will appear on the payment page. 
 
-## settlement
-- amount:999 (number) - This is the amount of the payment minor units. E.g., 999 would be $9.99. It is not possible to settle an amount greater than the original amount authorized. If an amount is not specified, the full transaction is settled.
-- merchantRefNum:MERCHANTREF123 (string) - This is an optional merchant transaction ID, for reference purposes. This should be unique for each transaction.
-
-## recipientDateOfBirth
-- day:29 (number,required) - This is the recipient's day of birth (1-31).
-- month:1 (number,required) -  This is the recipient's month of birth (1-12).
-- year:1973 (number,required) -  This is the recipient's year of birth.
-
-## refund
-- amount:999 (number) - This is the amount of the payment minor units. E.g., 999 would be $9.99. It is not possible to settle an amount greater than the original amount authorized. If an amount is not specified, the full transaction is settled.
-- merchantRefNum:MERCHANTREF123 (string) - This is an optional merchant transaction ID, for reference purposes. This should be unique for each transaction.
+## supplierDetails
+- city:Cambridge (string, optional) - The city in the supplier address.
+- email:test@test.com (string, optional) - The supplier’s email address.
+- registeredName:Checkout Test (string, optional) - The supplier's registered name.
+- street:1 Corp Street (string, optional) - The street of the supplier's address.
+- url:checkout_test@example.com (string, optional) - The URL of the supplier's web site.
+- zip:CP1 23X (string, optional) -The ZIP or postal code of the supplier's address.
 
 ## visaAdditionalAuthData
 - recipientDateOfBirth (recipientDateOfBirth,optional) - Include *recipientDateOfBirth* elements if your Merchant Category Code is 6012 and your registered trading address is in the United Kingdom. If you have any questions, contact your account manager. All fields are optional. However, scheme fines may apply if data is consistently not supplied and chargebacks persist.
