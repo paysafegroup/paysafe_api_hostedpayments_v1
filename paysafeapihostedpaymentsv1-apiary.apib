@@ -7,6 +7,7 @@ HOST: https://api.test.netbanx.com/hosted/
 
 | Version | Date | Details |
 |---      |---  |---      |
+|1.3.10  |March 2018| <p>Added merchantDescriptor object.</p> |
 |1.3.9  |January 2018| <p>Added supplierDetails object.</p> |
 |1.3.8  |December 2017| <ul><li>Removed Unionpay, Prepaid card, PayNearMe, Ideal and Pingit functionality that hadn't been removed</li><li>Removed Threatmetrix appendix and inserted it into the Dev Center</li></ul>|
 |1.3.7  |April 2017| <p>Unionpay, Prepaid card, PayNearMe, Ideal and Pingit functionality removed</p> |
@@ -940,6 +941,27 @@ The *link* section works in the same way as redirects. All addendum data fields 
 }
 ```
 
+<a name="merchantDescriptor-object" title="merchantDescriptor Object"></a>
+## merchantDescriptor Object
+
+Set the transaction description that a shopper sees on their bank statement.
+
+|Element                 |Type                      |Required       |Description|
+|---                     |---                       |---            |---|
+|dynamicDescriptor       |string                    |Yes            |A description of the transaction.|
+|phone                   |string<br/>`length<=40`   |               |The merchant's telephone number.|
+
+**Example**
+
+```apib
+{  
+    "merchantDescriptor":{ 
+        "dynamicDescriptor":"testt",
+        "phone":"123" 
+    }
+}
+```
+
 <a name="order-object" title="order Object"></a>
 ## order Object
 
@@ -948,6 +970,7 @@ The *link* section works in the same way as redirects. All addendum data fields 
 |merchantRefNum|string<br/>`length=40`|Yes|This is your own transaction ID, for your reference purposes. This should be unique for each transaction.
 |currencyCode|enumeration |Yes |This is the currency in which to process the transaction. See [Currency Codes](#currency-codes).
 |totalAmount |integer|Yes |This is the total amount of the transaction (note that this value must be equal to the amounts passed in the *ancillaryFees* and *shoppingCart* parameters, discussed below). Merchants can provide zero (0) as an amount, if they need to process a verification with no value on the card. In this case, the *authType* must be set to *auth* using the *extendedOptions* feature.|
+|[merchantDescriptor](#merchantDescriptor-object) |complex|| This sets the descriptor of the transaction that a shopper sees on their bank statement. |
 |customerIp |string<br/>`length<=15`||The value should be the incoming IP address of your customer, which will restrict the payment page to being viewable only from this IP address. <br></br><br></br>**Note:** Though the *customerIp* parameter is not mandatory, Paysafe recommends including it for additional security.|
 |id|string<br/>`length<=128`||This ID represents the original order request. This ID will be used for subsequent transactions associated with the original request, such as making a payment or requesting an order status.|
 |customerNotificationEmail|string<br/>`length<=256`||This is the customer’s email address, to which notifications regarding the purchase request are sent.|
@@ -1284,7 +1307,8 @@ The mandatory and optional parameters for processing an Order request are listed
 * customerIp
 * id      
 * customerNotificationEmail      
-* merchantNotificationEmail    
+* merchantNotificationEmail 
+* merchantDescriptor
 * profile        
 * shoppingCart      
 * ancillaryFees 
@@ -1386,6 +1410,7 @@ Once a customer profile has been created (see [profile Object](#profile-object))
         + merchantRefNum (string, required) - This is your own transaction ID, for your reference purposes. This should be unique for each transaction.
         + currencyCode:GBP (string, required) - This is the currency in which to process the transaction. See [Currency Codes](#currency-codes) for a list of codes.
         + totalAmount:1125 (number, required) - This is the total amount of the transaction. Merchants can provide zero (0) as an amount, if they need to process a verification with no value on the card. In this case, the *authType* must be set to *auth* using the *extendedOptions* feature.
+        + merchantDescriptor (merchantDescriptor, optional) - The [merchantDescriptor object](#merchantDescriptor-object) allows you to set the description of the transaction that the customer sees on their bank statement.
         + customerIp:123.123.123.123 (string,optional) - The value should be the incoming IP address of your customer, which will restrict the payment page to being viewable only from this IP address.
         + id: 25TWPTLHRR81AIG1LF (string,optional)  - This ID represents the original order request. This ID will be used for subsequent transactions associated with the original request, such as making a payment or requesting an order status.
         + customerNotificationEmail :john.smith@email (string,optional) - This is the customer’s email address, to which notifications regarding the purchase request are sent. 
@@ -2910,6 +2935,10 @@ Once a customer profile has been created (see [profile Object](#profile-object))
   + resend_callback -  Response-only parameter. If a callback URI is specified in the initial request, calling this URI will re-queue the callback and resend it (which is useful if your callback retries have run out).
 - returnKeys (array[string],optional) - This is an array of names of parameters to return to the URI specified.
 - uri(string,required) - This is the URL to which to send the link. If this is an HTTPS address, please ensure that the certificate is valid. Otherwise, the link will cause the browser to display a certificate warning.
+
+## merchantDescriptor
+- dynamicDescriptor:Test (string) - This sets the descriptor of the transaction that a shopper sees in their bank statement.
+- phone:123 (string) - This is the merchant's phone number.
 
 ## profile
 - merchantCustomerId:jane.smythe@emailhost.com (string) - This is the customer ID that the merchant has assigned to the customer. When this parameter is included in the request, a customer profile will be created.
