@@ -948,8 +948,8 @@ Set the transaction description that a shopper sees on their bank statement.
 
 |Element                 |Type                      |Required       |Description|
 |---                     |---                       |---            |---|
-|dynamicDescriptor       |string                    |Yes            |A description of the transaction.|
-|phone                   |string<br/>`length<=40`   |               |The merchant's telephone number.|
+|dynamicDescriptor       |string<br/>`length<=20`   |Yes            |A merchant descriptor, which is displayed on a customer’s card statement.|
+|phone                   |string<br/>`length<=13`   |               |The merchant’s phone number, which is appended to the merchant descriptor on a customer’s card statement.|
 
 **Example**
 
@@ -2937,8 +2937,8 @@ Once a customer profile has been created (see [profile Object](#profile-object))
 - uri(string,required) - This is the URL to which to send the link. If this is an HTTPS address, please ensure that the certificate is valid. Otherwise, the link will cause the browser to display a certificate warning.
 
 ## merchantDescriptor
-- dynamicDescriptor:Test (string) - This sets the descriptor of the transaction that a shopper sees in their bank statement.
-- phone:123 (string) - This is the merchant's phone number.
+- dynamicDescriptor:Test (string) - A merchant descriptor, which is displayed on a customer’s card statement.
+- phone:123 (string) - The merchant’s phone number, which is appended to the merchant descriptor on a customer’s card statement.
 
 ## profile
 - merchantCustomerId:jane.smythe@emailhost.com (string) - This is the customer ID that the merchant has assigned to the customer. When this parameter is included in the request, a customer profile will be created.
