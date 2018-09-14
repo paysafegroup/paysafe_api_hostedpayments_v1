@@ -7,7 +7,8 @@ HOST: https://api.test.netbanx.com/hosted/
 
 | Version | Date | Details |
 |---      |---  |---      |
-|1.3.10  |March 2018| <p>Added merchantDescriptor object.</p> |
+|1.3.11 | May 2018 | <p>Removed poli payment method.</p> |
+|1.3.10 |March 2018| <p>Added merchantDescriptor object.</p> |
 |1.3.9  |January 2018| <p>Added supplierDetails object.</p> |
 |1.3.8  |December 2017| <ul><li>Removed Unionpay, Prepaid card, PayNearMe, Ideal and Pingit functionality that hadn't been removed</li><li>Removed Threatmetrix appendix and inserted it into the Dev Center</li></ul>|
 |1.3.7  |April 2017| <p>Unionpay, Prepaid card, PayNearMe, Ideal and Pingit functionality removed</p> |
@@ -111,7 +112,6 @@ The following payment methods require no additional parameters, because the redi
 
 *   interac
 *   paypal
-*   poli
 
 The following payment methods, however, do require additional parameters:
 
@@ -180,7 +180,6 @@ This table provides the following additional information on each payment method:
 | interac | CAD | Yes | Yes |
 | neteller | All currencies supported by NETELLER &ndash; refer to NETELLER documentation for details. | Yes | Yes |
 | paypal | All currencies supported by Paypal &ndash; refer to Paypal documentation for details | Yes | Yes |
-| poli | AUD | Yes | No |
 | sofortbanking | EUR | Yes | No |
 
 <a name="testing_instructions" title="Testing Instructions"></a>
@@ -985,7 +984,7 @@ Set the transaction description that a shopper sees on their bank statement.
 |[callback](#callback-Object) |complex|| This allows you to add callbacks to the order. <br></br><br></br>**Note:** You can avoid callbacks if you poll the self endpoint for the Transaction ID. See the link.rel parameter in the order response. |
 |[redirect](#redirect-Object) |complex|| This allows you to add redirects to the order. Redirects cause a connection back to the merchant system via the customer's browser. |]
 |[link](#link-Object) |complex|| This allows you to add links to the order. You can add different links – e.g., to cancel a payment and return to the shopping cart.|
-|paymentMethod | enumeration ||Array of payment methods. This allows you to add payment methods to the order. Possible values are: <ul><li>card</li><li>giropay</li><li>interac</li><li>neteller</li><li>paypal</li><li>poli</li><li>sofortbanking</li></ul> <br></br><br></br>**Note:** This value defaults to *card*. See [Payment Method Notes](#payment-method-notes) for additional information on each payment method.|
+|paymentMethod | enumeration ||Array of payment methods. This allows you to add payment methods to the order. Possible values are: <ul><li>card</li><li>giropay</li><li>interac</li><li>neteller</li><li>paypal</li><li>sofortbanking</li></ul> <br></br><br></br>**Note:** This value defaults to *card*. See [Payment Method Notes](#payment-method-notes) for additional information on each payment method.|
 |[addendumData](#addendumdata-object) |complex||This allows you to specify additional data (e.g., affiliate codes, session IDs, etc.) to be stored against the transaction and returned to you in status calls, reports, etc.|
 |locale|enumeration||This allows you to display your payment/receipt pages and emails using the locale requested. Possible values are: <ul><li>en_GB &ndash; UK English</li><li>en_US &ndash; American English</li><li>fr_CA &ndash; Canadian French</li><li>fr_FR &ndash; European French</li></ul><br></br><br></br>**Note:** If the locale parameter is not passed or if an unsupported ISO 639-1 code is sent to the API then the default value provided in the merchant’s integration configuration will be used.|
 |[extendedOptions](#extendedOptions-object)|complex||This allows you to activate/deactivate certain features in the payment system.|
@@ -1273,6 +1272,16 @@ When you are ready to test your example, you can choose between the Production a
 
 To call the API resource, click **Call Resource**. The response is displayed in the Console window.
 
+# Legal and Community
+<ul>
+<li><a href="https://www.paysafe.com/paysafegroup/privacy-policy/" target="_blank">Privacy Policy</a></li>
+<li><a href="https://developer.paysafe.com/en/resources-and-support/terms-of-use/" target="_blank">Terms of Use</a></li>
+<li><a href="https://www.paysafe.com/paysafegroup/regulatory-disclosures/" target="_blank">Regulatory Disclosures</a></li>
+<li><a href="http://community.paysafe.com/spaces/11/index.html" target="_blank">FAQs</a></li>
+<li><a href="http://community.paysafe.com/index.html" target="_blank">Community</a></li>
+<li><a href="http://community.paysafe.com/spaces/10/index.html" target="_blank">Paysafe Blog</a></li>
+</ul>
+
 ## Verify the Service is Accessible [GET /monitor]
 <a name="verify_service_is_accessible" title="Verify the Service is Accessible"></a>
 
@@ -1431,7 +1440,6 @@ Once a customer profile has been created (see [profile Object](#profile-object))
              + interac
              + neteller
              + paypal
-             + poli
              + sofortbanking
         + addendumData (array[addendumData],optional) - This allows you to specify additional data (e.g., affiliate codes, session IDs, etc.) to be stored against the transaction and returned to you in status calls, reports, etc.
         + locale (enum,optional) -  This allows you to display your payment/receipt pages and emails using the locale requested. If the locale parameter is not passed or if an unsupported ISO 639-1 code is sent to the API then the default value provided in the merchant’s integration configuration will be used.
@@ -2070,7 +2078,7 @@ In addition to the parameters that were part of the original transaction request
 | transaction.settled | boolean | The authorization-only transaction has been settled. |
 | transaction.confirmationNumber | string<br>`length=20` | This is the confirmation number returned by Paysafe in response to the transaction request. |
 | transaction.lastUpdate | dateTime UTC | This is the date and time of the last change made to the transaction, e.g., a refund. |
-| transaction.paymentType | string<br>`length<=20` | This is the type of payment used for the transaction. Value will be set to:<ul><li>card</li><li>giropay</li><li>interac</li><li>neteller</li><li>paypal</li><li>poli</li><li>sofortbanking</li></ul>
+| transaction.paymentType | string<br>`length<=20` | This is the type of payment used for the transaction. Value will be set to:<ul><li>card</li><li>giropay</li><li>interac</li><li>neteller</li><li>paypal</li><li>sofortbanking</li></ul>
 | transaction.refunded | boolean | This indicates that the transaction has been either fully or partially refunded.<br></br><br></br>**Note:** If this value is set to _true_, then check the value for _availableToRefund_ before attempting to issue a refund request. |
 | transaction.reversed | boolean | This indicates whether a reversal has been attempted (e.g., a successful transaction that fails an AVS check, or a successful authorization that has been subsequently cancelled).|
 | transaction.status | enumeration | This indicates the status of the transaction. Possible values are:<ul><li>success – Transaction has been authorized by bank/Paysafe.</li><li>cancelled – Transaction has been cancelled.</li><li>declined – Transaction has been declined by bank/Paysafe.</li><li>pending – Transaction has been created and is awaiting customer interaction.</li><li>abandoned – Transaction was abandoned part way through by the customer.</li><li>held – Transaction has been placed on hold due to risk rules results. See *transaction.riskReasonCode* for the reason code.</li><li>errored – An error occurred and the transaction could not be completed <br></br><br></br>**Note:** The merchant's account must be configured by Paysafe to be able to place transactions on hold. </li></ul>
@@ -2128,9 +2136,6 @@ In addition to the parameters that were part of the original transaction request
 | transaction.neteller.client_currency | string | This is the client’s currency. |
 | transaction.neteller.merchant_amount | string | The amount moved to to the merchant’s account. |
 | transaction.neteller.merchant_currency | string | This is the merchant’s currency. |
-| transaction.poli.poliRef | string | This is the state of the transaction. |
-| transaction.poli.poliToken | string | This is an encrypted POLi ID. |
-| transaction.poli.state | string | This is the state of the transaction. |
 | transaction.sofortBanking.sofortBankingTxId | string | This is the Sofort Banking transaction ID. Please consult Sofort Banking documentation for information about field lengths and constraints on field values. |
 | transaction.sofortBanking.internationalTransaction | boolean | This is the flag for international transactions. |
 
@@ -2376,7 +2381,6 @@ An optional *merchantRefNum* parameter can also be included.
 **Note:** It is not currently possible to process refunds with the Hosted Payments API for the following payment types:
 
 * Giropay
-* POLi
 * Sofort Banking
 
 You will need to issue refunds via your merchant account with the relevant payment method.
@@ -2661,20 +2665,6 @@ See [Process a Rebill Using an Order ID](#process-a-rebill-using-an-order-id) fo
 
 Once a customer profile has been created (see [profile Object](#profile-object)), the *id* can be used to securely store the customer's card details with Paysafe for future use. You can use this profile information to issue an original credit.
 
-<br>
-<br>
-<br>
-<a name="footer">
-<h1>Legal and Community</h1>
-<ul class="footer-menu">
-<li><a href="https://www.paysafe.com/privacy-policy/" target="_blank">Privacy Policy</a></li>
-<li><a href="https://developer.paysafe.com/en/resources-and-support/terms-of-use/" target="_blank">Terms of Use</a></li>
-<li><a href="http://www.paysafe.com/regulatory-disclosure/" target="_blank">Regulatory Disclosures</a></li>
-<li><a href="http://community.paysafe.com/spaces/11/index.html" target="_blank">FAQs</a></li>
-<li><a href="http://community.paysafe.com/index.html" target="_blank">Community</a></li>
-<li><a href="http://community.paysafe.com/spaces/10/index.html" target="_blank">Paysafe Blog</a></li>
-</ul>
-
 + Request (application/json)
     
   + Headers
@@ -2836,7 +2826,6 @@ Once a customer profile has been created (see [profile Object](#profile-object))
    + interac
    + neteller
    + paypal
-   + poli
    + sofortbanking
 - refunded: false (boolean) - This indicates that the transaction has been either fully or partially refunded. Note tht if this value is set to *true* then check the value for *availableToRefund* before attempting to issue a refund request.
 - reversed: false (boolean) - This indicates whether a reversal has been attempted (e.g., a successful transaction that fails an AVS check, or a successful authorization that has been subsequently cancelled).
@@ -2867,7 +2856,6 @@ Once a customer profile has been created (see [profile Object](#profile-object))
 - dueDate (string) - This is the date the order request will be processed in YYYY-MM-DD (UTC) format.
 - giropay (giropay) - If the giropay payment method is used then this parameter is added with details about the transaction.
 - neteller (neteller) - If the neteller payment method is used then this parameter is added with details about the transaction.
-- poli (poli) - If the poli payment method is used then this parameter is added with details about the transaction.
 - unionpay (unionpay) - If the unionpay payment method is used then this parameter is added with details about the transaction.
 - sofortBanking (sofortBanking) - If the sofortBanking payment method is used then this parameter is added with details about the transaction.
 - paypalToken (string) - This is the PayPal token. Please consult PayPal documentation for more information.
@@ -3062,11 +3050,6 @@ Once a customer profile has been created (see [profile Object](#profile-object))
 - client_currency (string) - This is the client’s currency.
 - merchant_amount (string) - This is the amount moved to to the merchant’s account.
 - merchant_currency (string) - This is the merchant’s currency.
-
-## poli
-- poliRef (string)  - This is the state of the transaction. Please consult Poli documentation for further details concerning these parameters.
-- poliToken (string) - This is an encrypted POLi ID.
-- state (string) - This is the state of the transaction.
 
 ## sofortBanking
 - sofortBankingTxId (string) - This is the Sofort Banking transaction ID. Please consult Sofort Banking documentation for further details concerning these parameters.
