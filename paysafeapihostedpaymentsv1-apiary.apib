@@ -31,7 +31,7 @@ The API is a RESTful interface for making secure payments by way of your e-comme
 * By using a payment page hosted by Paysafe, sensitive payment information such as credit card numbers is handled by Paysafe.
 * The Paysafe payment page helps reduce the overhead of PCI audit requirements and its associated costs.
 
-The API does not allow merchants to pass card data. If you wish your e-commerce site to collect and pass card data, then you need to use the [Paysafe Card Payments API](https://developer.paysafe.com/en/rest-api/cards/getting-started/introduction-to-card-payments/)
+The API does not allow merchants to pass card data. If you wish your e-commerce site to collect and pass card data, then you need to use the [Paysafe Card Payments API](https://developer.paysafe.com/en/rest-apis/cards/getting-started/introduction-to-card-payments/)
 and comply with PCI guidelines regarding the handling of card data.
 
 **Note:** Paysafe may add additional elements in future releases of this API, so ensure that your integration is flexible enough to ignore any unrecognized response fields.
@@ -101,7 +101,7 @@ The following request types are supported:
 <a name="getting_started" title="Getting Started"></a>
 # Getting Started
 
-The Hosted Payments API handles the collection and storage of sensitive customer payment information, significantly reducing your PCI DSS compliance requirements. Click [here](https://developer.paysafe.com/en/rest-api/hosted/using-the-api/scenarios/) for descriptions of the main scenarios.
+The Hosted Payments API handles the collection and storage of sensitive customer payment information, significantly reducing your PCI DSS compliance requirements. Click [here](https://developer.paysafe.com/en/classic-apis/hosted-payments/using-the-api/scenarios/) for descriptions of the main scenarios.
 
 <a name="silent-post-considerations" title="Silent Post Considerations"></a>
 # Silent Post Considerations
@@ -185,8 +185,8 @@ This table provides the following additional information on each payment method:
 <a name="testing_instructions" title="Testing Instructions"></a>
 # Testing Instructions
 
-The Paysafe Test environment can be used to test websites or applications without actually running transactions through a live Hosted Payments service. It is important to make sure that your systems are working correctly before going into a live environment. Click [here](https://developer.paysafe.com/en/rest-api/hosted/test-and-go-live/testing-instructions/) for details of how to use the test environment.
-See [our test card section](https://developer.paysafe.com/en/rest-api/cards/test-and-go-live/test-cards/) for cards you can use in our test environment.
+The Paysafe Test environment can be used to test websites or applications without actually running transactions through a live Hosted Payments service. It is important to make sure that your systems are working correctly before going into a live environment. Click [here](https://developer.paysafe.com/en/classic-apis/hosted-payments/test-and-go-live/testing-instructions/) for details of how to use the test environment.
+See [our test card section](https://developer.paysafe.com/en/rest-apis/cards/test-and-go-live/test-cards/) for cards you can use in our test environment.
 
 <a name="iso_standards" title="ISO Standards"></a>
 # ISO Standards
@@ -903,9 +903,9 @@ The *extendedOptions* array may contain the following key/value pairs.
 | forcePaymentMethodStorage | boolean | If passed as *true* this removes the "Store my details for future use" check box from the hosted payment page and sets the flag value to *true*. |
 | houseNumberNotEditable | boolean | This prevents the customer from changing their address on the hosted payment page.|
 | merchantAccount | string</br>`length<=40` | This allows merchants to specify the merchant account ID to use to process the order. This feature should be used if a merchant has multiple merchant accounts with the same currency. This feature must be configured by Paysafe before use. |
-| orderTimeout | integer<br>`300-2592000` | This indicates how many seconds an order remains valid (see [Process an Order with a Hosted Page](https://developer.paysafe.com/en/rest-api/hosted/typical-api-calls/process-an-order-using-a-hosted-page/)). Current supported values are from 5 minutes to 30 days (300–2592000 seconds). If a timeout occurs and a customer is directed to the *hosted_payment* URI, or if Silent Post (or Direct Post) details are submitted, then an error will be raised. Merchants can also specify that customers are returned to the *on_timeout* URL (see the redirect parameters in [redirect Object](#redirect-object)).|
+| orderTimeout | integer<br>`300-2592000` | This indicates how many seconds an order remains valid (see [Process an Order with a Hosted Page](https://developer.paysafe.com/en/classic-apis/hosted-payments/typical-api-calls/process-an-order-using-a-hosted-page/)). Current supported values are from 5 minutes to 30 days (300–2592000 seconds). If a timeout occurs and a customer is directed to the *hosted_payment* URI, or if Silent Post (or Direct Post) details are submitted, then an error will be raised. Merchants can also specify that customers are returned to the *on_timeout* URL (see the redirect parameters in [redirect Object](#redirect-object)).|
 | recurringIndicator | boolean | This allows merchants to specify that the transaction is recurring and does not require the *cvdNumber* element. See [Process a Rebill Using an Order ID](#process-a-rebill-using-an-order-id).|
-| silentPost | boolean | This allows merchants to submit a Silent Post (or Direct Post) order. See [Process an Order with a Silent Post](https://developer.paysafe.com/en/rest-api/hosted/typical-api-calls/process-an-order-using-a-silent-post/).|
+| silentPost | boolean | This allows merchants to submit a Silent Post (or Direct Post) order. See [Process an Order with a Silent Post](https://developer.paysafe.com/en/classic-apis/hosted-payments/typical-api-calls/process-an-order-using-a-silent-post/).|
 | skip3D | boolean | This allows merchants to skip 3D Secure for an order. |
 | suppressCustomerEmail | boolean | This allows merchants to include the *customerNotificationEmail* parameter in an order but without having Paysafe send an email to the customer notifying them of the purchase. It gives merchants the ability to show/capture the customer’s email address on the payments page but not send an email.|
 | threatMetrixSessionId | string</br>`length<=128` | This allows Silent Post (or Direct Post) merchants to specify their own *session_id* for use with ThreatMetrix. The value should be unique per request. This must consist of the following characters only:<ul><li>Upper and lowercase English letters (a-z, A-Z)</li><li>Digits (0-9)</li><li>Underscore or hyphen ( *, -)</li> |
@@ -1990,7 +1990,7 @@ The *recurringIndicator* option allows a payment to be processed without prompti
 <a name="get-an-order-status" title="Get an Order Status"></a>
 
 To determine the status of an order request, use the *self* link (which is returned in the order creation response from Paysafe) from your application or from the command line. 
-The parameters included in the order status response may include the parameters that were part of the original transaction request (see [Process an Order with a Hosted Page](https://developer.paysafe.com/en/rest-api/hosted/typical-api-calls/process-an-order-using-a-hosted-page/)).
+The parameters included in the order status response may include the parameters that were part of the original transaction request (see [Process an Order with a Hosted Page](https://developer.paysafe.com/en/classic-apis/hosted-payments/typical-api-calls/process-an-order-using-a-hosted-page/)).
 
 The response contains all of the information you provided in the initial call, in the same structure, but with two additional elements:
 * transaction
