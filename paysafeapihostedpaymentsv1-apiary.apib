@@ -737,6 +737,8 @@ The accordD object allows the merchant to specify a financing plan along with th
 <a name="billingcycleobject" title="billingCycle Object"></a>
 ## billingCycle
 
+**Note:** This object can be used if *useThreeDSecureVersion2* is included and set to *true*. See [3D Secure 2 documentation](https://developer.paysafe.com/en/rest-apis/3d-secure-2/getting-started/introduction-to-3d-secure-2/) for more information.
+
 |Element                |Type                           |       |Description|
 |---                    |---                            |---    |---       |
 |endDate                |UTC formatted date             |Yes    |This is the date after which no further authorizations will be performed. The ISO 8601 date format is expected, i.e., YYYY-MM-DD.|
@@ -855,6 +857,8 @@ The callback return keys may contain the following parameters.
 <a name="electronicdeliveryobject" title="electronicDelivery Object"></a>
 ## electronicDelivery
 
+**Note:** This object can be used if *useThreeDSecureVersion2* is included and set to *true*. See [3D Secure 2 documentation](https://developer.paysafe.com/en/rest-apis/3d-secure-2/getting-started/introduction-to-3d-secure-2/) for more information.
+
 |Element                |Type                           |Required   |Description|
 |---                    |---                            |---        |---        |
 |isElectronicDelivery   |boolean                        |Yes        |This indicates whether there is an electronic delivery for the product.|
@@ -937,7 +941,7 @@ The *extendedOptions* array may contain the following key/value pairs.
 | orderTimeout | integer<br>`300-2592000` | This indicates how many seconds an order remains valid (see [Process an Order with a Hosted Page](https://developer.paysafe.com/en/classic-apis/hosted-payments/typical-api-calls/process-an-order-using-a-hosted-page/)). Current supported values are from 5 minutes to 30 days (300–2592000 seconds). If a timeout occurs and a customer is directed to the *hosted_payment* URI, or if Silent Post (or Direct Post) details are submitted, then an error will be raised. Merchants can also specify that customers are returned to the *on_timeout* URL (see the redirect parameters in [redirect Object](#redirect-object)).|
 | recurringIndicator | boolean | This allows merchants to specify that the transaction is recurring and does not require the *cvdNumber* element. See [Process a Rebill Using an Order ID](#process-a-rebill-using-an-order-id).|
 | silentPost | boolean | This allows merchants to submit a Silent Post (or Direct Post) order. See [Process an Order with a Silent Post](https://developer.paysafe.com/en/classic-apis/hosted-payments/typical-api-calls/process-an-order-using-a-silent-post/).|
-| skip3D | boolean | This allows merchants to skip 3D Secure for an order. |
+| skip3D | boolean | This allows merchants to skip 3D Secure for an order. <br/>**Note:** This field is ignored if *useThreeDSecureVersion2* is included and set to *true*.|
 | suppressCustomerEmail | boolean | This allows merchants to include the *customerNotificationEmail* parameter in an order but without having Paysafe send an email to the customer notifying them of the purchase. It gives merchants the ability to show/capture the customer’s email address on the payments page but not send an email.|
 | threatMetrixSessionId | string</br>`length<=128` | This allows Silent Post (or Direct Post) merchants to specify their own *session_id* for use with ThreatMetrix. The value should be unique per request. This must consist of the following characters only:<ul><li>Upper and lowercase English letters (a-z, A-Z)</li><li>Digits (0-9)</li><li>Underscore or hyphen ( *, -)</li> |
 | useProfileDefaults | boolean | When performing a transaction with *recurringIndicator* set to *true,* passing this key with a value of *true* will allow the previously stored billing details to be retrieved from the profile and passed with the new transaction. |
@@ -999,19 +1003,20 @@ Set the transaction description that a shopper sees on their bank statement.
 |---                     |---                       |---            |---|
 |merchantRefNum|string<br/>`length=40`|Yes|This is your own transaction ID, for your reference purposes. This should be unique for each transaction.
 |currencyCode|enumeration |Yes |This is the currency in which to process the transaction. See [Currency Codes](#currency-codes).
-|useThreeDSecureVersion2 |boolean   |Yes    |This enables [3D Secure version 2](https://developer.paysafe.com/en/rest-apis/3d-secure-2/getting-started/introduction-to-3d-secure-2/). <br/>**Note:** When set to *true* this field ignores the standard 3D Secure that is enabled in your merchant configuration. This field defaults to *false*.|
-|merchantUrl             |string<br/>`length<=2048` |Yes    |This is the fully qualified URL of the merchant's commercial or Customer Care website. | 
+|useThreeDSecureVersion2 |boolean   |    |This enables [3D Secure version 2](https://developer.paysafe.com/en/rest-apis/3d-secure-2/getting-started/introduction-to-3d-secure-2/). <br/>**Note:** This field defaults to *false*. When set to *true* this field ignores the standard 3D Secure that is enabled in your merchant configuration.|
+|merchantUrl             |string<br/>`length<=2048` |    |This is the fully qualified URL of the merchant's commercial or Customer Care website.<br/>**Note:** This field is required if *useThreeDSecureVersion2* is included and set to *true*.| 
 |totalAmount |integer|Yes |This is the total amount of the transaction (note that this value must be equal to the amounts passed in the *ancillaryFees* and *shoppingCart* parameters, discussed below). Merchants can provide zero (0) as an amount, if they need to process a verification with no value on the card. In this case, the *authType* must be set to *auth* using the *extendedOptions* feature.|
 |[merchantDescriptor](#merchantDescriptor-object) |complex|| This sets the descriptor of the transaction that a shopper sees on their bank statement. |
-|transactionIntent      | enumeration  | Yes   | This identifies the type of transaction being authenticated for 3D Secure 2. Possible values are:<ul><li>GOODS_OR_SERVICE_PURCHASE</li><li>CHECK_ACCEPTANCE</li><li>ACCOUNT_FUNDING</li><li>QUASI_CASH_TRANSACTION</li></ul> <br/>**Note:** This field defaults to GOODS_OR_SERVICE_PURCHASE.|
-|messageCategory    |enumeration    |Yes    |This specifies category of the message for a specific use case. Possible values are:<ul><li>PAYMENT</li.<li>NON_PAYMENT</li></ul><br/>**Note:** This field defaults to PAYMENT.|
-|initialPurchaseTime    |UTC formatted date |Yes    |This is the date and time of the purchase. |
-|authenticationPurpose  |enumeration    |Yes    |This indicates the type of Authentication request, providing additional information to help determine the best approach for handing an Authentication request. Possible values are:<ul><li>PAYMENT_TRANSACTION</li><li>RECURRING_TRANSACTION</li><li>INSTALMENT_TRANSACTION</li><li>ADD_CARD</li><li>MAINTAIN_CARD</li></ul><br/>**Note:** This field defaults to PAYMENT_TRANSACTION.|
-|maxAuthorizationsForInstalmentPayment |integer<br/>`min=1`<br/>`max=999` |   |This indicates the maximum number of authorizations permitted for instalment payments. This field is required if *authenticationPurpose* is set to INSTALMENT_TRANSACTION.|
-|[electronicDelivery](#electronicdeliveryobject) | complex |Yes |This is the electronic delivery information.|
-|[orderItemDetails](#orderitemdetailsobject)   | complex |   | These are the details of a previously made purchase or preorder.|
-|[billingCycle](#billingcycleobject)           | complex |   | This object is required if *authenticationPurpose* is set to INSTALMENT_TRANSACTION or RECURRING_TRANSACTION.|
-|[userAccountDetails](#useraccountdetailsobject) |complex | |These are details of the user account at the merchant website.|
+|transactionIntent      | enumeration  |    | This identifies the type of transaction being authenticated for 3D Secure 2. Possible values are:<ul><li>GOODS_OR_SERVICE_PURCHASE</li><li>CHECK_ACCEPTANCE</li><li>ACCOUNT_FUNDING</li><li>QUASI_CASH_TRANSACTION</li></ul> <br/>**Note:** This field can be used if *useThreeDSecureVersion2* is included and set to *true*. This field defaults to GOODS_OR_SERVICE_PURCHASE.|
+|messageCategory    |enumeration    |    |This specifies category of the message for a specific use case. Possible values are:<ul><li>PAYMENT</li><li>NON_PAYMENT</li></ul><br/>**Note:** This field can be used if *useThreeDSecureVersion2* is included and set to *true*. This field defaults to PAYMENT.|
+|initialPurchaseTime    |UTC formatted date |    |This is the date and time of the purchase. <br/>**Note:** This field can be used if *useThreeDSecureVersion2* is included and set to *true*. <br/>This field is required in the following cases:<ul><li>*messageCategory* is set to PAYMENT</li><li>*messageCategory* is set to NON_PAYMENT and *authenticationPurpose* is set to either INSTALMENT_TRANSACTION or RECURRING_TRANSACTION</li></ul>|
+|authenticationPurpose  |enumeration    |    |This indicates the type of Authentication request, providing additional information to help determine the best approach for handing an Authentication request. Possible values are:<ul><li>PAYMENT_TRANSACTION</li><li>RECURRING_TRANSACTION</li><li>INSTALMENT_TRANSACTION</li><li>ADD_CARD</li><li>MAINTAIN_CARD</li><li>EMV_TOKEN_VERIFICATION</li></ul><br/>**Note:** This field is can be used if *useThreeDSecureVersion2* is included and set to *true*. This field defaults to PAYMENT_TRANSACTION.|
+|maxAuthorizationsForInstalmentPayment |integer<br/>`min=1`<br/>`max=999` |   |This indicates the maximum number of authorizations permitted for instalment payments. <br/>**Note:** This field can be used if *useThreeDSecureVersion2* is included and set to *true*. This field is required if *authenticationPurpose* is set to INSTALMENT_TRANSACTION.|
+|[electronicDelivery](#electronicdeliveryobject) | complex | |This is the electronic delivery information. <br/>**Note:** This object can be used if *useThreeDSecureVersion2* is included and set to *true*.|
+|[orderItemDetails](#orderitemdetailsobject)   | complex |   | These are the details of a previously made purchase or preorder. <br/>**Note:** This object can be used if *useThreeDSecureVersion2* is included and set to *true*.|
+|[billingCycle](#billingcycleobject)           | complex |   | **Note:** This object can be used if *useThreeDSecureVersion2* is included and set to *true*. This object is required if *authenticationPurpose* is set to INSTALMENT_TRANSACTION or RECURRING_TRANSACTION.|
+|[userAccountDetails](#useraccountdetailsobject) |complex | |These are details of the user account at the merchant website. <br/> **Note:** This object can be used if *useThreeDSecureVersion2* is included and set to *true*.|
+|[purchasedGiftCardDetails](#purchasedgiftcarddetailsobject) |complex | |These are details of previous purchases made on a gift card. <br/>**Note:** This object can be used if *useThreeDSecureVersion2* is included and set to *true*.|
 |customerIp |string<br/>`length<=15`||The value should be the incoming IP address of your customer, which will restrict the payment page to being viewable only from this IP address. <br></br><br></br>**Note:** Though the *customerIp* parameter is not mandatory, Paysafe recommends including it for additional security.|
 |id|string<br/>`length<=128`||This ID represents the original order request. This ID will be used for subsequent transactions associated with the original request, such as making a payment or requesting an order status.|
 |customerNotificationEmail|string<br/>`length<=256`||This is the customer’s email address, to which notifications regarding the purchase request are sent.|
@@ -1038,9 +1043,11 @@ Set the transaction description that a shopper sees on their bank statement.
 <a name="orderitemdetailsobject" title="orderItemDetails Object"></a>
 ## orderItemDetails
 
+**Note:** This object can be used if *useThreeDSecureVersion2* is included and set to *true*. See [3D Secure 2 documentation](https://developer.paysafe.com/en/rest-apis/3d-secure-2/getting-started/introduction-to-3d-secure-2/) for more information.
+
 | Element                         | Type               |Required | Description                                                                                                                                                        |
 |---------------------------------|--------------------|---     |--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| orderItemDetails                | UTC formatted date | | For a pre-ordered purchase, this is the date that the merchandise is expected to be available. The ISO 8601 date format is expected, i.e., YYYY-MM-DD.|
+| preOrderItemAvailabilityDate    | UTC formatted date | | For a pre-ordered purchase, this is the date that the merchandise is expected to be available. The ISO 8601 date format is expected, i.e., YYYY-MM-DD.|
 | preOrderPurchaseIndicator       | enumeration        | |This indicates whether the cardholder is placing an order for available merchandise or merchandise with a future availability or release date. Possible values are:<br/><ul><li>MERCHANDISE_AVAILABLE</li><li>FUTURE_AVAILABILITY</li></ul>|
 | reorderItemsIndicator           | enumeration        | | This indicates whether the cardholder is reordering merchandise. Possible values are:<br/><ul><li>FIRST_TIME_ORDER</li><li>REORDER</li></ul>|
 | shippingIndicator               | enumeration        | | This is the shipping method for the transaction. Possible values are:<br/><ul><li>SHIP_TO_BILLING_ADDRESS</li><li>SHIP_TO_VERIFIED_ADDRESS</li><li>SHIP_TO_DIFFERENT_ADDRESS</li><li>SHIP_TO_STORE</li><li>DIGITAL_GOODS</li><li>TRAVEL_AND_EVENT_TICKETS</li><li>OTHER</li></ul>|
@@ -1057,6 +1064,8 @@ Set the transaction description that a shopper sees on their bank statement.
 <a name="paymentaccountdetailsobject" title="paymentAccountDetails Object"></a>
 ## paymentAccountDetails
 
+**Note:** This object can be used if *useThreeDSecureVersion2* is included and set to *true*. See [3D Secure 2 documentation](https://developer.paysafe.com/en/rest-apis/3d-secure-2/getting-started/introduction-to-3d-secure-2/) for more information.
+
 |Element        |Type                   |Required   |Description|
 |---            |---                    |---        |---|
 |createdRange   |enumeration            |           |This indicates the length of time that the payment account was enrolled in the cardholder’s account with the 3DS Requestor. Possible values are:<br/><ul><li>NO_ACCOUNT</li><li>DURING_TRANSACTION</li><li>LESS_THAN_THIRTY_DAYS</li><li>THIRTY_TO_SIXTY_DAYS</li><li>MORE_THAN_SIXTY_DAYS</li></ul>|
@@ -1071,6 +1080,8 @@ Set the transaction description that a shopper sees on their bank statement.
 
 <a name="priorthreedsauthenticationobject" title="piorThreeDSAuthentication Object"></a>
 ## priorThreeDSAuthentication
+
+**Note:** This object can be used if *useThreeDSecureVersion2* is included and set to *true*. See [3D Secure 2 documentation](https://developer.paysafe.com/en/rest-apis/3d-secure-2/getting-started/introduction-to-3d-secure-2/) for more information.
 
 |Element        |Type                       |Required   |Description|
 |---            |---                        |---        |---|
@@ -1115,6 +1126,25 @@ For more information on profiles, see [Create a Profile with an Order](#create-a
         "lastName" : "Smythe"
    },
     "customerNotificationEmail" : "jane.smythe@emailhost.com"
+}
+```
+
+<a name="purchasedgiftcarddetailsobject" title="purchasedGiftCardDetails Object"></a>
+## purchasedGiftCardDetails
+
+**Note:** This object can be used if *useThreeDSecureVersion2* is included and set to *true*. See [3D Secure 2 documentation](https://developer.paysafe.com/en/rest-apis/3d-secure-2/getting-started/introduction-to-3d-secure-2/) for more information.
+
+|Element            |Type                               |Required   |Description|
+|---                |---                                |---        |---        |
+|amount             |integer<br/>`max = 99999999999`    |           |This is the amount of the gift card, in minor units. |
+|count              |integer<br/>`max = 99`             |           |This is the total count of individual prepaid or gift cards/codes purchased.|
+|currency           |string<br/>`length = 3`            |           |This is the currency of the gift card. |
+
+```apib
+{
+    "amount": 9999,
+    "count": 2, 
+    "currency":USD"
 }
 ```
 
@@ -1181,7 +1211,7 @@ The redirect return keys may contain the following parameters.
 |zip|string<br>`length=10` |Yes |This is the postal/zip code in the shipping address. |
 |state |string<br>`length<=40`||This is the state/province/region in the shipping address. For Canada, see [Province Codes](#province-codes). For the U.S., see [State Codes](#state-codes). Other countries have no restrictions.
 |phone|string<br>`length<=40`||This is the telephone number in the shipping address.|
-|carrier|enumeration||This is the shipment carrier. Possible values are: <ul><li>APC = APC Overnight</li><li>APS = AnPost</li><li>CAD = Canada Postal Service</li><li>DHL</li><li>FEX = Fedex</li><li>RML = Royal Mail</li><li>UPS = United Parcel Service</li><li>USPS = United States Postal Service</li><li>OTHER</li></ul>|
+|carrier|enumeration||This is the shipment carrier. Possible values are: <ul><li>APC = APC Overnight</li><li>APS = AnPost</li><li>CAD = Canada Postal Service</li><li>DHL</li><li>FEX = Fedex</li><li>RML = Royal Mail</li><li>UPS = United Parcel Service</li><li>USPS = United States Postal Service</li><li>CLK = CityLink</li><li>EMS = EMS (US Postal Service)</li><li>NEX = Nexworldwide</li><li>OTHER</li></ul>|
 |shipMethod|enumeration||This is the method of shipment. Possible values are:<ul><li>N = Next Day/Overnight&nbsp;</li><li>T = Two-Day Service&nbsp;</li><li>C = Lowest Cost</li><li>O = Other</li></ul>|
 
 **Example**
@@ -1202,6 +1232,8 @@ The redirect return keys may contain the following parameters.
 
 <a name="shippingdetailsusageobject" title="shippingDetailsUsage Object"></a>
 ## shippingDetailsUsage
+
+**Note:** This object can be used if *useThreeDSecureVersion2* is included and set to *true*. See [3D Secure 2 documentation](https://developer.paysafe.com/en/rest-apis/3d-secure-2/getting-started/introduction-to-3d-secure-2/) for more information.
 
 |Element                |Type                   |Required   |Description|
 |---                    |---                    |---        |---|
@@ -1281,6 +1313,8 @@ The redirect return keys may contain the following parameters.
 <a name="traveldetailsobject" title="Travel Details Object"></a>
 ## travelDetails
 
+**Note:** This object can be used if *useThreeDSecureVersion2* is included and set to *true*. See [3D Secure 2 documentation](https://developer.paysafe.com/en/rest-apis/3d-secure-2/getting-started/introduction-to-3d-secure-2/) for more information.
+
 |Element                |Type                       |Required   |Description|
 |---                    |---                        |---        |---|
 |isAirTravel            |boolean                    |           |This indicates whether the transaction is an air travel related purchase, e.g., a ticket purchase. <br/>**Note:** This field defaults to *false*.|
@@ -1306,6 +1340,8 @@ The redirect return keys may contain the following parameters.
 <a name="useraccountdetailsobject" title="userAccountDetails Object"></a>
 ## userAccountDetails
 
+**Note:** This object can be used if *useThreeDSecureVersion2* is included and set to *true*. See [3D Secure 2 documentation](https://developer.paysafe.com/en/rest-apis/3d-secure-2/getting-started/introduction-to-3d-secure-2/) for more information.
+
 |Element                                                        |Type                                              |Required |Description|
 |---                                                            |---                                               |--- |---       |
 |addCardAttemptsForLastDay                                      |number<br/>`max=999`                              | |This is the number of Add Card attempts in the last 24 hours.|
@@ -1322,7 +1358,7 @@ The redirect return keys may contain the following parameters.
 |totalPurchasesSixMonthCount                                    |number<br/>`max=9999`                             | |This is the total number of purchases from this cardholder account in the previous six months.|
 |transactionCountForPreviousDay                                 |number<br/>`max=999`                              | |This is the number of transactions (successful and abandoned) for this cardholder account with the 3D Secure Requestor across all payment accounts in the previous 24 hours.|
 |transactionCountForPreviousYear                                |number<br/>`max=999`                              | |This is the number of transactions (successful and abandoned) for this cardholder account with the 3D Secure Requestor across all payment accounts in the previous year.|
-|[travelDetails](#traveldetailsobject)                          |complex                                           | |These are the Amex-specific travel details.|
+|[travelDetails](#traveldetailsobject)                          |complex                                           | |These are the Amex-specific travel details. <br/> **Note:** This object can be used if *useThreeDSecureVersion2* is included and set to *true*.|
 |[userLogin](#userloginobject)                                  |complex                                           | |This is the cardholder login information.|
 
 ```apib
@@ -1372,6 +1408,8 @@ The redirect return keys may contain the following parameters.
 
 <a name="userloginobject" title="userLogin Object"></a>
 ## userLogin
+
+**Note:** This object can be used if *useThreeDSecureVersion2* is included and set to *true*. See [3D Secure 2 documentation](https://developer.paysafe.com/en/rest-apis/3d-secure-2/getting-started/introduction-to-3d-secure-2/) for more information.
 
 |Element                |Type                       |Required   |Description|
 |---                    |---                        |---        |---|
@@ -2983,87 +3021,30 @@ Once a customer profile has been created (see [profile Object](#profile-object))
 # Data Structures
 
 ## 3D Secure 2
-- useThreeDSecureVersion2 (boolean, required) - This enables [3D Secure version 2](https://developer.paysafe.com/en/rest-apis/3d-secure-2/getting-started/introduction-to-3d-secure-2/). **Note:** When set to *true* this field ignores the standard 3D Secure that is enabled in your merchant configuration. This field defaults to *false*.
-- merchantUrl (string, required) - This is the fully qualified URL of the merchant's commercial or Customer Care website.
-- transactionIntent (enum, required) - This identifies the type of transaction being authenticated for 3D Secure 2. **Note:** This field defaults to GOODS_OR_SERVICE_PURCHASE.
+- useThreeDSecureVersion2 (boolean) - This enables [3D Secure version 2](https://developer.paysafe.com/en/rest-apis/3d-secure-2/getting-started/introduction-to-3d-secure-2/). **Note:** When set to *true* this field ignores the standard 3D Secure that is enabled in your merchant configuration. This field defaults to *false*.
+- merchantUrl (string) - This is the fully qualified URL of the merchant's commercial or Customer Care website. **Note:** This field is required if *useThreeDSecureVersion2* is included and set to *true*.
+- transactionIntent (enum) - This identifies the type of transaction being authenticated for 3D Secure 2. **Note:** This field can be used if *useThreeDSecureVersion2* is included and set to *true*. This field defaults to GOODS_OR_SERVICE_PURCHASE.
     + GOODS_OR_SERVICE_PURCHASE
     + CHECK_ACCEPTANCE
     + ACCOUNT_FUNDING
     + QUASI_CASH_TRANSACTION
-- messageCategory (enum, required) - This specifies category of the message for a specific use case. **Note:** This field defaults to PAYMENT.
+- messageCategory (enum) - This specifies category of the message for a specific use case. **Note:** This field can be used if *useThreeDSecureVersion2* is included and set to *true*. This field defaults to PAYMENT.
     + PAYMENT
     + NON_PAYMENT
-- initialPurchaseTime (string, required) - This is the UTC formatted date and time of the purchase.
-- authenticationPurpose (enum, required) - This indicates the type of Authentication request, providing additional information to help determine the best approach for handing an Authentication request. **Note:** This field defaults to PAYMENT_TRANSACTION.|
+- initialPurchaseTime (string) - This is the UTC formatted date and time of the purchase. **Note:** This field can be used if *useThreeDSecureVersion2* is included and set to *true*. This field is required in the following cases: 1) *messageCategory* is set to PAYMENT; and 2) *messageCategory* is set to NON_PAYMENT and *authenticationPurpose* is set to either INSTALMENT_TRANSACTION or RECURRING_TRANSACTION.
+- authenticationPurpose (enum) - This indicates the type of Authentication request, providing additional information to help determine the best approach for handing an Authentication request. **Note:** This field can be used if *useThreeDSecureVersion2* is included and set to *true*. This field defaults to PAYMENT_TRANSACTION.
     + PAYMENT_TRANSACTION
     + RECURRING_TRANSACTION
     + INSTALMENT_TRANSACTION
     + ADD_CARD
     + MAINTAIN_CARD
-- maxAuthorizationsForInstalmentPayment (number) - This indicates the maximum number of authorizations permitted for instalment payments. **Note:** This field is required if *authenticationPurpose* is set to INSTALMENT_TRANSACTION.
+    + EMV_TOKEN_VERIFICATION
+- maxAuthorizationsForInstalmentPayment (number) - This indicates the maximum number of authorizations permitted for instalment payments. **Note:** This field can be used if *useThreeDSecureVersion2* is included and set to *true*. This field is required if *authenticationPurpose* is set to INSTALMENT_TRANSACTION.
 + Include Electronic Delivery
 + Include Order Item Details
 + Include Billing Cycle
 + Include User Account Details
-
-## User Account Details
-+ userAccountDetails (object) - This
-    + addCardAttemptsForLastDay (number) - This is the number of Add Card attempts in the last 24 hours.
-    + changedDate (string) - This is the UTC formatted date that the cardholder’s account with the 3DS Requestor was last changed. 
-    + changedRange (enum) - This is the length of time between the most recent change to the cardholder’s account information and the API call of the current transaction.
-        + DURING_TRANSACTION
-        + LESS_THAN_THIRTY_DAYS
-        + THIRTY_TO_SIXTY_DAYS
-        + MORE_THAN_SIXTY_DAYS
-    + createdDate (string) - This is the UTC formatted date when the cardholder opened the account with the 3DS Requestor. 
-    + createdRange (enum) - This is the length of time between the cardholder opening the account with the 3DS Requestor and the API call of the current transaction.
-        + NO_ACCOUNT
-        + DURING_TRANSACTION
-        + LESS_THAN_THIRTY_DAYS
-        + THIRTY_TO_SIXTY_DAYS
-        + MORE_THAN_SIXTY_DAYS
-    + passwordChangedDate (string) - This is the UTC formatted date when the cardholder’s account was reset or the password was changed.
-    + passwordChangedRange (enum) - This is the length of time between the most recent password change or cardholder account reset and the API call of the current transaction.
-        + NO_CHANGE
-        + DURING_TRANSACTION
-        + LESS_THAN_THIRTY_DAYS
-        + THIRTY_TO_SIXTY_DAYS
-        + MORE_THAN_SIXTY_DAYS
-    + Include Payment Account Details
-    + Include Prior 3DS Authentication
-    + Include Shipping Details Usage
-    + suspiciousAccountActivity (boolean) - This indicates whether the 3DS Requestor has experienced suspicious activity, including previous fraud, on the cardholder account.
-    + totalPurchasesSixMonthCount (number) - This is the total number of purchases from this cardholder account in the previous six months.
-    + transactionCountForPreviousDay (number) - This is the number of transactions (successful and abandoned) for this cardholder account with the 3D Secure Requestor across all payment accounts in the previous 24 hours.
-    + transactionCountForPreviousYear (number) - This is the number of transactions (successful and abandoned) for this cardholder account with the 3D Secure Requestor across all payment accounts in the previous year.
-    + Include Travel Details
-    + Include User Login 
-
-## Payment Account Details
-+ paymentAccountDetails (object) - These are the details of the current payment account of the cardholder.
-    + createdRange (enum) - This indicates the length of time that the payment account was enrolled in the cardholder’s account with the 3DS Requestor.
-        + NO_ACCOUNT
-        + DURING_TRANSACTION
-        + LESS_THAN_THIRTY_DAYS
-        + THIRTY_TO_SIXTY_DAYS
-        + MORE_THAN_SIXTY_DAYS
-    + createdDate (string) - This is the UTC formatted date that the cardholder opened the account with the 3DS Requestor.
-
-## Prior 3DS Authentication
-+ priorThreeDSAuthentication (object) - This is the previous authentication information used with current merchant, cardholder, and card.
-    + addCardAttemptsForLastDay (number) - This is the number of Add Card attempts in the last 24 hours.
-
-## Shipping Details Usage
-+ shippingDetailsUsage (object) - This is the shipping usage information.
-    + addCardAttemptsForLastDay (number) - This is the number of Add Card attempts in the last 24 hours.
-
-## Travel Details
-+ travelDetails (object) - These are the Amex-specific travel details.
-    + addCardAttemptsForLastDay (number) - This is the number of Add Card attempts in the last 24 hours.
-
-## User Login
-+ userLogin (object) - This is the cardholder login information.
-    + addCardAttemptsForLastDay (number) - This is the number of Add Card attempts in the last 24 hours.
++ Include Purchased Gift Card Details
 
 ## accordD
 - financingType (enum,required)
@@ -3082,7 +3063,7 @@ Once a customer profile has been created (see [profile Object](#profile-object))
 - description: Postage (string,required) - This is the description of the fee. 
 
 ## Billing Cycle
-+ billingCycle (object) - This object is required if *authenticationPurpose* is set to INSTALMENT_TRANSACTION or RECURRING_TRANSACTION. 
++ billingCycle (object) - This object can be used if *useThreeDSecureVersion2* is included and set to *true*. This object is required if *authenticationPurpose* is set to INSTALMENT_TRANSACTION or RECURRING_TRANSACTION. 
     + endDate (string, required) - This is the UTC formatted date after which no further authorizations will be performed.
     + frequency (number, required) - This is the minimum number of days between authorizations.
 
@@ -3116,7 +3097,7 @@ Once a customer profile has been created (see [profile Object](#profile-object))
 
 
 ## Electronic Delivery
-+ electronicDelivery (object) - This is information regarding electronic delivery. 
++ electronicDelivery (object) - This is information regarding electronic delivery. **Note:** This object can be used if *useThreeDSecureVersion2* is included and set to *true*.
     + isElectronicDelivery (boolean, required) - This indicates whether there is an electronic delivery for the product.
     + email (string) - This is the email address to which the merchandise was delivered.
 
@@ -3244,7 +3225,7 @@ Once a customer profile has been created (see [profile Object](#profile-object))
 - phone:123 (string) - The merchant’s phone number, which is appended to the merchant descriptor on a customer’s card statement.
 
 ## Order Item Details
-+ orderItemDetails (object) - These are the details of a previously made purchase or preorder.
++ orderItemDetails (object) - These are the details of a previously made purchase or preorder. **Note:** This field can be used if *useThreeDSecureVersion2* is included and set to *true*.
     + preOrderItemAvailabilityDate (string) - For a pre-ordered purchase, this is the UTC formatted date that the merchandise is expected to be available. 
     + preOrderPurchaseIndicator (enum) - This indicates whether the cardholder is placing an order for available merchandise or merchandise with a future availability or release date.
         + MERCHANDISE_AVAILABLE
@@ -3261,6 +3242,27 @@ Once a customer profile has been created (see [profile Object](#profile-object))
         + TRAVEL_AND_EVENT_TICKETS
         + OTHER
 
+## Payment Account Details
++ paymentAccountDetails (object) - These are the details of the current payment account of the cardholder.
+    + createdRange (enum) - This indicates the length of time that the payment account was enrolled in the cardholder’s account with the 3DS Requestor.
+        + NO_ACCOUNT
+        + DURING_TRANSACTION
+        + LESS_THAN_THIRTY_DAYS
+        + THIRTY_TO_SIXTY_DAYS
+        + MORE_THAN_SIXTY_DAYS
+    + createdDate (string) - This is the UTC formatted date that the cardholder opened the account with the 3DS Requestor.
+
+## Prior 3DS Authentication
++ priorThreeDSAuthentication (object) - This is the previous authentication information used with current merchant, cardholder, and card.
+    + data (string) - This field is reserved for future iterations of 3D Secure 2.
+    + method (enum) - This is the mechanism used previously by the cardholder to authenticate to the 3D Secure Requestor.
+        + FRICTIONLESS_AUTHENTICATION
+        + ACS_CHALLENGE
+        + AVS_VERIFIED
+        + OTHER_ISSUER_METHOD
+    + id (string) - This is a previous authentication ID for the cardholder. **Note:** For recurring payments, this is the _authenticationId_ of the first authentication.
+    + time (string) - This is the UTC formatted date and time of the cardholder authentication.
+
 ## profile
 - merchantCustomerId:jane.smythe@emailhost.com (string) - This is the customer ID that the merchant has assigned to the customer. When this parameter is included in the request, a customer profile will be created.
 - firstName:Jane (string) - This is the customer’s first name.
@@ -3269,6 +3271,12 @@ Once a customer profile has been created (see [profile Object](#profile-object))
 ## profileResponse
 - id:`0275e76c-2141-11e4-8ac3-74cde64e5c68` (string) - This is the customer ID returned by Paysafe when the profile is created. If the ID is included in an order request, then the customer profile associated with that ID will be used for the transaction. See [Process an Order with a Profile ID](#process-an-order-with-a-profile-id) for more information.
 - paymentToken:`SJsww3Eq33ezNvhM+jQRNoH/U4o7j0XJ4yrXtDMenLM` (string) - This is the payment token returned by Paysafe when the profile is created (see [Order Status Response Parameters](#order-status-response-parameters)). If the paymentToken is included in an order request, then the card number associated with that token will be used for the transaction. See [Process an Order with a Payment Token](#process-an-order-with-a-payment-token) for more information.
+
+## Purchased Gift Card Details
++ purchasedGiftCardDetails (object) - These are details of purchases previously made on a gift card.
+    + amount (number) - This is the amount of the gift card, in minor units.
+    + count (number) - This is the total count of individual prepaid or gift cards/codes purchased.
+    + currency (string) - This is the currency of the gift card.
 
 ## recipientDateOfBirth
 - day:29 (number,required) - This is the recipient's day of birth (1-31).
@@ -3313,12 +3321,25 @@ Once a customer profile has been created (see [profile Object](#profile-object))
   + RML - Royal Mail
   + UPS - United Parcel Service
   + USPS - United States Postal Service
+  + CLK - CityLink
+  + EMS - EMS (US Postal Service)
+  + NEX - Nexworldwide
   + OTHER
 - shipMethod (enum,optional) - This is the method of shipment.
   + N - Next Day/Overnight
   + T - Two-day Service
   + C - Lowest Cost
   + O - Other
+
+## Shipping Details Usage
++ shippingDetailsUsage (object) - This is the shipping usage information.
+    + cardHolderNameMatch (boolean) - This indicates whether the cardholder name on the account is identical to the shipping name used for this transaction.
+    + initialUsageDate (string) - This is the UTC formatted date when the shipping address for this transaction was first used with the 3D Secure Requestor.
+    + initialUsageRange (enum) - This is the length of time between the first use of this shipping address and the current transaction.
+        + CURRENT_TRANSACTION
+        + LESS_THAN_THIRTY_DAYS
+        + THIRTY_TO_SIXTY_DAYS
+        + MORE_THAN_SIXTY_DAYS
 
 ## shoppingCart
 - amount:999 (number,required) - This is the total amount for this item in the shopping cart in minor units. E.g., 999 would be $9.99.
@@ -3408,3 +3429,58 @@ Once a customer profile has been created (see [profile Object](#profile-object))
 - status (string) - This is the status of the transaction.
 - message (string) - This is the message returned, if required.
 - transId (string) - This is the Union Pay transaction ID
+
+## Travel Details
++ travelDetails (object) - These are the Amex-specific travel details. **Note:** This object can be used if *useThreeDSecureVersion2* is included and set to *true*.
+    + isAirTravel (boolean) - This indicates whether the transaction is an air travel related purchase, e.g., a ticket purchase. **Note:** This field defaults to *false*.
+    + airlineCarrier (string) - This is the selected airline carrier. **Note:** Required if *isAirTravel* is *true*.
+    + departureDate (string) - This is the UTC formatted date of departure in the time zone of the departure location. **Note:** Required if *isAirTravel* is *true*.
+    + destination (string) - This is the airport code of the destination airport. **Note:** Required if *isAirTravel* is *true*.
+    + origin (string) - This is the airport code of the originating airport. **Note:** Required if *isAirTravel* is *true*.
+    + passengerFirstName (string) - This is the first name of the cardholder from the billing details. **Note:** Required if *isAirTravel* is *true*.
+    + passengerLastName (string) - This is the last name of the cardholder from the billing details. **Note:** Required if *isAirTravel* is *true*.
+
+## User Account Details
++ userAccountDetails (object) - These are details of the user account at the merchant website. **Note:** This object can be used if *useThreeDSecureVersion2* is included and set to *true*.
+    + addCardAttemptsForLastDay (number) - This is the number of Add Card attempts in the last 24 hours.
+    + changedDate (string) - This is the UTC formatted date that the cardholder’s account with the 3DS Requestor was last changed. 
+    + changedRange (enum) - This is the length of time between the most recent change to the cardholder’s account information and the API call of the current transaction.
+        + DURING_TRANSACTION
+        + LESS_THAN_THIRTY_DAYS
+        + THIRTY_TO_SIXTY_DAYS
+        + MORE_THAN_SIXTY_DAYS
+    + createdDate (string) - This is the UTC formatted date when the cardholder opened the account with the 3DS Requestor. 
+    + createdRange (enum) - This is the length of time between the cardholder opening the account with the 3DS Requestor and the API call of the current transaction.
+        + NO_ACCOUNT
+        + DURING_TRANSACTION
+        + LESS_THAN_THIRTY_DAYS
+        + THIRTY_TO_SIXTY_DAYS
+        + MORE_THAN_SIXTY_DAYS
+    + passwordChangedDate (string) - This is the UTC formatted date when the cardholder’s account was reset or the password was changed.
+    + passwordChangedRange (enum) - This is the length of time between the most recent password change or cardholder account reset and the API call of the current transaction.
+        + NO_CHANGE
+        + DURING_TRANSACTION
+        + LESS_THAN_THIRTY_DAYS
+        + THIRTY_TO_SIXTY_DAYS
+        + MORE_THAN_SIXTY_DAYS
+    + Include Payment Account Details
+    + Include Prior 3DS Authentication
+    + Include Shipping Details Usage
+    + suspiciousAccountActivity (boolean) - This indicates whether the 3DS Requestor has experienced suspicious activity, including previous fraud, on the cardholder account.
+    + totalPurchasesSixMonthCount (number) - This is the total number of purchases from this cardholder account in the previous six months.
+    + transactionCountForPreviousDay (number) - This is the number of transactions (successful and abandoned) for this cardholder account with the 3D Secure Requestor across all payment accounts in the previous 24 hours.
+    + transactionCountForPreviousYear (number) - This is the number of transactions (successful and abandoned) for this cardholder account with the 3D Secure Requestor across all payment accounts in the previous year.
+    + Include Travel Details
+    + Include User Login 
+
+## User Login
++ userLogin (object) - This is the cardholder login information.
+    + authenticationMethod (enum) - This is the mechanism used by the cardholder to authenticate to the 3DS Requestor.
+        + NO_LOGIN
+        + INTERNAL_CREDENTIALS
+        + FEDERATED_ID
+        + ISSUER_CREDENTIALS
+        + THIRD_PARY_AUTHENTICATION
+        + FIDO_AUTHENTICATOR
+    + data (string) - This is the data that documents and supports a specific authentication process. Not currently specified in detail, intended to carry data that the ACS can use to verify the authentication process.
+    + time (string) - This is the UTC formatted date and time of the cardholder authentication.
