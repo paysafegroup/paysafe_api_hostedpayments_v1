@@ -1010,6 +1010,7 @@ Set the transaction description that a shopper sees on their bank statement.
 |transactionIntent      | enumeration  |    | This identifies the type of transaction being authenticated for 3D Secure 2. Possible values are:<ul><li>GOODS_OR_SERVICE_PURCHASE</li><li>CHECK_ACCEPTANCE</li><li>ACCOUNT_FUNDING</li><li>QUASI_CASH_TRANSACTION</li></ul> <br/>**Note:** This field can be used if *useThreeDSecureVersion2* is included and set to *true*. This field defaults to GOODS_OR_SERVICE_PURCHASE.|
 |messageCategory    |enumeration    |    |This specifies category of the message for a specific use case. Possible values are:<ul><li>PAYMENT</li><li>NON_PAYMENT</li></ul><br/>**Note:** This field can be used if *useThreeDSecureVersion2* is included and set to *true*. This field defaults to PAYMENT.|
 |initialPurchaseTime    |UTC formatted date |    |This is the date and time of the purchase. <br/>**Note:** This field can be used if *useThreeDSecureVersion2* is included and set to *true*. <br/>This field is required in the following cases:<ul><li>*messageCategory* is set to PAYMENT</li><li>*messageCategory* is set to NON_PAYMENT and *authenticationPurpose* is set to either INSTALMENT_TRANSACTION or RECURRING_TRANSACTION</li></ul>|
+| requestorChallengePreference  | enum  |  | This indicates whether a challenge is requested for this transaction. Possible values are:<br/><ul><li>NO_PREFERENCE</li><li>NO_CHALLENGE_REQUESTED</li><li>CHALLENGE_REQUESTED</li><li>CHALLENGE_MANDATED</li></ul>|
 |authenticationPurpose  |enumeration    |    |This indicates the type of Authentication request, providing additional information to help determine the best approach for handing an Authentication request. Possible values are:<ul><li>PAYMENT_TRANSACTION</li><li>RECURRING_TRANSACTION</li><li>INSTALMENT_TRANSACTION</li><li>ADD_CARD</li><li>MAINTAIN_CARD</li><li>EMV_TOKEN_VERIFICATION</li></ul><br/>**Note:** This field is can be used if *useThreeDSecureVersion2* is included and set to *true*. This field defaults to PAYMENT_TRANSACTION.|
 |maxAuthorizationsForInstalmentPayment |integer<br/>`min=1`<br/>`max=999` |   |This indicates the maximum number of authorizations permitted for instalment payments. <br/>**Note:** This field can be used if *useThreeDSecureVersion2* is included and set to *true*. This field is required if *authenticationPurpose* is set to INSTALMENT_TRANSACTION.|
 |[electronicDelivery](#electronicdeliveryobject) | complex | |This is the electronic delivery information. <br/>**Note:** This object can be used if *useThreeDSecureVersion2* is included and set to *true*.|
@@ -1413,8 +1414,8 @@ The redirect return keys may contain the following parameters.
 
 |Element                |Type                       |Required   |Description|
 |---                    |---                        |---        |---|
-|authenticationMethod   |enumeration                |           |This is the mechanism used by the cardholder to authenticate to the 3DS Requestor. Possible values are:<br/><ul><li>NO_LOGIN</li><li>INTERNAL_CREDENTIALS</li><li>FEDERATED_ID</li><li>ISSUER_CREDENTIALS</li><li>THIRD_PARY_AUTHENTICATION</li><li>FIDO_AUTHENTICATOR</li></ul>|
-|data                   |string<br/>`max=2048 bytes`|           |This is the data that documents and supports a specific authentication process. Not currently specified in detail, intended to carry data that the ACS can use to verify the authentication process.|
+|authenticationMethod   |enumeration                |           |This is the mechanism used by the cardholder to authenticate to the 3DS Requestor. Possible values are:<br/><ul><li>NO_LOGIN</li><li>INTERNAL_CREDENTIALS</li><li>FEDERATED_ID</li><li>ISSUER_CREDENTIALS</li><li>THIRD_PARTY_AUTHENTICATION</li><li>FIDO_AUTHENTICATOR</li></ul>|
+|data                   |string<br/>`max=2048 bytes`|           |This field is reserved for future iterations of 3D Secure 2.|
 |time                   |UTC formatted date         |           |This is the date and time of the cardholder authentication. The ISO 8601 date format is expected, i.e., YYYY-MM-DD-THH:MM:SSZ.|
 
 ```apib
@@ -3032,6 +3033,11 @@ Once a customer profile has been created (see [profile Object](#profile-object))
     + PAYMENT
     + NON_PAYMENT
 - initialPurchaseTime (string) - This is the UTC formatted date and time of the purchase. **Note:** This field can be used if *useThreeDSecureVersion2* is included and set to *true*. This field is required in the following cases: 1) *messageCategory* is set to PAYMENT; and 2) *messageCategory* is set to NON_PAYMENT and *authenticationPurpose* is set to either INSTALMENT_TRANSACTION or RECURRING_TRANSACTION.
+- requestorChallengePreference (enum) - This indicates whether a challenge is requested for this transaction.
+    + NO_PREFERENCE
+    + NO_CHALLENGE_REQUESTED
+    + CHALLENGE_REQUESTED
+    + CHALLENGE_MANDATED
 - authenticationPurpose (enum) - This indicates the type of Authentication request, providing additional information to help determine the best approach for handing an Authentication request. **Note:** This field can be used if *useThreeDSecureVersion2* is included and set to *true*. This field defaults to PAYMENT_TRANSACTION.
     + PAYMENT_TRANSACTION
     + RECURRING_TRANSACTION
@@ -3480,7 +3486,7 @@ Once a customer profile has been created (see [profile Object](#profile-object))
         + INTERNAL_CREDENTIALS
         + FEDERATED_ID
         + ISSUER_CREDENTIALS
-        + THIRD_PARY_AUTHENTICATION
+        + THIRD_PARTY_AUTHENTICATION
         + FIDO_AUTHENTICATOR
-    + data (string) - This is the data that documents and supports a specific authentication process. Not currently specified in detail, intended to carry data that the ACS can use to verify the authentication process.
+    + data (string) - This field is reserved for future iterations of 3D Secure 2.
     + time (string) - This is the UTC formatted date and time of the cardholder authentication.
