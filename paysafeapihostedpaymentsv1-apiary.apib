@@ -2063,10 +2063,11 @@ There are two ways of processing a rebill:
 
 Rebills can be processed against your customer’s card by using a previously successful order ID. The rebill can be immediate or can be set up to run at a future date. 
 A rebill request has the same parameter requirements as an order creation request, with the following exceptions:
+
 **3DS 2 Subsequent Recurring Transactions**
 The subsequent recurring transaction with 3DS 2 needs to have the following parameters:
 
-extendedOptions
+extendedOptions:
 <ul><li>key = storedCredentialType</li>
 <li>value = RECURRING or TOPUP</li>
 <li>key = storedCredentialOccurrence</li>
