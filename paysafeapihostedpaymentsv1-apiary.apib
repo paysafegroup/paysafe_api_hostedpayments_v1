@@ -945,7 +945,9 @@ The *extendedOptions* array may contain the following key/value pairs.
 | suppressCustomerEmail | boolean | This allows merchants to include the *customerNotificationEmail* parameter in an order but without having Paysafe send an email to the customer notifying them of the purchase. It gives merchants the ability to show/capture the customer’s email address on the payments page but not send an email.|
 | threatMetrixSessionId | string</br>`length<=128` | This allows Silent Post (or Direct Post) merchants to specify their own *session_id* for use with ThreatMetrix. The value should be unique per request. This must consist of the following characters only:<ul><li>Upper and lowercase English letters (a-z, A-Z)</li><li>Digits (0-9)</li><li>Underscore or hyphen ( *, -)</li> |
 | useProfileDefaults | boolean | When performing a transaction with *recurringIndicator* set to *true,* passing this key with a value of *true* will allow the previously stored billing details to be retrieved from the profile and passed with the new transaction. |
-
+| storedCredentialType | enum | This specifies the type of request being made. Possible values are. <ul><li>ADHOC - Ad hoc consumer-initiated request.</li><li>TOPUP - Unscheduled merchant-initated request when a consumer balance is below a set limit. </li><li>RECURRING - Scheduled, merchant-initiated recurring request. </li>|
+| storedCredentialOccurrence | enum | This specifies whether this stored credential request is initial or recurring. Possible values are: <ul><li>INITIAL - Used when this is the first time the consumer uses this credit card. </li><li>SUBSEQUENT - Used when the consumer uses this credit card for subsquent requests.</li>|
+| initialTransactionId | string | The netbanx refferense of a successful 3DS 2 Initial Recurring transaction. |
 
 <a name="link-object" title="link Object"></a>
 ## link Object
@@ -1667,7 +1669,14 @@ After a customer profile (see [profile Object](#profile-object)) has been create
 Providing the *paymentToken* (along with the associated profile *id*) in the profile section of a new order will select the card used in the initial transaction on the hosted page.
 
 Once a customer profile has been created (see [profile Object](#profile-object)), the *id* can be used to securely store the customer's card details with Paysafe for future use. When the customer is redirected to the Hosted Payments page, they will see an option to store their card details. When the profile *id* is passed in with subsequent order requests, all card information associated with profile will be displayed to the customer. The customer can then select the payment card they want to use for the order. If no cards are yet associated with the profile *id*, then any other profile information, like the customer's address, will be displayed on the payment page.
-
+A recurring transaction is an agreement between a cardholder and a merchant providing goods/services that essentially authorizes the charging of periodic, automatic payments during a set amount of time. The initial recurring transaction with 3DS 2 needs to have the following parameters:
+<ul><li>extendedOptions</li>
+<li>key = storedCredentialType</li>
+<li>value = RECURRING or TOPUP</li>
+<li>key = storedCredentialOccurrence</li>
+<li>value = INITIAL</li>
+For additional details about the extendedOptions, please refer to [extendedOptions object](#extendedoptions-object)
+For additional details about the required 3DS 2 fields, please refer to [3DS Authentication](#Prior 3DS Authentication)
 
 + Request Process an Order with a Hosted Page (application/json)
 
