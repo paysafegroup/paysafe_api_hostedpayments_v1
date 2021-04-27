@@ -947,7 +947,7 @@ The *extendedOptions* array may contain the following key/value pairs.
 | useProfileDefaults | boolean | When performing a transaction with *recurringIndicator* set to *true,* passing this key with a value of *true* will allow the previously stored billing details to be retrieved from the profile and passed with the new transaction. |
 | storedCredentialType | enum | This specifies the type of request being made. Possible values are. <ul><li>ADHOC - Ad hoc consumer-initiated request.</li><li>TOPUP - Unscheduled merchant-initated request when a consumer balance is below a set limit. </li><li>RECURRING - Scheduled, merchant-initiated recurring request. </li>|
 | storedCredentialOccurrence | enum | This specifies whether this stored credential request is initial or recurring. Possible values are: <ul><li>INITIAL - Used when this is the first time the consumer uses this credit card. </li><li>SUBSEQUENT - Used when the consumer uses this credit card for subsquent requests.</li>|
-| initialTransactionId | string | The netbanx refferense of a successful 3DS 2 Initial Recurring transaction. |
+| initialTransactionId | string | The netbanx reference of a successful 3DS 2 Initial Recurring transaction. |
 
 <a name="link-object" title="link Object"></a>
 ## link Object
@@ -2073,7 +2073,7 @@ extendedOptions:
 <li>key = storedCredentialOccurrence</li>
 <li>value = SUBSEQUENT</li>
 <li>key = initialTransactionId</li>
-<li>value = The netbanx refferense of the successful 3DS 2 Initial Recurring transaction related to this recurring sequence</li></ul>
+<li>value = The netbanx reference of the successful 3DS 2 Initial Recurring transaction related to this recurring sequence</li></ul>
 
 * Do not include links and redirects, which are not applicable.
 * If the rebill is for a future date, then you must include the *dueDate* parameter.
