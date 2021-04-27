@@ -1670,6 +1670,7 @@ Providing the *paymentToken* (along with the associated profile *id*) in the pro
 
 Once a customer profile has been created (see [profile Object](#profile-object)), the *id* can be used to securely store the customer's card details with Paysafe for future use. When the customer is redirected to the Hosted Payments page, they will see an option to store their card details. When the profile *id* is passed in with subsequent order requests, all card information associated with profile will be displayed to the customer. The customer can then select the payment card they want to use for the order. If no cards are yet associated with the profile *id*, then any other profile information, like the customer's address, will be displayed on the payment page.
 
+
 **3DS 2 Initial Recurring Transactions**
 A recurring transaction is an agreement between a cardholder and a merchant providing goods/services that essentially authorizes the charging of periodic, automatic payments during a set amount of time. The initial recurring transaction with 3DS 2 needs to have the following parameters:
 <ul><li>extendedOptions</li>
