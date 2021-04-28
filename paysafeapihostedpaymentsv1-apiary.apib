@@ -1674,11 +1674,11 @@ Once a customer profile has been created (see [profile Object](#profile-object))
 **3DS 2 Initial Recurring Transactions**
 
 A recurring transaction is an agreement between a cardholder and a merchant providing goods/services that essentially authorizes the charging of periodic, automatic payments during a set amount of time. The initial recurring transaction with 3DS 2 needs to have the following parameters:
-<ul><li>extendedOptions</li>
-<li>key = storedCredentialType</li>
-<li>value = RECURRING or TOPUP</li>
-<li>key = storedCredentialOccurrence</li>
-<li>value = INITIAL</li></ul>
+* extendedOptions
+  * key = storedCredentialType
+  * value = RECURRING or TOPUP
+  * key = storedCredentialOccurrence
+  * value = INITIAL
 
 + Request Process an Order with a Hosted Page (application/json)
 
@@ -2068,19 +2068,24 @@ There are two ways of processing a rebill:
 Rebills can be processed against your customer’s card by using a previously successful order ID. The rebill can be immediate or can be set up to run at a future date. 
 A rebill request has the same parameter requirements as an order creation request, with the following exceptions:
 
-**3DS 2 Subsequent Recurring Transactions**
-The subsequent recurring transaction with 3DS 2 needs to have the following parameters:
-
-extendedOptions:
-<ul><li>key = storedCredentialType</li>
-<li>value = RECURRING or TOPUP</li>
-<li>key = storedCredentialOccurrence</li>
-<li>value = SUBSEQUENT</li>
-<li>key = initialTransactionId</li>
-<li>value = The netbanx reference of the successful 3DS 2 Initial Recurring transaction related to this recurring sequence</li></ul>
-
 * Do not include links and redirects, which are not applicable.
 * If the rebill is for a future date, then you must include the *dueDate* parameter.
+
+
+**3DS 2 Subsequent Recurring Transactions**
+
+The subsequent recurring transaction with 3DS 2 needs to have the following parameters:
+
+* extendedOptions:
+  * key = storedCredentialType
+  * value = RECURRING or TOPUP
+  * key = storedCredentialOccurrence
+  * value = SUBSEQUENT
+  * key = initialTransactionId
+  * value = The netbanx reference of the successful 3DS 2 Initial Recurring transaction related to this recurring sequence
+
+For additional details about the 3DS 2 Initial Recurring Transactions, refer to [3DS 2 Initial Recurring Transactions](#3DS 2 Initial Recurring Transactions)
+
 
 + Parameters
     + order_id:25TWPTLHRR81AIG1LF (required, string) - Order ID
