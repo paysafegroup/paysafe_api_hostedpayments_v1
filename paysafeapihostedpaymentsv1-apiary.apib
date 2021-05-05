@@ -2362,6 +2362,7 @@ In addition to the parameters that were part of the original transaction request
 | transaction.card.threeDEnrolment | enumeration | This indicates the enrollment status of the card in the 3D Secure program. Possible values are:<ul><li>Y – Authentication available </li><li>N – Cardholder not enrolled</li><li>U – Authentication unavailable</li><li>E – Error </li></ul>
 | transaction.card.threeDResult | enumeration | This indicates the outcome of the authentication request. Possible values are:<ul><li>Y – Cardholder successfully authenticated with their Card Issuer.</li><li>A – Cardholder authentication was attempted.</li><li>N – Cardholder failed to successfully authenticate with their Card Issuer.</li><li>U – Authentication with the Card Issuer was unavailable.</li><li>E – Error </li></ul>
 | transaction.card.type | enumeration | This is the type of card used. Possible values are:<ul><li>debit</li><li>credit </li></ul>
+| transaction.card.bin | enumeration | This is the BIN of the card used (the first 6 digits).|
 | transaction.cleared | boolean | The transaction has been sent to the bank for clearing. |
 | transaction.settled | boolean | The authorization-only transaction has been settled. |
 | transaction.confirmationNumber | string<br>`length=20` | This is the confirmation number returned by Paysafe in response to the transaction request. |
